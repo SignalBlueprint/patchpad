@@ -253,22 +253,22 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 #### Phase 4: Canvas Features
 
-- [ ] Add toolbar to Canvas view
-  - [ ] "Add Note" button - creates new note at center of viewport
-  - [ ] "Auto Layout" button - applies force-directed layout
-  - [ ] "Zoom to Fit" button - fits all notes in viewport
-  - [ ] "Export as PNG" button
+- [x] Add toolbar to Canvas view
+  - [x] "Add Note" button - creates new note at center of viewport
+  - [x] "Auto Layout" button - applies force-directed layout
+  - [x] "Zoom to Fit" button - fits all notes in viewport
+  - [x] "Export as PNG" button
 
-- [ ] Implement canvas export
-  - [ ] Use `canvas.toDataURL('image/png')`
-  - [ ] Create high-resolution export (2x scale)
-  - [ ] Download as `patchpad-canvas-{date}.png`
+- [x] Implement canvas export
+  - [x] Use `canvas.toDataURL('image/png')`
+  - [x] Create high-resolution export (2x scale)
+  - [x] Download as `patchpad-canvas-{date}.png`
 
-- [ ] Add grouping feature
-  - [ ] Draw rectangle to select multiple notes
-  - [ ] "Group" action creates visual container
-  - [ ] Groups can be collapsed/expanded
-  - [ ] Groups persist in localStorage
+- [x] Add grouping feature
+  - [x] Draw rectangle to select multiple notes
+  - [x] "Group" action creates visual container
+  - [x] Groups can be collapsed/expanded
+  - [x] Groups persist in localStorage
 
 #### Phase 5: Integration
 

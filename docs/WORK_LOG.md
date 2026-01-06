@@ -94,6 +94,36 @@
 
 ---
 
+## Canvas Mode Phase 4: Canvas Features (Horizon 2.1)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/components/Canvas/CanvasView.tsx` — Added toolbar with Add Note, Auto Layout (grid/force), Zoom to Fit, Export PNG buttons; added grouping via Alt+drag selection; added html2canvas PNG export
+- `src/components/Canvas/CanvasGroup.tsx` — New component for visual note groups with collapse/expand, rename, and delete
+- `src/components/Canvas/index.ts` — Added CanvasGroup export
+- `package.json` — Added html2canvas dependency for PNG export
+
+**Implementation Notes:**
+- Toolbar positioned top-left with buttons for: Add Note (callback), Auto Layout (dropdown with grid/force options), Zoom to Fit, Export PNG
+- Auto Layout dropdown allows choosing between grid and force-directed algorithms
+- Export uses html2canvas library to render DOM to PNG at 2x scale
+- Filename format: `patchpad-canvas-{date}.png`
+- Groups created via Alt+drag rectangle selection (minimum 2 notes)
+- CanvasGroup component shows group name (editable via double-click), note count badge, collapse toggle, delete button
+- Groups stored in localStorage (`patchpad_canvas_groups`)
+- Collapsed groups show just header with note count
+- Group colors cycle through preset palette
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- All acceptance criteria for Phase 4 met:
+  - Toolbar with Add Note, Auto Layout, Zoom to Fit, Export PNG buttons
+  - PNG export with html2canvas at 2x scale
+  - Rectangle selection to group notes
+  - Groups collapsible/expandable
+  - Groups persist in localStorage
+
+---
+
 ## Canvas Mode Phase 3: Canvas Data Model (Horizon 2.1)
 **Completed:** 2026-01-06
 **Files Changed:**

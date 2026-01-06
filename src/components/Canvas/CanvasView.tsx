@@ -2,18 +2,22 @@ import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import type { Note, CanvasPosition } from '../../types/note';
 import { StickyNote, type StickyNoteData } from './StickyNote';
 import { ConnectionLine } from './ConnectionLine';
+import { CanvasGroup, type CanvasGroupData } from './CanvasGroup';
 
 // Re-export CanvasPosition for convenience
 export type { CanvasPosition } from '../../types/note';
 
-// localStorage key for viewport only (positions are in DB)
+// localStorage keys
 const CANVAS_VIEWPORT_KEY = 'patchpad_canvas_viewport';
+const CANVAS_GROUPS_KEY = 'patchpad_canvas_groups';
 
 interface CanvasViewProps {
   notes: Note[];
   onNoteClick?: (id: string) => void;
   onCreateConnection?: (fromId: string, toId: string) => void;
   onPositionChange?: (noteId: string, position: CanvasPosition) => void;
+  onAddNote?: () => void;
+  onAutoLayout?: (algorithm: 'grid' | 'force') => void;
   selectedNoteIds?: string[];
 }
 
@@ -56,6 +60,36 @@ function saveViewport(viewport: Viewport): void {
   }
 }
 
+// Load groups from localStorage
+function loadGroups(): CanvasGroupData[] {
+  try {
+    const saved = localStorage.getItem(CANVAS_GROUPS_KEY);
+    if (saved) {
+      return JSON.parse(saved);
+    }
+  } catch (e) {
+    console.warn('Failed to load canvas groups:', e);
+  }
+  return [];
+}
+
+// Save groups to localStorage
+function saveGroups(groups: CanvasGroupData[]): void {
+  try {
+    localStorage.setItem(CANVAS_GROUPS_KEY, JSON.stringify(groups));
+  } catch (e) {
+    console.warn('Failed to save canvas groups:', e);
+  }
+}
+
+// Generate unique ID
+function generateId(): string {
+  return `group-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+}
+
+// Group colors
+const GROUP_COLORS = ['#3B82F6', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4', '#84CC16'];
+
 // Get color based on folder or tags
 function getNoteColor(note: Note): string {
   if (note.folder) {
@@ -92,15 +126,28 @@ export function CanvasView({
   onNoteClick,
   onCreateConnection,
   onPositionChange,
+  onAddNote,
+  onAutoLayout,
   selectedNoteIds = [],
 }: CanvasViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
+  const canvasContentRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [viewport, setViewport] = useState<Viewport>(loadViewport);
   const [positions, setPositions] = useState<Map<string, CanvasPosition>>(() => loadPositionsFromNotes(notes));
   const [draggingNote, setDraggingNote] = useState<string | null>(null);
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
+  const [showLayoutMenu, setShowLayoutMenu] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
+  const [groups, setGroups] = useState<CanvasGroupData[]>(() => loadGroups());
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
+  const [selectionRect, setSelectionRect] = useState<{
+    startX: number;
+    startY: number;
+    endX: number;
+    endY: number;
+  } | null>(null);
   const [connectionDrag, setConnectionDrag] = useState<{
     fromId: string;
     fromPos: { x: number; y: number };
@@ -236,12 +283,30 @@ export function CanvasView({
     });
   }, [onPositionChange]);
 
-  // Handle canvas pan
+  // Handle canvas pan or selection rectangle
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     // Check if clicking on canvas background (not a note)
     if (e.target === e.currentTarget || (e.target as HTMLElement).classList.contains('canvas-background')) {
-      setIsPanning(true);
-      setPanStart({ x: e.clientX - viewport.x, y: e.clientY - viewport.y });
+      // Alt+drag starts selection rectangle
+      if (e.altKey) {
+        const rect = containerRef.current?.getBoundingClientRect();
+        if (rect) {
+          const canvasX = (e.clientX - rect.left - viewport.x) / viewport.zoom;
+          const canvasY = (e.clientY - rect.top - viewport.y) / viewport.zoom;
+          setSelectionRect({
+            startX: canvasX,
+            startY: canvasY,
+            endX: canvasX,
+            endY: canvasY,
+          });
+        }
+      } else {
+        // Regular pan
+        setIsPanning(true);
+        setPanStart({ x: e.clientX - viewport.x, y: e.clientY - viewport.y });
+      }
+      // Deselect group when clicking background
+      setSelectedGroupId(null);
     }
   }, [viewport]);
 
@@ -253,6 +318,14 @@ export function CanvasView({
         y: e.clientY - panStart.y,
       }));
     }
+    if (selectionRect) {
+      const rect = containerRef.current?.getBoundingClientRect();
+      if (rect) {
+        const canvasX = (e.clientX - rect.left - viewport.x) / viewport.zoom;
+        const canvasY = (e.clientY - rect.top - viewport.y) / viewport.zoom;
+        setSelectionRect(prev => prev ? { ...prev, endX: canvasX, endY: canvasY } : null);
+      }
+    }
     if (connectionDrag) {
       setConnectionDrag(prev => prev ? {
         ...prev,
@@ -262,10 +335,58 @@ export function CanvasView({
         }
       } : null);
     }
-  }, [isPanning, panStart, connectionDrag, viewport]);
+  }, [isPanning, panStart, selectionRect, connectionDrag, viewport]);
 
   const handleMouseUp = useCallback((e: React.MouseEvent) => {
     setIsPanning(false);
+
+    // Check if selection rectangle ended - create group from selected notes
+    if (selectionRect) {
+      const minX = Math.min(selectionRect.startX, selectionRect.endX);
+      const maxX = Math.max(selectionRect.startX, selectionRect.endX);
+      const minY = Math.min(selectionRect.startY, selectionRect.endY);
+      const maxY = Math.max(selectionRect.startY, selectionRect.endY);
+
+      // Find notes inside selection
+      const selectedNotes = stickyNotes.filter(note => {
+        const noteRight = note.x + note.width;
+        const noteBottom = note.y + note.height;
+        return note.x < maxX && noteRight > minX && note.y < maxY && noteBottom > minY;
+      });
+
+      if (selectedNotes.length >= 2) {
+        // Calculate group bounds with padding
+        const padding = 20;
+        const groupBounds = selectedNotes.reduce(
+          (acc, note) => ({
+            minX: Math.min(acc.minX, note.x),
+            minY: Math.min(acc.minY, note.y),
+            maxX: Math.max(acc.maxX, note.x + note.width),
+            maxY: Math.max(acc.maxY, note.y + note.height),
+          }),
+          { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity }
+        );
+
+        const newGroup: CanvasGroupData = {
+          id: generateId(),
+          name: `Group ${groups.length + 1}`,
+          noteIds: selectedNotes.map(n => n.id),
+          x: groupBounds.minX - padding,
+          y: groupBounds.minY - padding,
+          width: groupBounds.maxX - groupBounds.minX + padding * 2,
+          height: groupBounds.maxY - groupBounds.minY + padding * 2,
+          color: GROUP_COLORS[groups.length % GROUP_COLORS.length],
+          collapsed: false,
+        };
+
+        const newGroups = [...groups, newGroup];
+        setGroups(newGroups);
+        saveGroups(newGroups);
+        setSelectedGroupId(newGroup.id);
+      }
+
+      setSelectionRect(null);
+    }
 
     // Check if connection drag ended over a note
     if (connectionDrag && onCreateConnection) {
@@ -290,7 +411,7 @@ export function CanvasView({
       }
     }
     setConnectionDrag(null);
-  }, [connectionDrag, onCreateConnection, viewport, stickyNotes]);
+  }, [selectionRect, connectionDrag, onCreateConnection, viewport, stickyNotes, groups]);
 
   // Handle zoom
   const handleWheel = useCallback((e: React.WheelEvent) => {
@@ -375,6 +496,108 @@ export function CanvasView({
     setViewport({ x: 0, y: 0, zoom: 1 });
   }, []);
 
+  // Export canvas as PNG
+  const handleExportPNG = useCallback(async () => {
+    if (!canvasContentRef.current || stickyNotes.length === 0) return;
+
+    setIsExporting(true);
+
+    try {
+      // Dynamically import html2canvas
+      const html2canvasModule = await import('html2canvas');
+      const html2canvas = html2canvasModule.default;
+
+      // Create a temporary container for export
+      const exportContainer = document.createElement('div');
+      exportContainer.style.position = 'absolute';
+      exportContainer.style.left = '-9999px';
+      exportContainer.style.top = '-9999px';
+      document.body.appendChild(exportContainer);
+
+      // Clone the canvas content
+      const contentClone = canvasContentRef.current.cloneNode(true) as HTMLElement;
+
+      // Reset transform for export
+      contentClone.style.transform = 'none';
+      contentClone.style.position = 'relative';
+
+      // Set size to fit all notes with padding
+      const padding = 50;
+      const width = bounds.maxX - bounds.minX + padding * 2;
+      const height = bounds.maxY - bounds.minY + padding * 2;
+      contentClone.style.width = `${width}px`;
+      contentClone.style.height = `${height}px`;
+      contentClone.style.backgroundColor = '#F3F4F6';
+
+      // Adjust positions of children to account for bounds offset
+      const children = contentClone.querySelectorAll('[style*="left"]');
+      children.forEach((child) => {
+        const el = child as HTMLElement;
+        const left = parseFloat(el.style.left) || 0;
+        const top = parseFloat(el.style.top) || 0;
+        el.style.left = `${left - bounds.minX + padding}px`;
+        el.style.top = `${top - bounds.minY + padding}px`;
+      });
+
+      exportContainer.appendChild(contentClone);
+
+      // Render to canvas with 2x scale for high resolution
+      const canvas = await html2canvas(contentClone, {
+        scale: 2,
+        backgroundColor: '#F3F4F6',
+        logging: false,
+      });
+
+      // Clean up
+      document.body.removeChild(exportContainer);
+
+      // Download
+      const link = document.createElement('a');
+      const date = new Date().toISOString().split('T')[0];
+      link.download = `patchpad-canvas-${date}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (error) {
+      console.error('Failed to export canvas:', error);
+      // Fallback: alert user that html2canvas is needed
+      alert('Export failed. Make sure html2canvas is installed: npm install html2canvas');
+    } finally {
+      setIsExporting(false);
+    }
+  }, [bounds, stickyNotes.length]);
+
+  // Group management callbacks
+  const handleGroupToggleCollapse = useCallback((groupId: string) => {
+    setGroups(prev => {
+      const updated = prev.map(g =>
+        g.id === groupId ? { ...g, collapsed: !g.collapsed } : g
+      );
+      saveGroups(updated);
+      return updated;
+    });
+  }, []);
+
+  const handleGroupDelete = useCallback((groupId: string) => {
+    setGroups(prev => {
+      const updated = prev.filter(g => g.id !== groupId);
+      saveGroups(updated);
+      return updated;
+    });
+    if (selectedGroupId === groupId) {
+      setSelectedGroupId(null);
+    }
+  }, [selectedGroupId]);
+
+  const handleGroupRename = useCallback((groupId: string, name: string) => {
+    setGroups(prev => {
+      const updated = prev.map(g =>
+        g.id === groupId ? { ...g, name } : g
+      );
+      saveGroups(updated);
+      return updated;
+    });
+  }, []);
+
   if (notes.length === 0) {
     return (
       <div className="h-full flex items-center justify-center text-gray-500 bg-gray-50">
@@ -417,12 +640,26 @@ export function CanvasView({
 
       {/* Transform container for zoom/pan */}
       <div
+        ref={canvasContentRef}
         className="absolute"
         style={{
           transform: `translate(${viewport.x}px, ${viewport.y}px) scale(${viewport.zoom})`,
           transformOrigin: '0 0',
         }}
       >
+        {/* Groups (render behind notes) */}
+        {groups.map(group => (
+          <CanvasGroup
+            key={group.id}
+            group={group}
+            isSelected={selectedGroupId === group.id}
+            onSelect={() => setSelectedGroupId(group.id)}
+            onToggleCollapse={() => handleGroupToggleCollapse(group.id)}
+            onDelete={() => handleGroupDelete(group.id)}
+            onRename={(name) => handleGroupRename(group.id, name)}
+          />
+        ))}
+
         {/* Connection lines */}
         <svg
           className="absolute top-0 left-0 pointer-events-none"
@@ -476,6 +713,19 @@ export function CanvasView({
             viewportZoom={viewport.zoom}
           />
         ))}
+
+        {/* Selection rectangle */}
+        {selectionRect && (
+          <div
+            className="absolute border-2 border-blue-500 bg-blue-500/20 pointer-events-none"
+            style={{
+              left: Math.min(selectionRect.startX, selectionRect.endX),
+              top: Math.min(selectionRect.startY, selectionRect.endY),
+              width: Math.abs(selectionRect.endX - selectionRect.startX),
+              height: Math.abs(selectionRect.endY - selectionRect.startY),
+            }}
+          />
+        )}
       </div>
 
       {/* Minimap */}
@@ -562,9 +812,97 @@ export function CanvasView({
         {notes.length} notes, {connections.length} connections • {Math.round(viewport.zoom * 100)}%
       </div>
 
-      {/* Help text */}
-      <div className="absolute top-2 left-2 text-xs text-gray-400 bg-white/80 px-2 py-1 rounded">
-        Drag to pan • Scroll to zoom • Shift+drag from note to connect
+      {/* Toolbar */}
+      <div className="absolute top-2 left-2 flex items-center gap-1 bg-white/95 rounded-lg shadow-lg p-1">
+        {/* Add Note */}
+        {onAddNote && (
+          <button
+            onClick={onAddNote}
+            className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+            title="Add Note"
+          >
+            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+          </button>
+        )}
+
+        {/* Auto Layout */}
+        {onAutoLayout && (
+          <div className="relative">
+            <button
+              onClick={() => setShowLayoutMenu(!showLayoutMenu)}
+              className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+              title="Auto Layout"
+            >
+              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
+              </svg>
+            </button>
+            {showLayoutMenu && (
+              <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[120px] z-50">
+                <button
+                  onClick={() => {
+                    onAutoLayout('grid');
+                    setShowLayoutMenu(false);
+                  }}
+                  className="w-full px-3 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Grid Layout
+                </button>
+                <button
+                  onClick={() => {
+                    onAutoLayout('force');
+                    setShowLayoutMenu(false);
+                  }}
+                  className="w-full px-3 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  Force Layout
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Divider */}
+        <div className="w-px h-6 bg-gray-200 mx-1" />
+
+        {/* Zoom to Fit */}
+        <button
+          onClick={handleZoomToFit}
+          className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+          title="Zoom to Fit"
+        >
+          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
+          </svg>
+        </button>
+
+        {/* Export PNG */}
+        <button
+          onClick={handleExportPNG}
+          disabled={isExporting}
+          className="p-2 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+          title="Export as PNG"
+        >
+          {isExporting ? (
+            <svg className="w-4 h-4 text-gray-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+            </svg>
+          ) : (
+            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+          )}
+        </button>
+
+        {/* Divider */}
+        <div className="w-px h-6 bg-gray-200 mx-1" />
+
+        {/* Help text */}
+        <span className="text-xs text-gray-400 px-2">
+          Drag: pan • Scroll: zoom • Alt+drag: group
+        </span>
       </div>
     </div>
   );
