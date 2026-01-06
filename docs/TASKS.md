@@ -25,36 +25,36 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 **Tasks:**
 
-- [ ] Create new hook `src/hooks/useLinkSuggestions.ts`
-  - [ ] Import `useIdleDetection` from `src/hooks/useIdleDetection.ts`
-  - [ ] Import `findRelatedNotes` from `src/services/ai.ts`
-  - [ ] Track cursor position and extract current sentence/paragraph
-  - [ ] On idle (500ms), scan text for exact matches against note titles
-  - [ ] Return array of `{ term: string, noteId: string, noteTitle: string, position: number }`
+- [x] Create new hook `src/hooks/useLinkSuggestions.ts`
+  - [x] Import `useIdleDetection` from `src/hooks/useIdleDetection.ts`
+  - [x] Import `findRelatedNotes` from `src/services/ai.ts`
+  - [x] Track cursor position and extract current sentence/paragraph
+  - [x] On idle (500ms), scan text for exact matches against note titles
+  - [x] Return array of `{ term: string, noteId: string, noteTitle: string, position: number }`
 
-- [ ] Create `src/components/LinkSuggestionToast.tsx`
-  - [ ] Accept props: `suggestions: LinkSuggestion[]`, `onAccept: (suggestion) => void`, `onDismiss: () => void`
-  - [ ] Render subtle toast in bottom-right corner using glass-morphism style from existing components
-  - [ ] Show suggestion: "Link 'Project Phoenix' to existing note?"
-  - [ ] Add "Link" and "Dismiss" buttons
-  - [ ] Auto-dismiss after 5 seconds if no action
+- [x] Create `src/components/LinkSuggestionToast.tsx`
+  - [x] Accept props: `suggestions: LinkSuggestion[]`, `onAccept: (suggestion) => void`, `onDismiss: () => void`
+  - [x] Render subtle toast in bottom-right corner using glass-morphism style from existing components
+  - [x] Show suggestion: "Link 'Project Phoenix' to existing note?"
+  - [x] Add "Link" and "Dismiss" buttons
+  - [x] Auto-dismiss after 5 seconds if no action
 
-- [ ] Add concept matching logic to `src/services/brain.ts`
-  - [ ] Export new function `findConceptMatches(text: string, concepts: Concept[]): ConceptMatch[]`
-  - [ ] Match against concept names (case-insensitive)
-  - [ ] Return matches with position in text
+- [x] Add concept matching logic to `src/services/brain.ts`
+  - [x] Export new function `findConceptMatches(text: string, concepts: Concept[]): ConceptMatch[]`
+  - [x] Match against concept names (case-insensitive)
+  - [x] Return matches with position in text
 
-- [ ] Integrate into `src/components/Editor.tsx`
-  - [ ] Import and use `useLinkSuggestions` hook
-  - [ ] Render `LinkSuggestionToast` when suggestions available
-  - [ ] On accept, use CodeMirror transaction to wrap matched text with `[[...]]`
-  - [ ] Store dismissed suggestions in session to avoid re-suggesting
+- [x] Integrate into `src/components/Editor.tsx`
+  - [x] Import and use `useLinkSuggestions` hook
+  - [x] Render `LinkSuggestionToast` when suggestions available
+  - [x] On accept, use CodeMirror transaction to wrap matched text with `[[...]]`
+  - [x] Store dismissed suggestions in session to avoid re-suggesting
 
-- [ ] Add tests in `src/hooks/useLinkSuggestions.test.ts`
-  - [ ] Test: exact title match triggers suggestion
-  - [ ] Test: case-insensitive matching works
-  - [ ] Test: no duplicate suggestions for same term
-  - [ ] Test: dismissed suggestions not re-shown
+- [x] Add tests in `src/hooks/useLinkSuggestions.test.ts`
+  - [x] Test: exact title match triggers suggestion
+  - [x] Test: case-insensitive matching works
+  - [x] Test: no duplicate suggestions for same term
+  - [x] Test: dismissed suggestions not re-shown
 
 **Acceptance Criteria:**
 - Typing "discussed Project Phoenix" shows toast if note titled "Project Phoenix" exists

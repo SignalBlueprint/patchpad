@@ -658,3 +658,78 @@ function generateId(): string {
 export function isBrainAvailable(): boolean {
   return !!(env.aiProvider && (env.openai.apiKey || env.anthropic.apiKey));
 }
+
+/**
+ * Result of a concept match in text
+ */
+export interface ConceptMatch {
+  concept: Concept;
+  term: string;
+  position: number;
+}
+
+/**
+ * Find concept matches in text
+ * @param text The text to search in
+ * @param concepts The concepts to match against
+ * @returns Array of matches with position information
+ */
+export function findConceptMatches(text: string, concepts: Concept[]): ConceptMatch[] {
+  const matches: ConceptMatch[] = [];
+  const textLower = text.toLowerCase();
+  const seenTerms = new Set<string>();
+
+  for (const concept of concepts) {
+    const name = concept.name.trim();
+    if (!name || name.length < 2) continue;
+
+    const nameLower = name.toLowerCase();
+
+    // Skip if already found this term
+    if (seenTerms.has(nameLower)) continue;
+
+    // Find case-insensitive match
+    let searchStart = 0;
+    let index: number;
+
+    while ((index = textLower.indexOf(nameLower, searchStart)) !== -1) {
+      // Check word boundaries
+      const charBefore = index > 0 ? text[index - 1] : ' ';
+      const charAfter = index + name.length < text.length ? text[index + name.length] : ' ';
+
+      const isWordBoundaryBefore = /[\s\n\r.,;:!?()\[\]{}'"<>-]/.test(charBefore);
+      const isWordBoundaryAfter = /[\s\n\r.,;:!?()\[\]{}'"<>-]/.test(charAfter);
+
+      if (isWordBoundaryBefore && isWordBoundaryAfter) {
+        // Check if inside [[...]] brackets
+        const beforeText = text.substring(0, index);
+        const afterText = text.substring(index);
+        const lastOpenBracket = beforeText.lastIndexOf('[[');
+        const lastCloseBracket = beforeText.lastIndexOf(']]');
+        const nextCloseBracket = afterText.indexOf(']]');
+        const nextOpenBracket = afterText.indexOf('[[');
+
+        const isInsideBrackets = lastOpenBracket > lastCloseBracket &&
+          (nextCloseBracket !== -1 && (nextOpenBracket === -1 || nextCloseBracket < nextOpenBracket));
+
+        if (!isInsideBrackets) {
+          seenTerms.add(nameLower);
+          matches.push({
+            concept,
+            term: text.substring(index, index + name.length),
+            position: index,
+          });
+          // Only report first match per concept
+          break;
+        }
+      }
+
+      searchStart = index + 1;
+    }
+  }
+
+  // Sort by position
+  matches.sort((a, b) => a.position - b.position);
+
+  return matches;
+}

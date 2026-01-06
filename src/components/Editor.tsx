@@ -9,6 +9,8 @@ import { autocompletion, completionKeymap, closeBrackets, closeBracketsKeymap } 
 import type { Note, Highlight } from '../types/note';
 import { parseWikiLinks, getWikiLinkDisplayText, type ParsedWikiLink } from '../utils/linkParser';
 import { LinkPreviewCard } from './LinkPreviewCard';
+import { useLinkSuggestions, type LinkSuggestion } from '../hooks/useLinkSuggestions';
+import { LinkSuggestionToast } from './LinkSuggestionToast';
 
 interface EditorProps {
   note: Note | null;
@@ -270,12 +272,78 @@ export function Editor({ note, onSave, showPreview, onTogglePreview, onSelection
   const [hoveredLink, setHoveredLink] = useState<{ title: string; element: HTMLElement } | null>(null);
   const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+  // Track current content for link suggestions
+  const [currentContent, setCurrentContent] = useState<string>(note?.content || '');
+
+  // Link suggestions hook
+  const {
+    suggestions: linkSuggestions,
+    dismissSuggestion,
+    acceptSuggestion,
+    resetDismissed,
+    reportActivity: reportLinkActivity,
+  } = useLinkSuggestions({
+    content: currentContent,
+    notes: allNotes.filter(n => n.id !== note?.id), // Exclude current note
+    enabled: !!note,
+    idleTimeout: 500,
+  });
+
   // Update word/char count
   const updateStats = useCallback((content: string) => {
     setCharCount(content.length);
     const words = content.trim().split(/\s+/).filter(w => w.length > 0);
     setWordCount(words.length);
+    setCurrentContent(content);
   }, []);
+
+  // Reset dismissed suggestions when switching notes
+  useEffect(() => {
+    if (note?.id) {
+      resetDismissed();
+      setCurrentContent(note.content || '');
+    }
+  }, [note?.id, resetDismissed]);
+
+  // Handle accepting a link suggestion - wrap the term with [[...]]
+  const handleAcceptLinkSuggestion = useCallback((suggestion: LinkSuggestion) => {
+    if (!viewRef.current) return;
+
+    const content = viewRef.current.state.doc.toString();
+    const term = suggestion.term;
+    const position = suggestion.position;
+
+    // Verify the term is still at the expected position
+    const foundTerm = content.substring(position, position + term.length);
+    if (foundTerm.toLowerCase() !== term.toLowerCase()) {
+      // Term has moved, try to find it again
+      const termLower = term.toLowerCase();
+      const contentLower = content.toLowerCase();
+      const newPos = contentLower.indexOf(termLower);
+      if (newPos === -1) {
+        acceptSuggestion(term);
+        return;
+      }
+      // Use new position
+      const wikiLink = `[[${suggestion.noteTitle}]]`;
+      viewRef.current.dispatch({
+        changes: { from: newPos, to: newPos + term.length, insert: wikiLink },
+      });
+    } else {
+      // Replace at original position
+      const wikiLink = `[[${suggestion.noteTitle}]]`;
+      viewRef.current.dispatch({
+        changes: { from: position, to: position + term.length, insert: wikiLink },
+      });
+    }
+
+    acceptSuggestion(term);
+  }, [acceptSuggestion]);
+
+  // Handle dismissing a link suggestion
+  const handleDismissLinkSuggestion = useCallback((suggestion: LinkSuggestion) => {
+    dismissSuggestion(suggestion.term);
+  }, [dismissSuggestion]);
 
   // Debounced save function
   const debouncedSave = useCallback((id: string, content: string) => {
@@ -653,6 +721,15 @@ export function Editor({ note, onSave, showPreview, onTogglePreview, onSelection
             onWikiLinkClick(title);
           }}
           onClose={() => setHoveredLink(null)}
+        />
+      )}
+
+      {/* Link Suggestion Toast */}
+      {linkSuggestions.length > 0 && (
+        <LinkSuggestionToast
+          suggestions={linkSuggestions}
+          onAccept={handleAcceptLinkSuggestion}
+          onDismiss={handleDismissLinkSuggestion}
         />
       )}
     </div>
