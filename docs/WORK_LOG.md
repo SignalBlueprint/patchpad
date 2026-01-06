@@ -94,6 +94,39 @@
 
 ---
 
+## Canvas Mode Phase 2: Canvas View Component (Horizon 2.1)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/components/Canvas/CanvasView.tsx` — Main canvas component with infinite pan/zoom, minimap, note rendering, and connection visualization
+- `src/components/Canvas/StickyNote.tsx` — Draggable sticky note cards with resize handles, tag display, and connection drag support
+- `src/components/Canvas/ConnectionLine.tsx` — SVG bezier curve component with arrowheads for visualizing note connections
+- `src/components/Canvas/index.ts` — Barrel export file for Canvas components
+
+**Implementation Notes:**
+- CanvasView uses DOM elements (not HTML5 Canvas) for better interactivity and accessibility
+- Infinite canvas with mouse drag panning and scroll wheel zoom (0.25x to 2x range)
+- Minimap in bottom-left corner shows viewport position and all notes
+- Notes automatically colored based on folder name or first tag (hash-based color selection)
+- Wiki links parsed from note content to auto-generate connections between notes
+- Positions and viewport state persist to localStorage (`patchpad_canvas_positions`, `patchpad_canvas_viewport`)
+- Notes without saved positions auto-layout in a grid pattern
+- Zoom-to-fit button calculates optimal zoom to show all notes
+- Connection drawing: Shift+drag from a note shows rubber-band line, releasing over another note triggers `onCreateConnection` callback
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- All acceptance criteria for Phase 2 met:
+  - CanvasView accepts notes array and callback props
+  - Pan/zoom with mouse drag and scroll wheel
+  - Minimap shows viewport position
+  - StickyNote shows title, content preview (150 chars), tags
+  - Colors based on folder/tag
+  - Resize handles on notes
+  - ConnectionLine renders bezier curves with arrowheads
+  - Shift+drag creates rubber-band connection line
+
+---
+
 ## Canvas Mode Phase 1: Pinnable Nodes (Horizon 2.1)
 **Completed:** 2026-01-06
 **Files Changed:**

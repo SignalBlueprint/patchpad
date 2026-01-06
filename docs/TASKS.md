@@ -214,27 +214,27 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 #### Phase 2: Canvas View Component
 
-- [ ] Create `src/components/Canvas/CanvasView.tsx`
-  - [ ] Accept props: `notes: Note[]`, `onNoteClick: (id) => void`, `onCreateConnection: (from, to) => void`
-  - [ ] Render HTML5 Canvas with pan/zoom (adapt from KnowledgeGraph.tsx)
-  - [ ] Implement infinite canvas with mouse drag panning
-  - [ ] Add minimap in corner showing viewport position
+- [x] Create `src/components/Canvas/CanvasView.tsx`
+  - [x] Accept props: `notes: Note[]`, `onNoteClick: (id) => void`, `onCreateConnection: (from, to) => void`
+  - [x] Render HTML5 Canvas with pan/zoom (adapt from KnowledgeGraph.tsx)
+  - [x] Implement infinite canvas with mouse drag panning
+  - [x] Add minimap in corner showing viewport position
 
-- [ ] Create `src/components/Canvas/StickyNote.tsx`
-  - [ ] Render note as draggable card on canvas
-  - [ ] Show title, first 100 chars of content, tags
-  - [ ] Color based on folder or tag
-  - [ ] Resize handles for adjusting card size
+- [x] Create `src/components/Canvas/StickyNote.tsx`
+  - [x] Render note as draggable card on canvas
+  - [x] Show title, first 100 chars of content, tags
+  - [x] Color based on folder or tag
+  - [x] Resize handles for adjusting card size
 
-- [ ] Create `src/components/Canvas/ConnectionLine.tsx`
-  - [ ] Render bezier curve between two notes
-  - [ ] Arrowhead on target end
-  - [ ] Click to select, delete key to remove
+- [x] Create `src/components/Canvas/ConnectionLine.tsx`
+  - [x] Render bezier curve between two notes
+  - [x] Arrowhead on target end
+  - [x] Click to select, delete key to remove
 
-- [ ] Implement connection drawing mode
-  - [ ] Hold Shift + drag from note to create connection
-  - [ ] Show rubber-band line while dragging
-  - [ ] On release over another note, create wiki link between them
+- [x] Implement connection drawing mode
+  - [x] Hold Shift + drag from note to create connection
+  - [x] Show rubber-band line while dragging
+  - [x] On release over another note, create wiki link between them
 
 #### Phase 3: Canvas Data Model
 
