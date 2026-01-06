@@ -17,6 +17,13 @@ export interface WikiLink {
   displayText?: string;   // Optional display text from [[Title|display]]
 }
 
+export interface CanvasPosition {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
 export interface Note {
   id: string;
   title: string;
@@ -29,6 +36,7 @@ export interface Note {
   highlights?: Highlight[];
   parentId?: string; // For sub-notes (merged notes become children)
   collapsed?: boolean; // Whether children are collapsed in sidebar
+  canvasPosition?: CanvasPosition; // Position on canvas view
 }
 
 export interface Folder {

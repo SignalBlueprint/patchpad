@@ -28,4 +28,14 @@ db.version(4).stores({
   folders: 'id, name',
 });
 
+// Version 5: add canvas position fields for spatial note arrangement
+db.version(5).stores({
+  notes: 'id, title, updatedAt, favorite, folder, *tags, parentId',
+  patches: 'id, noteId, status, createdAt',
+  folders: 'id, name',
+});
+// Note: canvasPosition is stored as a JSON field on the Note object
+// No index needed since we don't query by position
+// Migration: existing notes will have undefined canvasPosition (null/undefined)
+
 export { db };

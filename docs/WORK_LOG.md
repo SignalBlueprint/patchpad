@@ -94,6 +94,35 @@
 
 ---
 
+## Canvas Mode Phase 3: Canvas Data Model (Horizon 2.1)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/types/note.ts` — Added `CanvasPosition` interface and `canvasPosition` optional field to Note type
+- `src/db/index.ts` — Added version 5 schema for canvas position storage
+- `src/services/canvas.ts` — New service with `saveCanvasLayout()`, `loadCanvasLayout()`, `saveNoteCanvasPosition()`, `clearCanvasLayout()`, `autoLayoutGrid()`, `autoLayoutForce()`, and `autoLayout()` functions
+- `src/components/Canvas/CanvasView.tsx` — Updated to use Note's canvasPosition field and notify parent on position changes
+- `src/components/Canvas/index.ts` — Updated exports to use CanvasPosition from types/note.ts
+
+**Implementation Notes:**
+- CanvasPosition stored as JSON object on Note (`canvasPosition?: { x, y, width, height }`)
+- Database version 5 maintains same indexes; canvasPosition is stored inline with Note document
+- canvas.ts service provides functions for batch save/load and auto-layout algorithms
+- Grid layout arranges notes in columns (ceil(sqrt(n)) columns)
+- Force-directed layout uses wiki links to cluster connected notes together
+- CanvasView accepts `onPositionChange` callback to persist changes to database
+- Positions sync from notes prop when they change (e.g., after DB load)
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- All acceptance criteria for Phase 3 met:
+  - CanvasPosition interface added to types/note.ts
+  - Note type extended with optional canvasPosition field
+  - Database schema version 5 added
+  - canvas.ts exports saveCanvasLayout, loadCanvasLayout, autoLayout functions
+  - Grid and force-directed layout algorithms implemented
+
+---
+
 ## Canvas Mode Phase 2: Canvas View Component (Horizon 2.1)
 **Completed:** 2026-01-06
 **Files Changed:**

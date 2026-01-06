@@ -1,23 +1,19 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
-import type { Note } from '../../types/note';
+import type { Note, CanvasPosition } from '../../types/note';
 import { StickyNote, type StickyNoteData } from './StickyNote';
 import { ConnectionLine } from './ConnectionLine';
 
-// localStorage keys
-const CANVAS_POSITIONS_KEY = 'patchpad_canvas_positions';
-const CANVAS_VIEWPORT_KEY = 'patchpad_canvas_viewport';
+// Re-export CanvasPosition for convenience
+export type { CanvasPosition } from '../../types/note';
 
-export interface CanvasPosition {
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-}
+// localStorage key for viewport only (positions are in DB)
+const CANVAS_VIEWPORT_KEY = 'patchpad_canvas_viewport';
 
 interface CanvasViewProps {
   notes: Note[];
   onNoteClick?: (id: string) => void;
   onCreateConnection?: (fromId: string, toId: string) => void;
+  onPositionChange?: (noteId: string, position: CanvasPosition) => void;
   selectedNoteIds?: string[];
 }
 
@@ -27,28 +23,15 @@ interface Viewport {
   zoom: number;
 }
 
-// Load saved positions from localStorage
-function loadSavedPositions(): Map<string, CanvasPosition> {
-  try {
-    const saved = localStorage.getItem(CANVAS_POSITIONS_KEY);
-    if (saved) {
-      const parsed = JSON.parse(saved);
-      return new Map(Object.entries(parsed));
+// Load positions from notes (stored in DB via canvasPosition field)
+function loadPositionsFromNotes(notes: Note[]): Map<string, CanvasPosition> {
+  const positions = new Map<string, CanvasPosition>();
+  for (const note of notes) {
+    if (note.canvasPosition) {
+      positions.set(note.id, note.canvasPosition);
     }
-  } catch (e) {
-    console.warn('Failed to load canvas positions:', e);
   }
-  return new Map();
-}
-
-// Save positions to localStorage
-function savePositions(positions: Map<string, CanvasPosition>): void {
-  try {
-    const obj = Object.fromEntries(positions);
-    localStorage.setItem(CANVAS_POSITIONS_KEY, JSON.stringify(obj));
-  } catch (e) {
-    console.warn('Failed to save canvas positions:', e);
-  }
+  return positions;
 }
 
 // Load saved viewport
@@ -108,12 +91,13 @@ export function CanvasView({
   notes,
   onNoteClick,
   onCreateConnection,
+  onPositionChange,
   selectedNoteIds = [],
 }: CanvasViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const [dimensions, setDimensions] = useState({ width: 800, height: 600 });
   const [viewport, setViewport] = useState<Viewport>(loadViewport);
-  const [positions, setPositions] = useState<Map<string, CanvasPosition>>(() => loadSavedPositions());
+  const [positions, setPositions] = useState<Map<string, CanvasPosition>>(() => loadPositionsFromNotes(notes));
   const [draggingNote, setDraggingNote] = useState<string | null>(null);
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
@@ -172,6 +156,21 @@ export function CanvasView({
     return conns;
   }, [notes]);
 
+  // Sync positions from notes when they change (e.g., loaded from DB)
+  useEffect(() => {
+    const newPositions = loadPositionsFromNotes(notes);
+    setPositions(prev => {
+      // Merge new positions, keeping local changes for notes being dragged
+      const merged = new Map(prev);
+      for (const [id, pos] of newPositions) {
+        if (!draggingNote || id !== draggingNote) {
+          merged.set(id, pos);
+        }
+      }
+      return merged;
+    });
+  }, [notes, draggingNote]);
+
   // Handle resize
   useEffect(() => {
     const container = containerRef.current;
@@ -213,20 +212,29 @@ export function CanvasView({
 
   const handleNoteDragEnd = useCallback((noteId: string) => {
     setDraggingNote(null);
-    // Save to localStorage
-    savePositions(positions);
-  }, [positions]);
+    // Notify parent to save to database
+    const position = positions.get(noteId);
+    if (position && onPositionChange) {
+      onPositionChange(noteId, position);
+    }
+  }, [positions, onPositionChange]);
 
   // Handle note resize
   const handleNoteResize = useCallback((noteId: string, width: number, height: number) => {
     setPositions(prev => {
       const next = new Map(prev);
       const current = next.get(noteId) || { x: 0, y: 0, width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT };
-      next.set(noteId, { ...current, width, height });
+      const newPosition = { ...current, width, height };
+      next.set(noteId, newPosition);
+
+      // Notify parent to save to database
+      if (onPositionChange) {
+        onPositionChange(noteId, newPosition);
+      }
+
       return next;
     });
-    savePositions(positions);
-  }, [positions]);
+  }, [onPositionChange]);
 
   // Handle canvas pan
   const handleMouseDown = useCallback((e: React.MouseEvent) => {

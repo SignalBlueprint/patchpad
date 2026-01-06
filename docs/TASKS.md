@@ -238,18 +238,18 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 #### Phase 3: Canvas Data Model
 
-- [ ] Extend `src/types/note.ts`
-  - [ ] Add interface `CanvasPosition { x: number, y: number, width: number, height: number }`
-  - [ ] Add optional `canvasPosition?: CanvasPosition` to Note type
+- [x] Extend `src/types/note.ts`
+  - [x] Add interface `CanvasPosition { x: number, y: number, width: number, height: number }`
+  - [x] Add optional `canvasPosition?: CanvasPosition` to Note type
 
-- [ ] Update database schema in `src/db/index.ts`
-  - [ ] Version 5: add `canvasX, canvasY, canvasWidth, canvasHeight` indexes
-  - [ ] Migration: existing notes get null canvas positions
+- [x] Update database schema in `src/db/index.ts`
+  - [x] Version 5: add `canvasX, canvasY, canvasWidth, canvasHeight` indexes
+  - [x] Migration: existing notes get null canvas positions
 
-- [ ] Create `src/services/canvas.ts`
-  - [ ] Export function `saveCanvasLayout(positions: Map<string, CanvasPosition>): Promise<void>`
-  - [ ] Export function `loadCanvasLayout(): Promise<Map<string, CanvasPosition>>`
-  - [ ] Export function `autoLayout(notes: Note[]): Map<string, CanvasPosition>` (grid or force-directed)
+- [x] Create `src/services/canvas.ts`
+  - [x] Export function `saveCanvasLayout(positions: Map<string, CanvasPosition>): Promise<void>`
+  - [x] Export function `loadCanvasLayout(): Promise<Map<string, CanvasPosition>>`
+  - [x] Export function `autoLayout(notes: Note[]): Map<string, CanvasPosition>` (grid or force-directed)
 
 #### Phase 4: Canvas Features
 
