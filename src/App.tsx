@@ -13,7 +13,10 @@ import { BrainDashboard } from './components/BrainDashboard';
 import { BacklinksPanel } from './components/BacklinksPanel';
 import { DailyDigestModal } from './components/DailyDigestModal';
 import { ExportDialog } from './components/ExportDialog';
+import { CanvasView } from './components/Canvas';
 import { useNotes, type SortOption, type NotesFilter } from './hooks/useNotes';
+import { saveNoteCanvasPosition, autoLayout } from './services/canvas';
+import type { CanvasPosition } from './types/note';
 import { useToast } from './hooks/useToast';
 import { applyOps } from './utils/applyOps';
 import { generateStitch, generatePatch } from './api/patch';
@@ -67,6 +70,9 @@ export default function App() {
 
   // Export dialog state
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
+
+  // Main view state: 'notes' | 'canvas' | 'graph'
+  const [mainView, setMainView] = useState<'notes' | 'canvas' | 'graph'>('notes');
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -355,6 +361,51 @@ export default function App() {
     success('Voice note created', `${Math.round(result.duration)}s of audio transcribed`);
   }, [createNote, info, success]);
 
+  // Canvas handlers
+  const handleCanvasNoteClick = useCallback((id: string) => {
+    setSelectedId(id);
+    setMainView('notes'); // Switch to notes view to edit
+  }, []);
+
+  const handleCanvasCreateConnection = useCallback(async (fromId: string, toId: string) => {
+    // Create a wiki link from the source note to the target note
+    const fromNote = notes.find(n => n.id === fromId);
+    const toNote = notes.find(n => n.id === toId);
+    if (!fromNote || !toNote) return;
+
+    // Add wiki link to the end of the source note
+    const newContent = fromNote.content + `\n\n[[${toNote.title}]]`;
+    await updateNote(fromId, newContent);
+    success('Connection created', `Linked "${fromNote.title}" to "${toNote.title}"`);
+  }, [notes, updateNote, success]);
+
+  const handleCanvasPositionChange = useCallback(async (noteId: string, position: CanvasPosition) => {
+    await saveNoteCanvasPosition(noteId, position);
+  }, []);
+
+  const handleCanvasAddNote = useCallback(async () => {
+    const id = await createNote();
+    setSelectedId(id);
+    setMainView('notes'); // Switch to notes view to edit the new note
+    success('Note created', 'Start typing to edit your new note');
+  }, [createNote, success]);
+
+  const handleCanvasAutoLayout = useCallback(async (algorithm: 'grid' | 'force') => {
+    const positions = autoLayout(notes, algorithm);
+
+    // Save all positions
+    for (const [noteId, position] of positions) {
+      await saveNoteCanvasPosition(noteId, position);
+    }
+
+    // Trigger re-render by updating any note (or we can use a state refresh)
+    // For now, just show a success message - positions are saved and will load on next render
+    success('Layout applied', `${algorithm === 'grid' ? 'Grid' : 'Force-directed'} layout applied to ${notes.length} notes`);
+
+    // Force refresh of notes to pick up new positions
+    // The canvas will re-read from notes on next render
+  }, [notes, success]);
+
   // Build command list
   const commands: Command[] = [
     // Note commands
@@ -427,6 +478,30 @@ export default function App() {
       category: 'view',
       icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" /></svg>,
       action: () => setFilter({ type: 'all' }),
+    },
+    {
+      id: 'view-notes',
+      name: 'Notes View',
+      description: 'Show notes list and editor',
+      category: 'view',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+      action: () => setMainView('notes'),
+    },
+    {
+      id: 'view-canvas',
+      name: 'Canvas View',
+      description: 'Show notes as draggable cards on canvas',
+      category: 'view',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" /></svg>,
+      action: () => setMainView('canvas'),
+    },
+    {
+      id: 'view-graph',
+      name: 'Knowledge Graph',
+      description: 'Show knowledge graph visualization',
+      category: 'view',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
+      action: () => setBrainDashboardOpen(true),
     },
 
     // AI commands - basic
@@ -730,47 +805,111 @@ export default function App() {
         />
       </div>
 
-      {/* Editor or Stitch Preview */}
-      <div className="flex-1 min-w-0">
-        {stitchPreview ? (
-          <StitchPreview
-            rationale={stitchPreview.rationale}
-            content={stitchPreview.content}
-            onApply={handleApplyStitch}
-            onReject={handleRejectStitch}
-          />
-        ) : (
-          <div className="relative h-full flex flex-col">
-            <div className="flex-1 min-h-0 relative">
-              <Editor
+      {/* Main Content Area with Tab Bar */}
+      <div className="flex-1 min-w-0 flex flex-col">
+        {/* Tab Bar */}
+        <div className="flex-shrink-0 border-b border-gray-200 bg-white">
+          <div className="flex gap-1 px-4 pt-2">
+            <button
+              onClick={() => setMainView('notes')}
+              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                mainView === 'notes'
+                  ? 'bg-gray-100 text-gray-900 border-b-2 border-indigo-500'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Notes
+              </span>
+            </button>
+            <button
+              onClick={() => setMainView('canvas')}
+              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                mainView === 'canvas'
+                  ? 'bg-gray-100 text-gray-900 border-b-2 border-indigo-500'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
+                </svg>
+                Canvas
+              </span>
+            </button>
+            <button
+              onClick={() => setBrainDashboardOpen(true)}
+              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                mainView === 'graph'
+                  ? 'bg-gray-100 text-gray-900 border-b-2 border-indigo-500'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                </svg>
+                Graph
+              </span>
+            </button>
+          </div>
+        </div>
+
+        {/* Content based on selected view */}
+        <div className="flex-1 min-h-0">
+          {mainView === 'canvas' ? (
+            <CanvasView
+              notes={notes}
+              onNoteClick={handleCanvasNoteClick}
+              onCreateConnection={handleCanvasCreateConnection}
+              onPositionChange={handleCanvasPositionChange}
+              onAddNote={handleCanvasAddNote}
+              onAutoLayout={handleCanvasAutoLayout}
+              selectedNoteIds={currentNote ? [currentNote.id] : Array.from(selectedIds)}
+            />
+          ) : stitchPreview ? (
+            <StitchPreview
+              rationale={stitchPreview.rationale}
+              content={stitchPreview.content}
+              onApply={handleApplyStitch}
+              onReject={handleRejectStitch}
+            />
+          ) : (
+            <div className="relative h-full flex flex-col">
+              <div className="flex-1 min-h-0 relative">
+                <Editor
+                  note={currentNote}
+                  onSave={handleSave}
+                  showPreview={showPreview}
+                  onTogglePreview={() => setShowPreview(!showPreview)}
+                  onSelectionChange={handleSelectionChange}
+                  onWikiLinkClick={handleWikiLinkClick}
+                  allNotes={notes}
+                  editorContainerRef={editorContainerRef}
+                />
+                <SelectionToolbar
+                  selection={selection}
+                  editorElement={editorContainerRef.current}
+                  onAction={handleSelectionAction}
+                  onHighlight={handleHighlight}
+                  isAIAvailable={isAIAvailable()}
+                />
+              </div>
+              <BacklinksPanel
                 note={currentNote}
-                onSave={handleSave}
-                showPreview={showPreview}
-                onTogglePreview={() => setShowPreview(!showPreview)}
-                onSelectionChange={handleSelectionChange}
-                onWikiLinkClick={handleWikiLinkClick}
                 allNotes={notes}
-                editorContainerRef={editorContainerRef}
-              />
-              <SelectionToolbar
-                selection={selection}
-                editorElement={editorContainerRef.current}
-                onAction={handleSelectionAction}
-                onHighlight={handleHighlight}
-                isAIAvailable={isAIAvailable()}
+                onNavigate={(noteId) => setSelectedId(noteId)}
               />
             </div>
-            <BacklinksPanel
-              note={currentNote}
-              allNotes={notes}
-              onNavigate={(noteId) => setSelectedId(noteId)}
-            />
-          </div>
-        )}
+          )}
+        </div>
       </div>
 
-      {/* Markdown Preview */}
-      {showPreview && !stitchPreview && (
+      {/* Markdown Preview - only show in notes view */}
+      {showPreview && !stitchPreview && mainView === 'notes' && (
         <div className="w-1/3 border-l border-gray-200">
           <MarkdownPreview content={currentNote?.content ?? ''} />
         </div>

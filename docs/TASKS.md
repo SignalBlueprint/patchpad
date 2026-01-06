@@ -272,15 +272,15 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 #### Phase 5: Integration
 
-- [ ] Add Canvas tab to main view in `src/App.tsx`
-  - [ ] Tab bar: "Notes" | "Canvas" | "Graph"
-  - [ ] Canvas view shows all notes with positions
-  - [ ] Clicking note in canvas opens it in editor
+- [x] Add Canvas tab to main view in `src/App.tsx`
+  - [x] Tab bar: "Notes" | "Canvas" | "Graph"
+  - [x] Canvas view shows all notes with positions
+  - [x] Clicking note in canvas opens it in editor
 
-- [ ] Sync canvas with note changes
-  - [ ] New note appears at default position
-  - [ ] Deleted note removed from canvas
-  - [ ] Title changes reflected on sticky note
+- [x] Sync canvas with note changes
+  - [x] New note appears at default position
+  - [x] Deleted note removed from canvas
+  - [x] Title changes reflected on sticky note
 
 **New Infrastructure Required:**
 - Canvas rendering engine (built on existing KnowledgeGraph canvas code)

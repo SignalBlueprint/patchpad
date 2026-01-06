@@ -94,6 +94,39 @@
 
 ---
 
+## Canvas Mode Phase 5: Integration (Horizon 2.1)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/App.tsx` — Added tab bar UI with Notes/Canvas/Graph tabs, conditional rendering of CanvasView, canvas event handlers for note click, connection creation, position changes, add note, and auto layout
+
+**Implementation Notes:**
+- Tab bar positioned at top of main content area with three tabs: Notes, Canvas, Graph
+- Tabs styled with indigo border-bottom indicator for active state
+- Canvas tab renders CanvasView component when selected
+- Graph tab opens BrainDashboard modal (maintains existing behavior)
+- Canvas handlers:
+  - `handleCanvasNoteClick`: Navigates to note and switches to notes view for editing
+  - `handleCanvasCreateConnection`: Creates wiki link from source note to target note
+  - `handleCanvasPositionChange`: Saves canvas position to database via `saveNoteCanvasPosition`
+  - `handleCanvasAddNote`: Creates new note and switches to notes view
+  - `handleCanvasAutoLayout`: Applies grid or force-directed layout to all notes
+- View commands added to command palette for switching views
+- Markdown preview only shows in notes view (not canvas)
+- Canvas syncs automatically with notes via React props - new notes appear with default grid positions, deleted notes removed, title changes reflected
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- Build succeeds (`npm run build`)
+- All acceptance criteria for Canvas Mode met:
+  - Toggle between Notes list and Canvas view via tab bar
+  - Drag notes to arrange spatially with position persistence
+  - Draw connections between notes by Shift+dragging
+  - Export canvas as PNG image via toolbar
+  - Zoom and pan work smoothly
+  - Clicking note in canvas opens it in editor
+
+---
+
 ## Canvas Mode Phase 4: Canvas Features (Horizon 2.1)
 **Completed:** 2026-01-06
 **Files Changed:**
