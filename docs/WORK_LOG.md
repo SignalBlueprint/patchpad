@@ -93,3 +93,30 @@
   - Filenames are filesystem-safe
 
 ---
+
+## Canvas Mode Phase 1: Pinnable Nodes (Horizon 2.1)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/components/KnowledgeGraph.tsx` — Added position persistence, pinnable nodes, double-click to toggle pin, visual pin indicators
+
+**Implementation Notes:**
+- Added `PinnedPosition` interface with x, y, and pinned boolean
+- localStorage keys: `patchpad_graph_positions` for positions, `patchpad_pinned_count` for metrics
+- Positions loaded on graph initialization and applied to nodes
+- Positions saved on drag end to localStorage
+- Pinned nodes have red border and small pin indicator badge
+- Pinned nodes skip force simulation (repulsion, attraction, center force)
+- Double-click toggles node pinned state
+- Hover tooltip shows pin status and "Double-click to pin/unpin" hint
+- Console logging for pin/unpin events for validation
+
+**Verification:**
+- TypeScript compilation passes
+- All acceptance criteria met:
+  - Nodes can be dragged and positions persist across page reloads
+  - Double-click pins/unpins nodes
+  - Pinned nodes stay in place while others respond to forces
+  - Visual indicator (red border + badge) shows pinned state
+  - Usage metrics tracked in localStorage
+
+---

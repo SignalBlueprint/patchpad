@@ -197,20 +197,20 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 #### Phase 1: Pinnable Nodes (Validation Experiment)
 
-- [ ] Add position persistence to `KnowledgeGraph.tsx`
-  - [ ] Create interface `PinnedPosition { x: number, y: number, pinned: boolean }`
-  - [ ] Add localStorage key: `patchpad_graph_positions`
-  - [ ] Load positions on mount, apply to initial node positions
-  - [ ] Save positions on drag end
+- [x] Add position persistence to `KnowledgeGraph.tsx`
+  - [x] Create interface `PinnedPosition { x: number, y: number, pinned: boolean }`
+  - [x] Add localStorage key: `patchpad_graph_positions`
+  - [x] Load positions on mount, apply to initial node positions
+  - [x] Save positions on drag end
 
-- [ ] Add "pin" toggle to nodes in `src/components/KnowledgeGraph.tsx`
-  - [ ] Double-click node to toggle pinned state
-  - [ ] Pinned nodes skip force simulation (already partially implemented at line 99)
-  - [ ] Visual indicator: pin icon or different border
+- [x] Add "pin" toggle to nodes in `src/components/KnowledgeGraph.tsx`
+  - [x] Double-click node to toggle pinned state
+  - [x] Pinned nodes skip force simulation (already partially implemented at line 99)
+  - [x] Visual indicator: pin icon or different border
 
-- [ ] Track usage metrics
-  - [ ] Count pinned nodes in localStorage: `patchpad_pinned_count`
-  - [ ] Log to console for validation
+- [x] Track usage metrics
+  - [x] Count pinned nodes in localStorage: `patchpad_pinned_count`
+  - [x] Log to console for validation
 
 #### Phase 2: Canvas View Component
 

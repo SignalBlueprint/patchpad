@@ -1,11 +1,21 @@
 import { useEffect, useRef, useState, useCallback, useMemo } from 'react';
 import type { KnowledgeGraph as KnowledgeGraphType, Concept, ConceptRelationship } from '../services/brain';
 
+// localStorage keys
+const GRAPH_POSITIONS_KEY = 'patchpad_graph_positions';
+const PINNED_COUNT_KEY = 'patchpad_pinned_count';
+
 interface KnowledgeGraphProps {
   graph: KnowledgeGraphType;
   onConceptClick?: (concept: Concept) => void;
   onNoteClick?: (noteId: string) => void;
   selectedConceptId?: string;
+}
+
+interface PinnedPosition {
+  x: number;
+  y: number;
+  pinned: boolean;
 }
 
 interface Node {
@@ -14,6 +24,7 @@ interface Node {
   y: number;
   vx: number;
   vy: number;
+  pinned: boolean;
   concept: Concept;
 }
 
@@ -21,6 +32,35 @@ interface Edge {
   source: string;
   target: string;
   relationship: ConceptRelationship;
+}
+
+// Load saved positions from localStorage
+function loadSavedPositions(): Map<string, PinnedPosition> {
+  try {
+    const saved = localStorage.getItem(GRAPH_POSITIONS_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return new Map(Object.entries(parsed));
+    }
+  } catch (e) {
+    console.warn('Failed to load graph positions:', e);
+  }
+  return new Map();
+}
+
+// Save positions to localStorage
+function savePositions(positions: Map<string, PinnedPosition>): void {
+  try {
+    const obj = Object.fromEntries(positions);
+    localStorage.setItem(GRAPH_POSITIONS_KEY, JSON.stringify(obj));
+
+    // Track pinned count for metrics
+    const pinnedCount = Array.from(positions.values()).filter(p => p.pinned).length;
+    localStorage.setItem(PINNED_COUNT_KEY, String(pinnedCount));
+    console.log(`[KnowledgeGraph] Saved ${positions.size} positions, ${pinnedCount} pinned`);
+  } catch (e) {
+    console.warn('Failed to save graph positions:', e);
+  }
 }
 
 const TYPE_COLORS: Record<string, string> = {
@@ -58,8 +98,27 @@ export function KnowledgeGraph({
     const width = dimensions.width;
     const height = dimensions.height;
 
-    // Create nodes with random initial positions
+    // Load saved positions
+    const savedPositions = loadSavedPositions();
+
+    // Create nodes with saved or random initial positions
     nodesRef.current = graph.concepts.map((concept, i) => {
+      const saved = savedPositions.get(concept.id);
+
+      if (saved) {
+        // Use saved position
+        return {
+          id: concept.id,
+          x: saved.x,
+          y: saved.y,
+          vx: 0,
+          vy: 0,
+          pinned: saved.pinned,
+          concept,
+        };
+      }
+
+      // Create new position in a circular layout
       const angle = (i / graph.concepts.length) * 2 * Math.PI;
       const radius = Math.min(width, height) * 0.3;
       return {
@@ -68,6 +127,7 @@ export function KnowledgeGraph({
         y: height / 2 + Math.sin(angle) * radius + (Math.random() - 0.5) * 50,
         vx: 0,
         vy: 0,
+        pinned: false,
         concept,
       };
     });
@@ -96,7 +156,8 @@ export function KnowledgeGraph({
     // Apply forces
     for (let i = 0; i < nodes.length; i++) {
       const node = nodes[i];
-      if (node === draggingNode) continue;
+      // Skip pinned nodes and dragging node
+      if (node === draggingNode || node.pinned) continue;
 
       // Center force
       node.vx += (width / 2 - node.x) * centerForce;
@@ -126,11 +187,12 @@ export function KnowledgeGraph({
       const dist = Math.sqrt(dx * dx + dy * dy) || 1;
       const force = (dist - 100) * attraction * edge.relationship.strength;
 
-      if (source !== draggingNode) {
+      // Skip pinned nodes in edge attraction too
+      if (source !== draggingNode && !source.pinned) {
         source.vx += (dx / dist) * force;
         source.vy += (dy / dist) * force;
       }
-      if (target !== draggingNode) {
+      if (target !== draggingNode && !target.pinned) {
         target.vx -= (dx / dist) * force;
         target.vy -= (dy / dist) * force;
       }
@@ -138,7 +200,8 @@ export function KnowledgeGraph({
 
     // Update positions
     for (const node of nodes) {
-      if (node === draggingNode) continue;
+      // Skip pinned nodes and dragging node
+      if (node === draggingNode || node.pinned) continue;
 
       node.vx *= damping;
       node.vy *= damping;
@@ -189,6 +252,7 @@ export function KnowledgeGraph({
     for (const node of nodes) {
       const isSelected = node.id === selectedConceptId;
       const isHovered = node === hoveredNode;
+      const isPinned = node.pinned;
       const radius = 8 + Math.log(node.concept.mentions.length + 1) * 4;
       const color = TYPE_COLORS[node.concept.type] || TYPE_COLORS.other;
 
@@ -198,10 +262,29 @@ export function KnowledgeGraph({
       ctx.fillStyle = color;
       ctx.fill();
 
-      if (isSelected || isHovered) {
-        ctx.strokeStyle = isSelected ? '#1F2937' : '#6B7280';
-        ctx.lineWidth = 3;
+      // Border for selected, hovered, or pinned nodes
+      if (isSelected || isHovered || isPinned) {
+        ctx.strokeStyle = isSelected ? '#1F2937' : isPinned ? '#EF4444' : '#6B7280';
+        ctx.lineWidth = isPinned ? 2 : 3;
         ctx.stroke();
+      }
+
+      // Pin indicator (small icon in top-right of node)
+      if (isPinned) {
+        const pinX = node.x + radius * 0.7;
+        const pinY = node.y - radius * 0.7;
+
+        // Pin circle background
+        ctx.beginPath();
+        ctx.arc(pinX, pinY, 5, 0, Math.PI * 2);
+        ctx.fillStyle = '#EF4444';
+        ctx.fill();
+
+        // Pin dot
+        ctx.beginPath();
+        ctx.arc(pinX, pinY, 2, 0, Math.PI * 2);
+        ctx.fillStyle = '#FFFFFF';
+        ctx.fill();
       }
 
       // Label
@@ -307,6 +390,26 @@ export function KnowledgeGraph({
     }
   }, [getMousePos, draggingNode, findNodeAtPosition]);
 
+  // Save current positions to localStorage
+  const saveCurrentPositions = useCallback(() => {
+    const positions = new Map<string, PinnedPosition>();
+    for (const node of nodesRef.current) {
+      positions.set(node.id, {
+        x: node.x,
+        y: node.y,
+        pinned: node.pinned,
+      });
+    }
+    savePositions(positions);
+  }, []);
+
+  // Toggle pinned state for a node
+  const toggleNodePinned = useCallback((node: Node) => {
+    node.pinned = !node.pinned;
+    console.log(`[KnowledgeGraph] Node "${node.concept.name}" ${node.pinned ? 'pinned' : 'unpinned'}`);
+    saveCurrentPositions();
+  }, [saveCurrentPositions]);
+
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
     const pos = getMousePos(e);
     const node = findNodeAtPosition(pos.x, pos.y);
@@ -315,13 +418,40 @@ export function KnowledgeGraph({
     }
   }, [getMousePos, findNodeAtPosition]);
 
+  // Track drag start position for click detection
+  const dragStartPosRef = useRef<{ x: number; y: number } | null>(null);
+
+  const handleMouseDownWithTracking = useCallback((e: React.MouseEvent) => {
+    const pos = getMousePos(e);
+    dragStartPosRef.current = pos;
+    const node = findNodeAtPosition(pos.x, pos.y);
+    if (node) {
+      setDraggingNode(node);
+    }
+  }, [getMousePos, findNodeAtPosition]);
+
   const handleMouseUp = useCallback(() => {
-    if (draggingNode && onConceptClick) {
-      // If barely moved, treat as click
-      onConceptClick(draggingNode.concept);
+    if (draggingNode) {
+      // Save position after drag
+      saveCurrentPositions();
+
+      // Check if barely moved (treat as click)
+      if (onConceptClick) {
+        onConceptClick(draggingNode.concept);
+      }
     }
     setDraggingNode(null);
-  }, [draggingNode, onConceptClick]);
+    dragStartPosRef.current = null;
+  }, [draggingNode, onConceptClick, saveCurrentPositions]);
+
+  // Double-click to toggle pinned state
+  const handleDoubleClick = useCallback((e: React.MouseEvent) => {
+    const pos = getMousePos(e);
+    const node = findNodeAtPosition(pos.x, pos.y);
+    if (node) {
+      toggleNodePinned(node);
+    }
+  }, [getMousePos, findNodeAtPosition, toggleNodePinned]);
 
   const handleWheel = useCallback((e: React.WheelEvent) => {
     e.preventDefault();
@@ -347,7 +477,14 @@ export function KnowledgeGraph({
   // Hovered node info
   const hoveredInfo = hoveredNode && (
     <div className="absolute top-2 left-2 bg-white/95 rounded-lg p-3 shadow-lg max-w-xs">
-      <div className="font-medium text-gray-900">{hoveredNode.concept.name}</div>
+      <div className="flex items-center gap-2">
+        <div className="font-medium text-gray-900">{hoveredNode.concept.name}</div>
+        {hoveredNode.pinned && (
+          <span className="px-1.5 py-0.5 text-[10px] font-medium bg-red-100 text-red-600 rounded">
+            Pinned
+          </span>
+        )}
+      </div>
       <div className="text-xs text-gray-500 capitalize mt-0.5">{hoveredNode.concept.type}</div>
       <div className="text-xs text-gray-600 mt-2">
         Mentioned in {hoveredNode.concept.mentions.length} note{hoveredNode.concept.mentions.length !== 1 ? 's' : ''}
@@ -370,6 +507,9 @@ export function KnowledgeGraph({
           )}
         </div>
       )}
+      <div className="text-[10px] text-gray-400 mt-2 pt-2 border-t border-gray-100">
+        Double-click to {hoveredNode.pinned ? 'unpin' : 'pin'}
+      </div>
     </div>
   );
 
@@ -395,12 +535,13 @@ export function KnowledgeGraph({
         height={dimensions.height}
         className="cursor-grab active:cursor-grabbing"
         onMouseMove={handleMouseMove}
-        onMouseDown={handleMouseDown}
+        onMouseDown={handleMouseDownWithTracking}
         onMouseUp={handleMouseUp}
         onMouseLeave={() => {
           setHoveredNode(null);
           setDraggingNode(null);
         }}
+        onDoubleClick={handleDoubleClick}
         onWheel={handleWheel}
       />
       {hoveredInfo}
