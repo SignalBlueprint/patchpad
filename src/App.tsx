@@ -12,6 +12,7 @@ import { AudioRecorder } from './components/AudioRecorder';
 import { BrainDashboard } from './components/BrainDashboard';
 import { BacklinksPanel } from './components/BacklinksPanel';
 import { DailyDigestModal } from './components/DailyDigestModal';
+import { ExportDialog } from './components/ExportDialog';
 import { useNotes, type SortOption, type NotesFilter } from './hooks/useNotes';
 import { useToast } from './hooks/useToast';
 import { applyOps } from './utils/applyOps';
@@ -63,6 +64,9 @@ export default function App() {
   // Daily digest state
   const [dailyDigest, setDailyDigest] = useState<DailyDigest | null>(null);
   const [digestChecked, setDigestChecked] = useState(false);
+
+  // Export dialog state
+  const [exportDialogOpen, setExportDialogOpen] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -607,6 +611,18 @@ export default function App() {
       icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>,
       action: handleToggleDigest,
     },
+
+    // Export notes
+    {
+      id: 'export-notes',
+      name: 'Export Notes',
+      description: 'Export notes as a ZIP file with markdown',
+      shortcut: 'Ctrl+Shift+E',
+      category: 'note',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>,
+      action: () => setExportDialogOpen(true),
+      disabled: notes.length === 0,
+    },
   ];
 
   // Keyboard shortcuts
@@ -671,6 +687,12 @@ export default function App() {
       if (isMod && e.shiftKey && e.key === 'B' && notes.length > 0) {
         e.preventDefault();
         setBrainDashboardOpen(true);
+      }
+
+      // Export shortcut (Ctrl+Shift+E)
+      if (isMod && e.shiftKey && e.key === 'E' && notes.length > 0) {
+        e.preventDefault();
+        setExportDialogOpen(true);
       }
     };
 
@@ -814,6 +836,14 @@ export default function App() {
           }}
         />
       )}
+
+      {/* Export Dialog */}
+      <ExportDialog
+        isOpen={exportDialogOpen}
+        notes={notes}
+        selectedIds={currentNote ? [currentNote.id] : Array.from(selectedIds)}
+        onClose={() => setExportDialogOpen(false)}
+      />
 
       {/* Loading overlay for AI actions - Glass morphism with glow */}
       {aiLoading && (

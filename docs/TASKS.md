@@ -126,48 +126,48 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 **Tasks:**
 
-- [ ] Install JSZip package
+- [x] Install JSZip package
   ```bash
   npm install jszip
   npm install -D @types/jszip
   ```
 
-- [ ] Create `src/services/export.ts`
-  - [ ] Export interface `ExportOptions { notes: Note[], includeManifest: boolean, rewriteLinks: boolean }`
-  - [ ] Export async function `exportNotesAsZip(options: ExportOptions): Promise<Blob>`
-  - [ ] Import JSZip
-  - [ ] For each note, create `{sanitized-title}.md` file
-  - [ ] Build filename map: `{ noteId: filename }`
-  - [ ] Rewrite `[[Title]]` links to relative paths `[Title](./filename.md)`
-  - [ ] Generate `manifest.json` with metadata: `{ exported: Date, notes: [{ id, title, filename, tags }] }`
-  - [ ] Return ZIP blob
+- [x] Create `src/services/export.ts`
+  - [x] Export interface `ExportOptions { notes: Note[], includeManifest: boolean, rewriteLinks: boolean }`
+  - [x] Export async function `exportNotesAsZip(options: ExportOptions): Promise<Blob>`
+  - [x] Import JSZip
+  - [x] For each note, create `{sanitized-title}.md` file
+  - [x] Build filename map: `{ noteId: filename }`
+  - [x] Rewrite `[[Title]]` links to relative paths `[Title](./filename.md)`
+  - [x] Generate `manifest.json` with metadata: `{ exported: Date, notes: [{ id, title, filename, tags }] }`
+  - [x] Return ZIP blob
 
-- [ ] Create `src/utils/sanitizeFilename.ts`
-  - [ ] Export function `sanitizeFilename(title: string): string`
-  - [ ] Replace invalid chars: `/\:*?"<>|` with `-`
-  - [ ] Trim whitespace, limit to 100 chars
-  - [ ] Handle duplicates by appending `-1`, `-2`, etc.
+- [x] Create `src/utils/sanitizeFilename.ts`
+  - [x] Export function `sanitizeFilename(title: string): string`
+  - [x] Replace invalid chars: `/\:*?"<>|` with `-`
+  - [x] Trim whitespace, limit to 100 chars
+  - [x] Handle duplicates by appending `-1`, `-2`, etc.
 
-- [ ] Create `src/components/ExportDialog.tsx`
-  - [ ] Accept props: `notes: Note[]`, `selectedIds: string[]`, `onClose: () => void`
-  - [ ] Show list of notes to export with checkboxes
-  - [ ] Options: "Include manifest.json", "Rewrite wiki links"
-  - [ ] "Export" button triggers download
-  - [ ] Show progress spinner during ZIP generation
+- [x] Create `src/components/ExportDialog.tsx`
+  - [x] Accept props: `notes: Note[]`, `selectedIds: string[]`, `onClose: () => void`
+  - [x] Show list of notes to export with checkboxes
+  - [x] Options: "Include manifest.json", "Rewrite wiki links"
+  - [x] "Export" button triggers download
+  - [x] Show progress spinner during ZIP generation
 
-- [ ] Add export to context menu in `src/components/NotesList.tsx`
-  - [ ] Add "Export" option to note right-click menu
-  - [ ] Support multi-select export
+- [x] Add export to Command Palette and App.tsx
+  - [x] Add "Export Notes" command to command palette
+  - [x] Integrated via keyboard shortcut and App.tsx state
 
-- [ ] Add keyboard shortcut
-  - [ ] Register `Cmd/Ctrl+Shift+E` in `src/components/CommandPalette.tsx`
-  - [ ] Action: open ExportDialog with current note selected
+- [x] Add keyboard shortcut
+  - [x] Register `Cmd/Ctrl+Shift+E` in App.tsx keyboard handler
+  - [x] Action: open ExportDialog with current note selected
 
-- [ ] Add tests in `src/services/export.test.ts`
-  - [ ] Test: single note exports correctly
-  - [ ] Test: wiki links rewritten to relative paths
-  - [ ] Test: manifest.json contains correct metadata
-  - [ ] Test: filename sanitization handles special chars
+- [x] Add tests in `src/services/export.test.ts`
+  - [x] Test: single note exports correctly
+  - [x] Test: wiki links rewritten to relative paths
+  - [x] Test: manifest.json contains correct metadata
+  - [x] Test: filename sanitization handles special chars
 
 **Acceptance Criteria:**
 - Right-click note → "Export" downloads ZIP

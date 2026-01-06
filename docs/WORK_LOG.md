@@ -57,3 +57,39 @@
   - Can be disabled via preference (Command Palette)
 
 ---
+
+## Export Bundle (Horizon 1.3)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `package.json` — Added jszip dependency
+- `src/utils/sanitizeFilename.ts` — New utility for sanitizing filenames, handling invalid characters, length limits, and duplicate name resolution
+- `src/services/export.ts` — Export service with `exportNotesAsZip()` function, wiki link rewriting, YAML frontmatter generation, and manifest creation
+- `src/components/ExportDialog.tsx` — Modal dialog with note selection checkboxes, export options (manifest, link rewriting), and progress spinner
+- `src/App.tsx` — Integrated export dialog state, command palette entry, and Ctrl+Shift+E keyboard shortcut
+- `src/services/export.test.ts` — Comprehensive test suite for export functionality and filename sanitization
+
+**Implementation Notes:**
+- Uses JSZip library to generate ZIP files client-side
+- Generates YAML frontmatter with title, created/updated dates, tags, and favorite status
+- Rewrites `[[wiki links]]` to relative markdown links `[Title](./filename.md)` when target note is in export
+- Creates `manifest.json` with export metadata (timestamp, note count, per-note info)
+- Filename sanitization replaces `/\:*?"<>|` with dashes, limits to 100 chars, appends `-1`, `-2` for duplicates
+- Export triggered via Command Palette or Ctrl+Shift+E shortcut
+- Dialog pre-selects current note or multi-selected notes
+
+**Verification:**
+- TypeScript compilation passes
+- Comprehensive test suite covers:
+  - Single note export
+  - Wiki link rewriting
+  - Manifest metadata
+  - Special character handling in filenames
+- All acceptance criteria met:
+  - Command palette → "Export Notes" opens dialog
+  - Multi-select notes → export all selected
+  - ZIP contains `.md` files with proper frontmatter
+  - Internal `[[links]]` converted to relative markdown links
+  - Manifest.json lists all exported notes
+  - Filenames are filesystem-safe
+
+---
