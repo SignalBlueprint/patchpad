@@ -11,12 +11,14 @@ import { AskNotesDialog } from './components/AskNotesDialog';
 import { AudioRecorder } from './components/AudioRecorder';
 import { BrainDashboard } from './components/BrainDashboard';
 import { BacklinksPanel } from './components/BacklinksPanel';
+import { DailyDigestModal } from './components/DailyDigestModal';
 import { useNotes, type SortOption, type NotesFilter } from './hooks/useNotes';
 import { useToast } from './hooks/useToast';
 import { applyOps } from './utils/applyOps';
 import { generateStitch, generatePatch } from './api/patch';
 import { isAIAvailable, summarizeTranscription } from './services/ai';
 import { isBrainAvailable } from './services/brain';
+import { generateDailyDigest, shouldShowDigest, markDigestShown, toggleDigestEnabled, isDigestEnabled, type DailyDigest } from './services/digest';
 import { findNoteByTitle } from './utils/linkParser';
 import type { Note, HighlightColor } from './types/note';
 import type { PatchAction } from './types/patch';
@@ -58,6 +60,10 @@ export default function App() {
   // Brain dashboard state
   const [brainDashboardOpen, setBrainDashboardOpen] = useState(false);
 
+  // Daily digest state
+  const [dailyDigest, setDailyDigest] = useState<DailyDigest | null>(null);
+  const [digestChecked, setDigestChecked] = useState(false);
+
   const searchInputRef = useRef<HTMLInputElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
   const { toasts, dismissToast, success, error, info, warning } = useToast();
@@ -76,6 +82,32 @@ export default function App() {
     setNotesParent,
   } = useNotes(searchQuery, filter, sortBy);
 
+  // Check and show daily digest on mount
+  useEffect(() => {
+    if (!digestChecked && notes.length > 0) {
+      setDigestChecked(true);
+      if (shouldShowDigest()) {
+        const digest = generateDailyDigest(notes);
+        setDailyDigest(digest);
+      }
+    }
+  }, [notes, digestChecked]);
+
+  // Handle closing the daily digest
+  const handleCloseDigest = useCallback(() => {
+    markDigestShown();
+    setDailyDigest(null);
+  }, []);
+
+  // Toggle daily digest setting
+  const handleToggleDigest = useCallback(() => {
+    const newValue = toggleDigestEnabled();
+    if (newValue) {
+      success('Daily Digest enabled', 'You\'ll see your summary each day');
+    } else {
+      info('Daily Digest disabled', 'You won\'t see daily summaries');
+    }
+  }, [success, info]);
 
   // Load note content when selected
   useEffect(() => {
@@ -565,6 +597,16 @@ export default function App() {
       action: () => setBrainDashboardOpen(true),
       disabled: notes.length === 0 || !isBrainAvailable(),
     },
+
+    // Daily Digest toggle
+    {
+      id: 'toggle-digest',
+      name: isDigestEnabled() ? 'Disable Daily Digest' : 'Enable Daily Digest',
+      description: 'Toggle the daily activity summary',
+      category: 'view',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>,
+      action: handleToggleDigest,
+    },
   ];
 
   // Keyboard shortcuts
@@ -758,6 +800,18 @@ export default function App() {
             setBrainDashboardOpen(false);
           }}
           onClose={() => setBrainDashboardOpen(false)}
+        />
+      )}
+
+      {/* Daily Digest Modal */}
+      {dailyDigest && (
+        <DailyDigestModal
+          digest={dailyDigest}
+          onClose={handleCloseDigest}
+          onNavigateToNote={(id) => {
+            setSelectedId(id);
+            handleCloseDigest();
+          }}
         />
       )}
 

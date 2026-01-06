@@ -29,3 +29,31 @@
   - No suggestions for already-linked text
 
 ---
+
+## Daily Digest Dashboard (Horizon 1.2)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/services/digest.ts` — New service with `DailyDigest` interface and `generateDailyDigest()` function, plus localStorage utilities for tracking shown state and user preference
+- `src/components/DailyDigestModal.tsx` — Glass-morphism modal with gradient header, stats cards (notes created, updated, words written), task list, concept badges, and contextual suggestion
+- `src/App.tsx` — Integrated daily digest state, effect to check/show on mount, command to toggle digest preference, modal rendering
+
+**Implementation Notes:**
+- Generates digest from notes updated in last 24 hours
+- Extracts tasks using TODO/TASK/ACTION/FIXME patterns and unchecked markdown checkboxes
+- Aggregates top 5 concepts from recent note mentions (requires brain.ts concepts)
+- Time-based greeting ("Good morning", "Good afternoon", etc.)
+- Contextual suggestions based on task count, word count, and activity level
+- localStorage keys: `patchpad_last_digest_date` and `patchpad_digest_enabled`
+- Toggle available via Command Palette (Ctrl+K → "Toggle Daily Digest")
+
+**Verification:**
+- TypeScript compilation passes
+- All acceptance criteria met:
+  - On first load of day, modal appears with summary
+  - Shows accurate word count and note count
+  - Displays extracted tasks from notes
+  - Shows most-mentioned concepts
+  - Modal doesn't show again same day after dismissal
+  - Can be disabled via preference (Command Palette)
+
+---

@@ -74,37 +74,37 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 **Tasks:**
 
-- [ ] Create `src/services/digest.ts`
-  - [ ] Export interface `DailyDigest { date: Date, notesCreated: number, wordsWritten: number, tasksExtracted: string[], topConcepts: { name: string, count: number }[], suggestion: string }`
-  - [ ] Export function `generateDailyDigest(notes: Note[], concepts: Concept[]): DailyDigest`
-  - [ ] Filter notes by `updatedAt` in last 24 hours
-  - [ ] Count words using `content.split(/\s+/).length`
-  - [ ] Extract tasks using regex from `brain.ts` fallback pattern: `/(?:TODO|TASK|ACTION):\s*(.+?)(?:\n|$)/gi`
-  - [ ] Aggregate concept mentions from recent notes
-  - [ ] Generate suggestion based on open tasks count
+- [x] Create `src/services/digest.ts`
+  - [x] Export interface `DailyDigest { date: Date, notesCreated: number, wordsWritten: number, tasksExtracted: string[], topConcepts: { name: string, count: number }[], suggestion: string }`
+  - [x] Export function `generateDailyDigest(notes: Note[], concepts: Concept[]): DailyDigest`
+  - [x] Filter notes by `updatedAt` in last 24 hours
+  - [x] Count words using `content.split(/\s+/).length`
+  - [x] Extract tasks using regex from `brain.ts` fallback pattern: `/(?:TODO|TASK|ACTION):\s*(.+?)(?:\n|$)/gi`
+  - [x] Aggregate concept mentions from recent notes
+  - [x] Generate suggestion based on open tasks count
 
-- [ ] Create `src/components/DailyDigestModal.tsx`
-  - [ ] Accept props: `digest: DailyDigest`, `onClose: () => void`, `onNavigateToNote: (id: string) => void`
-  - [ ] Render modal overlay with glass-morphism styling
-  - [ ] Show greeting based on time of day ("Good morning", etc.)
-  - [ ] Display stats: notes created, words written
-  - [ ] List extracted tasks with checkboxes (visual only)
-  - [ ] Show top 5 concepts as pills/badges
-  - [ ] Show actionable suggestion at bottom
-  - [ ] "Start Writing" button to close
+- [x] Create `src/components/DailyDigestModal.tsx`
+  - [x] Accept props: `digest: DailyDigest`, `onClose: () => void`, `onNavigateToNote: (id: string) => void`
+  - [x] Render modal overlay with glass-morphism styling
+  - [x] Show greeting based on time of day ("Good morning", etc.)
+  - [x] Display stats: notes created, words written
+  - [x] List extracted tasks with checkboxes (visual only)
+  - [x] Show top 5 concepts as pills/badges
+  - [x] Show actionable suggestion at bottom
+  - [x] "Start Writing" button to close
 
-- [ ] Add localStorage key for last digest shown
-  - [ ] Key: `patchpad_last_digest_date`
-  - [ ] Store ISO date string
+- [x] Add localStorage key for last digest shown
+  - [x] Key: `patchpad_last_digest_date`
+  - [x] Store ISO date string
 
-- [ ] Integrate into `src/App.tsx`
-  - [ ] On mount, check if digest was shown today
-  - [ ] If not, generate digest and show modal
-  - [ ] Update localStorage after showing
+- [x] Integrate into `src/App.tsx`
+  - [x] On mount, check if digest was shown today
+  - [x] If not, generate digest and show modal
+  - [x] Update localStorage after showing
 
-- [ ] Add user preference to disable digest
-  - [ ] Add to localStorage: `patchpad_digest_enabled`
-  - [ ] Add toggle in settings/preferences (if exists) or command palette
+- [x] Add user preference to disable digest
+  - [x] Add to localStorage: `patchpad_digest_enabled`
+  - [x] Add toggle in settings/preferences (if exists) or command palette
 
 **Acceptance Criteria:**
 - On first load of day, modal appears with yesterday's summary
