@@ -2,6 +2,30 @@
 
 ---
 
+## Voice-First Capture Phase 4: Voice Commands (Horizon 2.3)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/services/voiceCommands.ts` — New voice command parser with pattern matching for create, search, ask commands
+- `src/App.tsx` — Updated handleQuickCapture to detect and route voice commands
+
+**Implementation Notes:**
+- voiceCommands.ts parses transcribed text against command patterns
+- Three command types: create_note, search, ask
+- Create note patterns: "Create a note about...", "New note for...", "Take a note about..."
+- Search patterns: "Find notes about...", "Search for...", "Show me notes about..."
+- Ask patterns: "What did I write about...", "Tell me about...", "Summarize my notes about..."
+- Commands with no match fall through to regular voice note creation
+- Search command sets searchQuery and switches to notes view
+- Ask command opens AskNotesDialog
+- Create command creates note with extracted topic as title and heading
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- Build succeeds (`npm run build`)
+- Voice commands detected from transcription text
+
+---
+
 ## Voice-First Capture Phase 4: Read Aloud (Horizon 2.3)
 **Completed:** 2026-01-06
 **Files Changed:**

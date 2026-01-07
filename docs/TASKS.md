@@ -518,10 +518,10 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
   - [x] Transcription feeds into `askNotes()` function
   - [x] Optional: read answer aloud using Web Speech Synthesis
 
-- [ ] Create voice command system
-  - [ ] "Create note about..." → new note
-  - [ ] "Find notes about..." → search
-  - [ ] "What did I write about..." → askNotes query
+- [x] Create voice command system
+  - [x] "Create note about..." → new note
+  - [x] "Find notes about..." → search
+  - [x] "What did I write about..." → askNotes query
 
 #### Phase 5: Background Voice Capture
 

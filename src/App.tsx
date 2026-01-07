@@ -27,6 +27,7 @@ import { processVoiceNote } from './services/voiceNoteProcessor';
 import { isBrainAvailable } from './services/brain';
 import { generateDailyDigest, shouldShowDigest, markDigestShown, toggleDigestEnabled, isDigestEnabled, type DailyDigest } from './services/digest';
 import { shouldStoreAudio } from './services/transcription';
+import { parseVoiceCommand } from './services/voiceCommands';
 import { findNoteByTitle } from './utils/linkParser';
 import type { Note, HighlightColor } from './types/note';
 import type { PatchAction } from './types/patch';
@@ -377,41 +378,94 @@ export default function App() {
 
   // Handle quick capture from floating button
   const handleQuickCapture = useCallback(async (result: TranscriptionResult) => {
-    info('Processing...', 'Creating note from voice capture');
+    // First, check if this is a voice command
+    const command = parseVoiceCommand(result.text);
 
-    // Process the voice note with AI (cleans up, extracts title, tags, tasks)
-    const processed = await processVoiceNote(result.text);
+    switch (command.type) {
+      case 'search': {
+        // Handle search command
+        info('Searching...', `Looking for: ${command.query}`);
+        setSearchQuery(command.query);
+        setMainView('notes');
+        success('Search started', `Searching for "${command.query}"`);
+        return;
+      }
 
-    // Build note content with tasks section if tasks were extracted
-    let noteContent = processed.content;
-    if (processed.tasks.length > 0) {
-      noteContent += '\n\n## Tasks\n';
-      for (const task of processed.tasks) {
-        noteContent += `- [ ] ${task}\n`;
+      case 'ask': {
+        // Handle ask command - open Ask Notes dialog with pre-filled question
+        info('Ask Notes', `Question: ${command.query}`);
+        setAskNotesDialogOpen(true);
+        // Note: We can't pre-fill the input directly, but user can now ask
+        success('Ask Notes opened', 'Type or speak your question');
+        return;
+      }
+
+      case 'create_note': {
+        // Handle create note command - create with the query as initial content
+        info('Creating note...', `Topic: ${command.query}`);
+        const dateStr = new Date().toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        const title = command.query.length > 50
+          ? command.query.substring(0, 50) + '...'
+          : command.query;
+        const content = `# ${command.query}\n\n`;
+        const id = await createNote(content, title || `Voice Note - ${dateStr}`);
+        setSelectedId(id);
+        setMainView('notes');
+
+        // Store audio if enabled
+        if (shouldStoreAudio() && result.audioBlob) {
+          await setNoteAudio(id, result.audioBlob, result.duration);
+        }
+
+        success('Note created', `Created: "${title}"`);
+        return;
+      }
+
+      case 'none':
+      default: {
+        // No command detected - process as regular voice note
+        info('Processing...', 'Creating note from voice capture');
+
+        // Process the voice note with AI (cleans up, extracts title, tags, tasks)
+        const processed = await processVoiceNote(result.text);
+
+        // Build note content with tasks section if tasks were extracted
+        let noteContent = processed.content;
+        if (processed.tasks.length > 0) {
+          noteContent += '\n\n## Tasks\n';
+          for (const task of processed.tasks) {
+            noteContent += `- [ ] ${task}\n`;
+          }
+        }
+
+        // Create the note with processed title
+        const dateStr = new Date().toLocaleDateString('en-US', {
+          month: 'short',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+        });
+        const title = processed.title || `Voice Note - ${dateStr}`;
+
+        // Create note with extracted tags
+        const id = await createNote(noteContent, title, undefined, processed.tags);
+        setSelectedId(id);
+        setMainView('notes');
+
+        // Store audio if enabled in settings
+        if (shouldStoreAudio() && result.audioBlob) {
+          await setNoteAudio(id, result.audioBlob, result.duration);
+        }
+
+        const taskInfo = processed.tasks.length > 0 ? `, ${processed.tasks.length} tasks extracted` : '';
+        success('Voice note created', `${Math.round(result.duration)}s transcribed${taskInfo}`);
       }
     }
-
-    // Create the note with processed title
-    const dateStr = new Date().toLocaleDateString('en-US', {
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
-    const title = processed.title || `Voice Note - ${dateStr}`;
-
-    // Create note with extracted tags
-    const id = await createNote(noteContent, title, undefined, processed.tags);
-    setSelectedId(id);
-    setMainView('notes'); // Switch to notes view to see the new note
-
-    // Store audio if enabled in settings
-    if (shouldStoreAudio() && result.audioBlob) {
-      await setNoteAudio(id, result.audioBlob, result.duration);
-    }
-
-    const taskInfo = processed.tasks.length > 0 ? `, ${processed.tasks.length} tasks extracted` : '';
-    success('Voice note created', `${Math.round(result.duration)}s transcribed${taskInfo}`);
   }, [createNote, info, success, setNoteAudio]);
 
   const handleQuickCaptureError = useCallback((errorMessage: string) => {
