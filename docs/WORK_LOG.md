@@ -2,6 +2,29 @@
 
 ---
 
+## Voice-First Capture Phase 2: Transcription Settings (Horizon 2.3)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/components/TranscriptionSettingsDialog.tsx` — New dialog component with language selection dropdown, local transcription toggle, and quality preference options
+- `src/services/transcription.ts` — Extended preferences interface with QualityPreference type, added getQualityPreference export
+- `src/App.tsx` — Added transcription settings dialog state, command palette entry, and dialog rendering
+
+**Implementation Notes:**
+- TranscriptionSettingsDialog accessible via Command Palette (Ctrl+K → "Transcription Settings")
+- Language selection: 24 supported languages for speech recognition (en-US, es-ES, fr-FR, de-DE, zh-CN, ja-JP, etc.)
+- Local transcription toggle: Allows users to prefer browser-based transcription for privacy (shows warning that it only works for real-time, not recorded audio)
+- Quality preference: Three options - Fast (quick, may miss words), Balanced (recommended), High Quality (best accuracy, slower)
+- Settings persist to localStorage using existing transcription preferences structure
+- Dialog uses same glass-morphism styling as other dialogs
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- Build succeeds (`npm run build`)
+- Transcription Settings command appears in command palette
+- All settings save correctly to localStorage
+
+---
+
 ## Voice-First Capture Phase 4: Voice Queries (Horizon 2.3)
 **Completed:** 2026-01-06
 **Files Changed:**

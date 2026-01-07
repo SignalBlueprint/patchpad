@@ -20,17 +20,26 @@ export interface TranscriptionProvider {
 
 // Storage key for transcription preferences
 const TRANSCRIPTION_PREFS_KEY = 'patchpad_transcription_prefs';
+const TRANSCRIPTION_QUALITY_KEY = 'patchpad_transcription_quality';
 
-interface TranscriptionPreferences {
+export type QualityPreference = 'speed' | 'balanced' | 'quality';
+
+export interface TranscriptionPreferences {
   preferLocalTranscription: boolean;
   language: string;
+  qualityPreference: QualityPreference;
 }
 
 function getPreferences(): TranscriptionPreferences {
   try {
     const saved = localStorage.getItem(TRANSCRIPTION_PREFS_KEY);
+    const quality = localStorage.getItem(TRANSCRIPTION_QUALITY_KEY) as QualityPreference;
     if (saved) {
-      return JSON.parse(saved);
+      const parsed = JSON.parse(saved);
+      return {
+        ...parsed,
+        qualityPreference: quality || 'balanced',
+      };
     }
   } catch {
     // Ignore parse errors
@@ -38,16 +47,25 @@ function getPreferences(): TranscriptionPreferences {
   return {
     preferLocalTranscription: false,
     language: 'en-US',
+    qualityPreference: 'balanced',
   };
 }
 
 export function savePreferences(prefs: Partial<TranscriptionPreferences>): void {
   const current = getPreferences();
-  localStorage.setItem(TRANSCRIPTION_PREFS_KEY, JSON.stringify({ ...current, ...prefs }));
+  const { qualityPreference, ...rest } = { ...current, ...prefs };
+  localStorage.setItem(TRANSCRIPTION_PREFS_KEY, JSON.stringify(rest));
+  if (prefs.qualityPreference) {
+    localStorage.setItem(TRANSCRIPTION_QUALITY_KEY, prefs.qualityPreference);
+  }
 }
 
 export function getTranscriptionPreferences(): TranscriptionPreferences {
   return getPreferences();
+}
+
+export function getQualityPreference(): QualityPreference {
+  return getPreferences().qualityPreference;
 }
 
 /**

@@ -492,10 +492,10 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
   - [x] `transcribe(audio: Blob): Promise<TranscriptionResult>`
   - [x] Provider selection based on config
 
-- [ ] Add transcription settings
-  - [ ] Language selection dropdown
-  - [ ] "Use local transcription" toggle for privacy
-  - [ ] Quality vs speed preference
+- [x] Add transcription settings
+  - [x] Language selection dropdown
+  - [x] "Use local transcription" toggle for privacy
+  - [x] Quality vs speed preference
 
 #### Phase 3: Voice Notes Processing
 
