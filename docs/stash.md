@@ -122,11 +122,79 @@ Export the knowledge graph visualization as a standalone, embeddable artifact th
 
 ---
 
+## Real-time Collaboration (Sync Phase 4)
+
+**Vision:** Enable multiple users to edit the same note simultaneously with Google Docs-style real-time cursors and conflict-free merging.
+
+### Core Concept
+Use Conflict-free Replicated Data Types (CRDTs) to enable true real-time collaboration. Each user sees other users' cursors and changes appear instantly without merge conflicts.
+
+### Technical Requirements
+- **CRDT Library:** Yjs (most mature, ProseMirror/CodeMirror bindings available)
+- **Transport:** WebSocket server or WebRTC for peer-to-peer
+- **Presence:** User cursors, selections, avatars in real-time
+- **Awareness:** See who's viewing/editing which note
+
+### Implementation Path
+
+**Phase 4a: Yjs Integration**
+- Add `yjs` and `y-indexeddb` dependencies
+- Create `Y.Doc` per note with shared text type
+- Persist Yjs updates to IndexedDB
+- Sync Yjs state to Supabase (binary blob column)
+- Bidirectional sync: local changes → Supabase, remote changes → local
+
+**Phase 4b: Real-time Presence**
+- WebSocket server for awareness protocol
+- Or: Supabase Realtime Presence (simpler, managed)
+- Render remote cursors in editor with user colors
+- Show typing indicators and selection highlights
+- "Who's here" indicator showing active collaborators
+
+**Phase 4c: Collaborative Editing UI**
+- Cursor labels with user names
+- Selection highlighting in user colors
+- Presence sidebar showing active users
+- "Follow" mode to track another user's view
+- Edit history with user attribution
+
+### Dependencies
+- Requires Sync Phases 1-3 complete (Supabase, Auth, Sync Engine)
+- Need WebSocket infrastructure or Supabase Realtime upgrade
+- Editor integration (may require switching to ProseMirror/TipTap)
+
+### Open Questions
+- WebSocket server (self-hosted) vs Supabase Realtime (managed)?
+- How to handle offline edits that need CRDT merge on reconnect?
+- Rate limiting for real-time updates?
+- Maximum collaborators per note?
+
+### Estimated Effort
+- Phase 4a (Yjs Integration): 24 hours
+- Phase 4b (Real-time Presence): 16 hours
+- Phase 4c (Collaborative UI): 20 hours
+
+---
+
 ## Notes for Future Implementation
 
 When returning to these features:
 
-1. **Memory Palace** is best tackled after Sync & Collaboration is stable, as multiplayer presence is a key differentiator
-2. **Knowledge Graph as Product** could be a standalone feature but becomes more valuable with user accounts (Sync layer)
-3. Both features benefit from the AI Research Partner's semantic understanding of notes
-4. Consider building the static Knowledge Graph export first as a simpler proof of concept before the full Memory Palace
+1. **Real-time Collaboration** (Sync Phase 4) is the logical next step after Sync Phases 1-3, enabling Google Docs-style co-editing
+2. **Knowledge Graph as Product** could be a standalone feature - the static export is a good quick win
+3. **Memory Palace** is best tackled after Real-time Collaboration is stable, as multiplayer presence is a key differentiator
+4. All features benefit from the AI Research Partner's semantic understanding of notes
+5. Consider building the static Knowledge Graph export first as a simpler proof of concept before the full Memory Palace
+
+### Current State (as of Horizon 3.2 completion)
+
+**Completed:**
+- Voice-First Capture (all phases)
+- Canvas Mode (all phases)
+- Sync & Collaboration Phases 1-3 (Supabase backend, Auth, Sync Engine)
+- AI Research Partner (all 4 phases)
+
+**Stashed for Future:**
+- Real-time Collaboration (Sync Phase 4) - Yjs CRDTs
+- Knowledge Graph as Product (Horizon 3.1) - Static export & hosted publishing
+- Memory Palace (Moonshot) - 3D/VR knowledge navigation
