@@ -2,6 +2,28 @@
 
 ---
 
+## Voice-First Capture Phase 2: Transcription Improvements (Horizon 2.3)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/services/transcription.ts` — New service with provider abstraction, TranscriptionProvider interface, OpenAI and WebSpeech providers, RealtimeSpeechRecognition class for dictation
+- `src/services/audio.ts` — Updated to use transcription service for transcribe() and isTranscriptionAvailable()
+
+**Implementation Notes:**
+- Created TranscriptionProvider interface for pluggable providers
+- OpenAIProvider uses Whisper API for blob transcription
+- WebSpeechProvider included but notes that Web Speech API only supports real-time input (not blob transcription)
+- RealtimeSpeechRecognition class added for future dictation mode support
+- Provider abstraction allows easy addition of new providers
+- Preferences storage for language and local transcription preference
+- audio.ts now delegates to transcription.ts for all transcription operations
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- Build succeeds (`npm run build`)
+- Transcription service correctly abstracts provider selection
+
+---
+
 ## Voice-First Capture Phase 1: Quick Capture Button (Horizon 2.3)
 **Completed:** 2026-01-06
 **Files Changed:**

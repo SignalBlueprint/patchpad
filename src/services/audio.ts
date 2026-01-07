@@ -4,6 +4,7 @@
  */
 
 import { getAPIKey, getAIProvider } from './ai';
+import { transcribe as transcribeAudio, isTranscriptionAvailable as checkTranscription } from './transcription';
 
 export interface RecordingState {
   isRecording: boolean;
@@ -183,47 +184,14 @@ class AudioRecorderService {
   }
 
   /**
-   * Transcribe audio using OpenAI Whisper API
+   * Transcribe audio using the best available provider
+   * Uses the transcription service which abstracts over multiple providers
    */
   async transcribe(audioBlob: Blob): Promise<TranscriptionResult> {
-    const apiKey = getAPIKey();
-    const provider = getAIProvider();
-
-    if (!apiKey) {
-      throw new Error('No API key configured');
-    }
-
-    // Only OpenAI supports Whisper
-    if (provider !== 'openai') {
-      throw new Error('Transcription requires OpenAI API key');
-    }
-
-    // Convert blob to file for upload
-    const audioFile = new File([audioBlob], 'recording.webm', { type: audioBlob.type });
-
-    const formData = new FormData();
-    formData.append('file', audioFile);
-    formData.append('model', 'whisper-1');
-    formData.append('response_format', 'verbose_json');
-
-    const response = await fetch('https://api.openai.com/v1/audio/transcriptions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-      },
-      body: formData,
-    });
-
-    if (!response.ok) {
-      const error = await response.json().catch(() => ({ error: { message: 'Unknown error' } }));
-      throw new Error(error.error?.message || 'Transcription failed');
-    }
-
-    const result = await response.json();
-
+    const result = await transcribeAudio(audioBlob);
     return {
       text: result.text,
-      duration: result.duration || 0,
+      duration: result.duration,
       language: result.language,
     };
   }
@@ -327,8 +295,9 @@ export function formatDuration(seconds: number): string {
 }
 
 /**
- * Check if transcription is available (OpenAI API key configured)
+ * Check if transcription is available
+ * Uses the transcription service to check all available providers
  */
 export function isTranscriptionAvailable(): boolean {
-  return getAIProvider() === 'openai' && !!getAPIKey();
+  return checkTranscription();
 }

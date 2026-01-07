@@ -478,19 +478,19 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 #### Phase 2: Transcription Improvements
 
-- [ ] Add alternative transcription providers in `src/services/audio.ts`
-  - [ ] Support Anthropic (when available) or fallback
-  - [ ] Add browser's Web Speech API as free fallback
+- [x] Add alternative transcription providers in `src/services/audio.ts`
+  - [x] Support Anthropic (when available) or fallback
+  - [x] Add browser's Web Speech API as free fallback
     ```typescript
     const recognition = new webkitSpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
     ```
 
-- [ ] Create `src/services/transcription.ts`
-  - [ ] Abstract transcription provider interface
-  - [ ] `transcribe(audio: Blob): Promise<TranscriptionResult>`
-  - [ ] Provider selection based on config
+- [x] Create `src/services/transcription.ts`
+  - [x] Abstract transcription provider interface
+  - [x] `transcribe(audio: Blob): Promise<TranscriptionResult>`
+  - [x] Provider selection based on config
 
 - [ ] Add transcription settings
   - [ ] Language selection dropdown
