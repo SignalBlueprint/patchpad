@@ -2,6 +2,28 @@
 
 ---
 
+## Voice-First Capture Phase 4: Read Aloud (Horizon 2.3)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/services/textToSpeech.ts` — New service wrapping Web Speech Synthesis API with speak, stop, pause, resume functions
+- `src/components/AskNotesDialog.tsx` — Added "Read aloud" button on assistant messages with play/stop toggle
+
+**Implementation Notes:**
+- textToSpeech service provides: speak(), stop(), pause(), resume(), isTTSAvailable(), isSpeaking()
+- Automatic voice selection: prefers Google/Microsoft English voices, falls back to any English voice
+- Read aloud button appears on all assistant messages in Ask Notes dialog
+- Button shows "Read aloud" with speaker icon, changes to "Stop" with stop icon when playing
+- Tracks which message is being spoken with speakingIndex state
+- Speech automatically stops when dialog closes
+- Purple highlight on active speak button
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- Build succeeds (`npm run build`)
+- Web Speech Synthesis available in modern browsers (Chrome, Edge, Firefox, Safari)
+
+---
+
 ## Voice-First Capture Phase 3: Audio Storage & Playback (Horizon 2.3)
 **Completed:** 2026-01-06
 **Files Changed:**

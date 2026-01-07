@@ -2,6 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import type { Note } from '../types/note';
 import { askNotes, type AskNotesResult } from '../services/ai';
 import { audioRecorder, isTranscriptionAvailable, type RecordingState } from '../services/audio';
+import { speak, stop as stopSpeech, isTTSAvailable, isSpeaking } from '../services/textToSpeech';
 
 interface AskNotesDialogProps {
   isOpen: boolean;
@@ -28,9 +29,11 @@ export function AskNotesDialog({ isOpen, onClose, notes, onSelectNote }: AskNote
     audioLevel: 0,
   });
   const [transcribing, setTranscribing] = useState(false);
+  const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const canUseVoice = isTranscriptionAvailable();
+  const canUseTTS = isTTSAvailable();
 
   useEffect(() => {
     if (isOpen) {
@@ -144,6 +147,32 @@ export function AskNotesDialog({ isOpen, onClose, notes, onSelectNote }: AskNote
     }
   }, [isOpen, isRecording, cancelRecording]);
 
+  // Stop speech when dialog closes
+  useEffect(() => {
+    if (!isOpen) {
+      stopSpeech();
+      setSpeakingIndex(null);
+    }
+  }, [isOpen]);
+
+  // Handle speak/stop for assistant messages
+  const handleSpeak = useCallback((text: string, index: number) => {
+    if (speakingIndex === index) {
+      // Stop current speech
+      stopSpeech();
+      setSpeakingIndex(null);
+    } else {
+      // Stop any current speech and start new
+      stopSpeech();
+      setSpeakingIndex(index);
+      speak(text, {
+        rate: 1,
+        onEnd: () => setSpeakingIndex(null),
+        onError: () => setSpeakingIndex(null),
+      });
+    }
+  }, [speakingIndex]);
+
   if (!isOpen) return null;
 
   return (
@@ -237,6 +266,36 @@ export function AskNotesDialog({ isOpen, onClose, notes, onSelectNote }: AskNote
                           </button>
                         ))}
                       </div>
+                    </div>
+                  )}
+                  {/* Read aloud button for assistant messages */}
+                  {msg.role === 'assistant' && canUseTTS && (
+                    <div className="mt-2 pt-2 border-t border-gray-200">
+                      <button
+                        onClick={() => handleSpeak(msg.content, i)}
+                        className={`flex items-center gap-1.5 text-xs px-2 py-1 rounded transition-colors ${
+                          speakingIndex === i
+                            ? 'bg-purple-100 text-purple-700'
+                            : 'text-gray-500 hover:bg-gray-200 hover:text-gray-700'
+                        }`}
+                        title={speakingIndex === i ? 'Stop reading' : 'Read aloud'}
+                      >
+                        {speakingIndex === i ? (
+                          <>
+                            <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
+                              <rect x="6" y="6" width="12" height="12" rx="2" />
+                            </svg>
+                            <span>Stop</span>
+                          </>
+                        ) : (
+                          <>
+                            <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
+                            </svg>
+                            <span>Read aloud</span>
+                          </>
+                        )}
+                      </button>
                     </div>
                   )}
                 </div>

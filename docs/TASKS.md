@@ -516,7 +516,7 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
   - [x] Add microphone button next to text input
   - [x] "Ask with voice" records question
   - [x] Transcription feeds into `askNotes()` function
-  - [ ] Optional: read answer aloud using Web Speech Synthesis
+  - [x] Optional: read answer aloud using Web Speech Synthesis
 
 - [ ] Create voice command system
   - [ ] "Create note about..." → new note
