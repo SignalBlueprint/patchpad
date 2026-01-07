@@ -1,7 +1,7 @@
 ---
 repo: patchpad
 source: VISION.md
-generated: 2026-01-06
+generated: 2026-01-07
 status: draft
 ---
 
@@ -9,7 +9,7 @@ status: draft
 
 ## Overview
 
-PatchPad is an AI-augmented markdown note editor designed to transform raw thoughts into structured knowledge through wiki-style linking, concept extraction, and AI-powered refinement. This task list breaks down the vision document into actionable development tasks across four horizons: Quick Wins (days), System Expansions (weeks), Blue Sky (transformational), and Moonshot (long-term vision). The goal is to evolve PatchPad from a local-first personal knowledge base into a full-featured "second brain" with collaboration, spatial thinking, and AI research partner capabilities.
+PatchPad has evolved from an AI-enhanced markdown editor into a personal knowledge operating system with voice capture, canvas visualization, semantic search, and conversational AI. This task list breaks down the next phase of development: surfacing intelligence from existing data (Horizon 1), building collaborative infrastructure (Horizon 2), and exploring transformational directions (Horizon 3). The foundation is solid - now we build the features that make PatchPad indispensable.
 
 ---
 
@@ -19,167 +19,300 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 ---
 
-### 1. Link Suggestions Toast
+### 1. Second Brain Dashboard
 
-**Goal:** Automatically suggest wiki-links to existing notes when users mention known concepts or note titles while typing.
-
-**Tasks:**
-
-- [x] Create new hook `src/hooks/useLinkSuggestions.ts`
-  - [x] Import `useIdleDetection` from `src/hooks/useIdleDetection.ts`
-  - [x] Import `findRelatedNotes` from `src/services/ai.ts`
-  - [x] Track cursor position and extract current sentence/paragraph
-  - [x] On idle (500ms), scan text for exact matches against note titles
-  - [x] Return array of `{ term: string, noteId: string, noteTitle: string, position: number }`
-
-- [x] Create `src/components/LinkSuggestionToast.tsx`
-  - [x] Accept props: `suggestions: LinkSuggestion[]`, `onAccept: (suggestion) => void`, `onDismiss: () => void`
-  - [x] Render subtle toast in bottom-right corner using glass-morphism style from existing components
-  - [x] Show suggestion: "Link 'Project Phoenix' to existing note?"
-  - [x] Add "Link" and "Dismiss" buttons
-  - [x] Auto-dismiss after 5 seconds if no action
-
-- [x] Add concept matching logic to `src/services/brain.ts`
-  - [x] Export new function `findConceptMatches(text: string, concepts: Concept[]): ConceptMatch[]`
-  - [x] Match against concept names (case-insensitive)
-  - [x] Return matches with position in text
-
-- [x] Integrate into `src/components/Editor.tsx`
-  - [x] Import and use `useLinkSuggestions` hook
-  - [x] Render `LinkSuggestionToast` when suggestions available
-  - [x] On accept, use CodeMirror transaction to wrap matched text with `[[...]]`
-  - [x] Store dismissed suggestions in session to avoid re-suggesting
-
-- [x] Add tests in `src/hooks/useLinkSuggestions.test.ts`
-  - [x] Test: exact title match triggers suggestion
-  - [x] Test: case-insensitive matching works
-  - [x] Test: no duplicate suggestions for same term
-  - [x] Test: dismissed suggestions not re-shown
-
-**Acceptance Criteria:**
-- Typing "discussed Project Phoenix" shows toast if note titled "Project Phoenix" exists
-- Clicking "Link" transforms text to "discussed [[Project Phoenix]]"
-- Toast auto-dismisses and doesn't block typing
-- No suggestions for already-linked text
-
-**Estimated Effort:** 4 hours
-
-**Dependencies:** None
-
----
-
-### 2. Daily Digest Dashboard
-
-**Goal:** Greet users with a personalized summary of their recent note-taking activity, extracted tasks, and key concepts.
+**Goal:** Replace the blank slate with a personalized knowledge overview that surfaces insights from user data automatically.
 
 **Tasks:**
 
-- [x] Create `src/services/digest.ts`
-  - [x] Export interface `DailyDigest { date: Date, notesCreated: number, wordsWritten: number, tasksExtracted: string[], topConcepts: { name: string, count: number }[], suggestion: string }`
-  - [x] Export function `generateDailyDigest(notes: Note[], concepts: Concept[]): DailyDigest`
-  - [x] Filter notes by `updatedAt` in last 24 hours
-  - [x] Count words using `content.split(/\s+/).length`
-  - [x] Extract tasks using regex from `brain.ts` fallback pattern: `/(?:TODO|TASK|ACTION):\s*(.+?)(?:\n|$)/gi`
-  - [x] Aggregate concept mentions from recent notes
-  - [x] Generate suggestion based on open tasks count
+#### Phase 1: Core Dashboard Component
 
-- [x] Create `src/components/DailyDigestModal.tsx`
-  - [x] Accept props: `digest: DailyDigest`, `onClose: () => void`, `onNavigateToNote: (id: string) => void`
-  - [x] Render modal overlay with glass-morphism styling
-  - [x] Show greeting based on time of day ("Good morning", etc.)
-  - [x] Display stats: notes created, words written
-  - [x] List extracted tasks with checkboxes (visual only)
-  - [x] Show top 5 concepts as pills/badges
-  - [x] Show actionable suggestion at bottom
-  - [x] "Start Writing" button to close
+- [ ] Create `src/components/SecondBrainDashboard.tsx`
+  - [ ] Accept props: `notes: Note[]`, `conversations: Conversation[]`, `onNavigateToNote: (id: string) => void`, `onClose: () => void`
+  - [ ] Use glass-morphism styling consistent with existing modals (reference `DailyDigestModal.tsx` for patterns)
+  - [ ] Layout: 3-column grid with responsive breakpoints (md:grid-cols-3)
 
-- [x] Add localStorage key for last digest shown
-  - [x] Key: `patchpad_last_digest_date`
-  - [x] Store ISO date string
+- [ ] Create greeting section (top center)
+  - [ ] Time-based greeting: "Good morning/afternoon/evening"
+  - [ ] Show most-edited note titles from last 7 days (query by `updatedAt`)
+  - [ ] Calculate editing streak: consecutive days with note updates
 
-- [x] Integrate into `src/App.tsx`
-  - [x] On mount, check if digest was shown today
-  - [x] If not, generate digest and show modal
-  - [x] Update localStorage after showing
+- [ ] Create "Brewing Ideas" section (left column)
+  - [ ] Query notes with no outgoing wiki links: `notes.filter(n => !n.content.includes('[['))`
+  - [ ] Filter to notes updated in last 14 days
+  - [ ] For each, call `findRelatedNotes()` from `src/services/ai.ts` to suggest connections
+  - [ ] Display as cards with "Connect to..." suggestion button
+  - [ ] On click, insert `[[suggested title]]` at end of note content
 
-- [x] Add user preference to disable digest
-  - [x] Add to localStorage: `patchpad_digest_enabled`
-  - [x] Add toggle in settings/preferences (if exists) or command palette
+- [ ] Create "Fading Memories" section (right column)
+  - [ ] Query notes not updated in 90+ days: `notes.filter(n => daysSince(n.updatedAt) > 90)`
+  - [ ] Cross-reference with recent concepts using `extractConcepts()` from `src/services/brain.ts`
+  - [ ] Show notes that mention concepts you've written about recently
+  - [ ] Display as cards with "Revisit" button that navigates to note
 
-**Acceptance Criteria:**
-- On first load of day, modal appears with yesterday's summary
-- Shows accurate word count and note count
-- Displays extracted tasks from notes
-- Shows most-mentioned concepts
-- Modal doesn't show again same day after dismissal
-- Can be disabled via preference
+#### Phase 2: Data Analysis Services
 
-**Estimated Effort:** 4 hours
+- [ ] Create `src/services/dashboardAnalytics.ts`
+  - [ ] Export function `getMostEditedNotes(notes: Note[], days: number): Note[]`
+    - Sort by edit frequency (count updates within date range)
+    - Return top 5
+  - [ ] Export function `getUnconnectedNotes(notes: Note[]): Note[]`
+    - Parse content for `[[...]]` patterns
+    - Return notes with zero outgoing links
+  - [ ] Export function `getFadingNotes(notes: Note[], concepts: Concept[]): FadingNote[]`
+    - Filter notes older than 90 days
+    - Match against recent concept mentions
+    - Return with relevance score
+  - [ ] Export function `getEditingStreak(notes: Note[]): number`
+    - Count consecutive days with at least one note update
+    - Start from today, work backwards
 
-**Dependencies:** None
+- [ ] Add tests in `src/services/dashboardAnalytics.test.ts`
+  - [ ] Test: getMostEditedNotes returns correct order
+  - [ ] Test: getUnconnectedNotes ignores notes with links
+  - [ ] Test: getFadingNotes cross-references concepts correctly
+  - [ ] Test: getEditingStreak handles gaps
 
----
+#### Phase 3: Integration
 
-### 3. Export Bundle
-
-**Goal:** Allow users to export selected notes as a downloadable ZIP file with proper markdown formatting and relative links.
-
-**Tasks:**
-
-- [x] Install JSZip package
-  ```bash
-  npm install jszip
-  npm install -D @types/jszip
+- [ ] Add dashboard state to `src/App.tsx`
+  ```typescript
+  const [secondBrainOpen, setSecondBrainOpen] = useState(false);
   ```
 
-- [x] Create `src/services/export.ts`
-  - [x] Export interface `ExportOptions { notes: Note[], includeManifest: boolean, rewriteLinks: boolean }`
-  - [x] Export async function `exportNotesAsZip(options: ExportOptions): Promise<Blob>`
-  - [x] Import JSZip
-  - [x] For each note, create `{sanitized-title}.md` file
-  - [x] Build filename map: `{ noteId: filename }`
-  - [x] Rewrite `[[Title]]` links to relative paths `[Title](./filename.md)`
-  - [x] Generate `manifest.json` with metadata: `{ exported: Date, notes: [{ id, title, filename, tags }] }`
-  - [x] Return ZIP blob
+- [ ] Add command palette entry in `App.tsx` commands array
+  ```typescript
+  {
+    id: 'second-brain',
+    name: 'Second Brain Dashboard',
+    description: 'View knowledge insights',
+    category: 'view',
+    shortcut: 'Ctrl+Shift+B',
+    action: () => setSecondBrainOpen(true),
+  }
+  ```
 
-- [x] Create `src/utils/sanitizeFilename.ts`
-  - [x] Export function `sanitizeFilename(title: string): string`
-  - [x] Replace invalid chars: `/\:*?"<>|` with `-`
-  - [x] Trim whitespace, limit to 100 chars
-  - [x] Handle duplicates by appending `-1`, `-2`, etc.
+- [ ] Register keyboard shortcut in `useEffect` keyboard handler
+  - [ ] `Ctrl+Shift+B` → `setSecondBrainOpen(true)`
+  - [ ] Note: This replaces existing brain dashboard shortcut - update `knowledge-brain` command
 
-- [x] Create `src/components/ExportDialog.tsx`
-  - [x] Accept props: `notes: Note[]`, `selectedIds: string[]`, `onClose: () => void`
-  - [x] Show list of notes to export with checkboxes
-  - [x] Options: "Include manifest.json", "Rewrite wiki links"
-  - [x] "Export" button triggers download
-  - [x] Show progress spinner during ZIP generation
-
-- [x] Add export to Command Palette and App.tsx
-  - [x] Add "Export Notes" command to command palette
-  - [x] Integrated via keyboard shortcut and App.tsx state
-
-- [x] Add keyboard shortcut
-  - [x] Register `Cmd/Ctrl+Shift+E` in App.tsx keyboard handler
-  - [x] Action: open ExportDialog with current note selected
-
-- [x] Add tests in `src/services/export.test.ts`
-  - [x] Test: single note exports correctly
-  - [x] Test: wiki links rewritten to relative paths
-  - [x] Test: manifest.json contains correct metadata
-  - [x] Test: filename sanitization handles special chars
+- [ ] Add localStorage preference for auto-show on login
+  - [ ] Key: `patchpad_show_dashboard_on_load`
+  - [ ] Toggle in dashboard footer: "Show on startup"
 
 **Acceptance Criteria:**
-- Right-click note → "Export" downloads ZIP
-- Multi-select notes → export all selected
-- ZIP contains `.md` files with proper frontmatter
-- Internal `[[links]]` converted to relative markdown links
-- Manifest.json lists all exported notes
-- Filenames are filesystem-safe
+- Dashboard opens via Ctrl+Shift+B or command palette
+- Shows personalized greeting with recent activity summary
+- "Brewing Ideas" suggests at least one connection for unlinked notes
+- "Fading Memories" surfaces relevant old notes
+- Clicking "Connect" adds wiki link to note
+- Dashboard preference persists across sessions
 
-**Estimated Effort:** 4 hours
+**Estimated Effort:** 8 hours
 
-**Dependencies:** None
+**Dependencies:** None - uses existing `brain.ts` and `ai.ts` services
+
+---
+
+### 2. Thinking Timeline
+
+**Goal:** Add a chronological view that groups notes by "thinking sessions" - clusters of related work within short time windows.
+
+**Tasks:**
+
+#### Phase 1: Timeline View Component
+
+- [ ] Create `src/components/Timeline/TimelineView.tsx`
+  - [ ] Accept props: `notes: Note[]`, `onSelectNote: (id: string) => void`, `onSelectCluster: (ids: string[]) => void`
+  - [ ] Vertical scrolling timeline with date markers
+  - [ ] Use glass-morphism card styling for clusters
+
+- [ ] Create `src/components/Timeline/TimelineCluster.tsx`
+  - [ ] Render group of notes created within same "session"
+  - [ ] Show: date/time range, note count, common tags, topic summary
+  - [ ] Expandable to show individual note titles
+  - [ ] Click cluster → highlight all notes on canvas (if canvas data exists)
+
+- [ ] Create `src/components/Timeline/TimelineDateMarker.tsx`
+  - [ ] Sticky date header as user scrolls
+  - [ ] Format: "Monday, January 6, 2026"
+
+#### Phase 2: Session Clustering Service
+
+- [ ] Create `src/services/thinkingSession.ts`
+  - [ ] Export interface `ThinkingSession { id, startTime, endTime, noteIds, topics, summary }`
+  - [ ] Export function `clusterIntoSessions(notes: Note[], maxGapMinutes: number = 60): ThinkingSession[]`
+    - Sort notes by createdAt
+    - Group notes created within `maxGapMinutes` of each other
+    - Minimum cluster size: 1 note (solo notes are their own session)
+  - [ ] Export function `extractSessionTopics(session: ThinkingSession, notes: Note[]): string[]`
+    - Use `extractConcepts()` from brain.ts on session notes
+    - Return top 3 shared concepts
+  - [ ] Export async function `generateSessionSummary(session: ThinkingSession, notes: Note[]): Promise<string>`
+    - Concatenate note titles and first 100 chars
+    - If AI available, generate one-sentence summary
+    - Fallback: "X notes about [top concept]"
+
+- [ ] Add tests in `src/services/thinkingSession.test.ts`
+  - [ ] Test: notes 30 min apart cluster together
+  - [ ] Test: notes 2 hours apart form separate clusters
+  - [ ] Test: solo notes form single-note sessions
+  - [ ] Test: topic extraction finds common concepts
+
+#### Phase 3: Integration with Main App
+
+- [ ] Update `mainView` type in `src/App.tsx`
+  ```typescript
+  const [mainView, setMainView] = useState<'notes' | 'canvas' | 'graph' | 'timeline'>('notes');
+  ```
+
+- [ ] Add Timeline tab button to tab bar (after Graph tab)
+  ```tsx
+  <button
+    onClick={() => setMainView('timeline')}
+    className={`px-4 py-2 text-sm font-medium ${mainView === 'timeline' ? 'text-indigo-600 border-b-2 border-indigo-500' : 'text-gray-500 hover:text-gray-700'}`}
+  >
+    <ClockIcon className="w-4 h-4 inline mr-1" />
+    Timeline
+  </button>
+  ```
+
+- [ ] Add conditional render in main content area
+  ```tsx
+  {mainView === 'timeline' && (
+    <TimelineView
+      notes={notes}
+      onSelectNote={(id) => { setSelectedId(id); setMainView('notes'); }}
+      onSelectCluster={(ids) => { setMultiSelectedIds(ids); setMainView('canvas'); }}
+    />
+  )}
+  ```
+
+- [ ] Add command palette entries
+  ```typescript
+  { id: 'view-timeline', name: 'Timeline View', category: 'view', action: () => setMainView('timeline') }
+  ```
+
+#### Phase 4: Canvas Integration
+
+- [ ] Add "View on Canvas" button to TimelineCluster
+  - [ ] On click, switch to canvas view
+  - [ ] Auto-fit viewport to show only cluster notes
+  - [ ] Temporarily highlight cluster notes (yellow border for 3 seconds)
+
+- [ ] Store session data for canvas overlay
+  - [ ] Add localStorage key: `patchpad_timeline_highlight`
+  - [ ] Format: `{ sessionId: string, noteIds: string[], expiry: Date }`
+  - [ ] CanvasView reads this and applies highlight styling
+
+**Acceptance Criteria:**
+- Timeline view accessible via tab bar and command palette
+- Notes grouped into thinking sessions by time proximity
+- Each session shows time range, note count, and topic summary
+- Clicking session highlights notes on canvas
+- Solo notes appear as single-note sessions
+- Smooth scrolling with sticky date headers
+
+**Estimated Effort:** 10 hours
+
+**Dependencies:** None - builds on existing canvas infrastructure
+
+---
+
+### 3. Conversation Insights
+
+**Goal:** Surface patterns from AI Research Partner usage - what questions users ask most, knowledge gaps, and conversation trends.
+
+**Tasks:**
+
+#### Phase 1: Insights Analysis Service
+
+- [ ] Create `src/services/conversationInsights.ts`
+  - [ ] Export interface `ConversationInsights { topQuestions, topTopics, knowledgeGaps, questionCount, avgResponseTime }`
+  - [ ] Export async function `analyzeConversations(conversations: Conversation[]): ConversationInsights`
+  - [ ] Export function `getTopQuestions(conversations: Conversation[], limit: number = 10): QuestionSummary[]`
+    - Extract user messages (role === 'user')
+    - Group similar questions using simple keyword matching
+    - Return with frequency count
+  - [ ] Export function `getTopTopics(conversations: Conversation[]): TopicCount[]`
+    - Extract topics from user messages using `extractConcepts()`
+    - Aggregate across all conversations
+    - Return sorted by frequency
+  - [ ] Export function `getKnowledgeGaps(conversations: Conversation[]): KnowledgeGap[]`
+    - Find AI responses containing phrases like "I don't have information", "your notes don't mention", "I couldn't find"
+    - Extract the topic/question that caused the gap
+    - Return unique gaps with conversation references
+
+- [ ] Add tests in `src/services/conversationInsights.test.ts`
+  - [ ] Test: topQuestions aggregates similar questions
+  - [ ] Test: topTopics extracts concepts correctly
+  - [ ] Test: knowledgeGaps detects "no information" responses
+
+#### Phase 2: Insights Panel Component
+
+- [ ] Create `src/components/ResearchPartner/InsightsPanel.tsx`
+  - [ ] Accept props: `conversations: Conversation[]`, `onCreateNote: (content: string, title: string) => void`
+  - [ ] Collapsible panel in ChatInterface (right sidebar or bottom drawer)
+  - [ ] Tab navigation: "Top Questions" | "Topics" | "Gaps"
+
+- [ ] Implement "Top Questions" tab
+  - [ ] List questions with frequency badges
+  - [ ] Click question → scroll to original conversation
+  - [ ] "Create Brief" button → synthesize answer into new note
+
+- [ ] Implement "Topics" tab
+  - [ ] Tag cloud or bar chart of most-discussed topics
+  - [ ] Click topic → filter conversations to those mentioning it
+  - [ ] Show trend: "You've asked about X 15 times this month"
+
+- [ ] Implement "Knowledge Gaps" tab
+  - [ ] List topics where AI couldn't find information
+  - [ ] "Create Note" button → creates empty note with topic as title
+  - [ ] "Research" button → opens web search (if available)
+
+#### Phase 3: Quick Brief Generation
+
+- [ ] Add `generateInsightBrief()` to `src/services/researchPartner.ts`
+  ```typescript
+  async function generateInsightBrief(topic: string, conversations: Conversation[]): Promise<string>
+  ```
+  - Filter conversations mentioning topic
+  - Extract all AI responses about topic
+  - Synthesize into cohesive brief
+  - Include citations to original conversations
+
+- [ ] Add "Create Brief from Questions" action
+  - [ ] In InsightsPanel, button on frequently-asked topics
+  - [ ] Calls `generateInsightBrief()` then `createNote()`
+  - [ ] Auto-tags note with "insight-brief"
+
+#### Phase 4: Integration
+
+- [ ] Add insights toggle to ChatInterface
+  - [ ] Button in header: "Insights" with icon
+  - [ ] Toggle `insightsPanelOpen` state
+  - [ ] Panel slides in from right
+
+- [ ] Load conversations on mount
+  - [ ] Use `getAllConversations()` from researchPartner.ts
+  - [ ] Cache analysis results (recompute on new conversation)
+
+- [ ] Add command palette entry
+  ```typescript
+  { id: 'conversation-insights', name: 'Conversation Insights', category: 'ai', action: () => { setResearchPartnerOpen(true); /* trigger insights panel */ } }
+  ```
+
+**Acceptance Criteria:**
+- Insights panel accessible from Research Partner interface
+- Shows top 10 most-asked questions with frequency
+- Shows topic frequency as visual chart
+- Lists knowledge gaps with actionable "Create Note" buttons
+- "Create Brief" generates note summarizing topic across conversations
+- Brief includes citations to source conversations
+
+**Estimated Effort:** 10 hours
+
+**Dependencies:** Research Partner must have conversation history (already implemented)
 
 ---
 
@@ -189,370 +322,448 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 ---
 
-### 1. Canvas Mode
+### 1. Real-time Collaboration
 
-**Goal:** Transform notes into draggable sticky notes on an infinite 2D canvas where spatial arrangement persists and connections can be drawn manually.
+**Goal:** Enable Google Docs-style real-time editing with cursor presence and live sync using Yjs CRDTs.
 
 **Tasks:**
 
-#### Phase 1: Pinnable Nodes (Validation Experiment)
+#### Phase 1: Shareable Links (Validation Experiment)
 
-- [x] Add position persistence to `KnowledgeGraph.tsx`
-  - [x] Create interface `PinnedPosition { x: number, y: number, pinned: boolean }`
-  - [x] Add localStorage key: `patchpad_graph_positions`
-  - [x] Load positions on mount, apply to initial node positions
-  - [x] Save positions on drag end
+- [ ] Update Supabase schema - add columns to notes table
+  ```sql
+  ALTER TABLE notes ADD COLUMN shared BOOLEAN DEFAULT FALSE;
+  ALTER TABLE notes ADD COLUMN share_token UUID;
+  CREATE INDEX idx_notes_share_token ON notes(share_token);
+  ```
 
-- [x] Add "pin" toggle to nodes in `src/components/KnowledgeGraph.tsx`
-  - [x] Double-click node to toggle pinned state
-  - [x] Pinned nodes skip force simulation (already partially implemented at line 99)
-  - [x] Visual indicator: pin icon or different border
+- [ ] Update `src/config/supabase.ts` - extend Note type
+  ```typescript
+  interface SupabaseNote {
+    // ... existing fields
+    shared: boolean;
+    share_token: string | null;
+  }
+  ```
 
-- [x] Track usage metrics
-  - [x] Count pinned nodes in localStorage: `patchpad_pinned_count`
-  - [x] Log to console for validation
+- [ ] Create `src/services/sharing.ts`
+  - [ ] Export async function `generateShareLink(noteId: string): Promise<string>`
+    - Generate UUID for share_token
+    - Update note in Supabase with `shared: true, share_token: token`
+    - Return URL: `${window.location.origin}/shared/${token}`
+  - [ ] Export async function `getSharedNote(token: string): Promise<Note | null>`
+    - Query Supabase by share_token
+    - Return null if not found or `shared: false`
+  - [ ] Export async function `revokeShareLink(noteId: string): Promise<void>`
+    - Set `shared: false, share_token: null`
 
-#### Phase 2: Canvas View Component
+- [ ] Create `src/components/ShareNoteDialog.tsx`
+  - [ ] Accept props: `noteId: string`, `isOpen: boolean`, `onClose: () => void`
+  - [ ] Show toggle: "Enable sharing"
+  - [ ] Display generated link with copy button
+  - [ ] "Revoke" button to disable sharing
+  - [ ] Analytics display: view count (future)
 
-- [x] Create `src/components/Canvas/CanvasView.tsx`
-  - [x] Accept props: `notes: Note[]`, `onNoteClick: (id) => void`, `onCreateConnection: (from, to) => void`
-  - [x] Render HTML5 Canvas with pan/zoom (adapt from KnowledgeGraph.tsx)
-  - [x] Implement infinite canvas with mouse drag panning
-  - [x] Add minimap in corner showing viewport position
+- [ ] Create `src/pages/SharedNote.tsx` (or route handler)
+  - [ ] Parse `share_token` from URL
+  - [ ] Fetch note via `getSharedNote()`
+  - [ ] Render read-only markdown view using `MarkdownPreview.tsx`
+  - [ ] Show "Open in PatchPad" prompt for non-users
+  - [ ] 404 page for invalid/revoked tokens
 
-- [x] Create `src/components/Canvas/StickyNote.tsx`
-  - [x] Render note as draggable card on canvas
-  - [x] Show title, first 100 chars of content, tags
-  - [x] Color based on folder or tag
-  - [x] Resize handles for adjusting card size
+- [ ] Add routing for `/shared/:token`
+  - [ ] Update `src/main.tsx` or create router
+  - [ ] Lazy load SharedNote component
 
-- [x] Create `src/components/Canvas/ConnectionLine.tsx`
-  - [x] Render bezier curve between two notes
-  - [x] Arrowhead on target end
-  - [x] Click to select, delete key to remove
+- [ ] Add "Share" button to Editor toolbar
+  - [ ] Icon: share/link icon
+  - [ ] Opens ShareNoteDialog
+  - [ ] Only visible when sync is enabled
 
-- [x] Implement connection drawing mode
-  - [x] Hold Shift + drag from note to create connection
-  - [x] Show rubber-band line while dragging
-  - [x] On release over another note, create wiki link between them
-
-#### Phase 3: Canvas Data Model
-
-- [x] Extend `src/types/note.ts`
-  - [x] Add interface `CanvasPosition { x: number, y: number, width: number, height: number }`
-  - [x] Add optional `canvasPosition?: CanvasPosition` to Note type
-
-- [x] Update database schema in `src/db/index.ts`
-  - [x] Version 5: add `canvasX, canvasY, canvasWidth, canvasHeight` indexes
-  - [x] Migration: existing notes get null canvas positions
-
-- [x] Create `src/services/canvas.ts`
-  - [x] Export function `saveCanvasLayout(positions: Map<string, CanvasPosition>): Promise<void>`
-  - [x] Export function `loadCanvasLayout(): Promise<Map<string, CanvasPosition>>`
-  - [x] Export function `autoLayout(notes: Note[]): Map<string, CanvasPosition>` (grid or force-directed)
-
-#### Phase 4: Canvas Features
-
-- [x] Add toolbar to Canvas view
-  - [x] "Add Note" button - creates new note at center of viewport
-  - [x] "Auto Layout" button - applies force-directed layout
-  - [x] "Zoom to Fit" button - fits all notes in viewport
-  - [x] "Export as PNG" button
-
-- [x] Implement canvas export
-  - [x] Use `canvas.toDataURL('image/png')`
-  - [x] Create high-resolution export (2x scale)
-  - [x] Download as `patchpad-canvas-{date}.png`
-
-- [x] Add grouping feature
-  - [x] Draw rectangle to select multiple notes
-  - [x] "Group" action creates visual container
-  - [x] Groups can be collapsed/expanded
-  - [x] Groups persist in localStorage
-
-#### Phase 5: Integration
-
-- [x] Add Canvas tab to main view in `src/App.tsx`
-  - [x] Tab bar: "Notes" | "Canvas" | "Graph"
-  - [x] Canvas view shows all notes with positions
-  - [x] Clicking note in canvas opens it in editor
-
-- [x] Sync canvas with note changes
-  - [x] New note appears at default position
-  - [x] Deleted note removed from canvas
-  - [x] Title changes reflected on sticky note
-
-**New Infrastructure Required:**
-- Canvas rendering engine (built on existing KnowledgeGraph canvas code)
-- Canvas position storage (Dexie schema update)
-- PNG export capability (native canvas API)
-
-**Migration Notes:**
-- Database version bump from 4 to 5
-- Existing notes will have null canvas positions until manually placed
-- No breaking changes to existing functionality
+- [ ] Track sharing analytics
+  - [ ] Log share creation events to localStorage
+  - [ ] Log share view events (increment counter in Supabase)
+  - [ ] Key: `patchpad_share_analytics`
 
 **Acceptance Criteria:**
-- Toggle between Notes list and Canvas view
-- Drag notes to arrange spatially
-- Positions persist across sessions
-- Draw connections between notes by dragging
-- Export canvas as PNG image
-- Zoom and pan work smoothly
-- Performance acceptable with 100+ notes
+- "Share" button generates unique URL
+- Anyone with URL can view note (read-only)
+- Note owner can revoke link
+- Invalid tokens show 404
+- Share events logged for validation metrics
 
-**Estimated Effort:** 24 hours
+**Estimated Effort:** 8 hours
 
-**Dependencies:** None (builds on existing KnowledgeGraph.tsx)
+**New Infrastructure Required:**
+- Supabase schema update (2 columns)
+- Client-side routing for `/shared/:token`
+
+**Migration Notes:**
+- Existing notes get `shared: false, share_token: null` by default
+- No breaking changes
 
 ---
 
-### 2. Sync & Collaboration Layer
+#### Phase 2: Yjs CRDT Integration
 
-**Goal:** Enable cross-device sync and real-time collaboration through a backend service with conflict-free merging.
-
-**Tasks:**
-
-#### Phase 1: Backend Setup
-
-- [x] Choose and set up backend
-  - [x] Option A: Supabase (recommended for speed)
-    ```bash
-    npm install @supabase/supabase-js
-    ```
-  - [ ] Option B: Firebase
-    ```bash
-    npm install firebase
-    ```
-
-- [x] Create `src/config/supabase.ts`
-  - [x] Initialize Supabase client with env variables
-  - [x] Export typed client
-
-- [x] Design database schema (Supabase SQL)
-  ```sql
-  -- Users table (handled by Supabase Auth)
-
-  -- Notes table
-  CREATE TABLE notes (
-    id UUID PRIMARY KEY,
-    user_id UUID REFERENCES auth.users,
-    title TEXT,
-    content TEXT,
-    tags TEXT[],
-    folder_id UUID,
-    parent_id UUID,
-    canvas_position JSONB,
-    created_at TIMESTAMPTZ,
-    updated_at TIMESTAMPTZ,
-    version INTEGER DEFAULT 1
-  );
-
-  -- Patches table for sync
-  CREATE TABLE patches (
-    id UUID PRIMARY KEY,
-    note_id UUID REFERENCES notes,
-    user_id UUID REFERENCES auth.users,
-    ops JSONB,
-    status TEXT,
-    created_at TIMESTAMPTZ
-  );
-
-  -- Enable RLS
-  ALTER TABLE notes ENABLE ROW LEVEL SECURITY;
-  ```
-
-- [x] Create `src/services/sync.ts`
-  - [x] Export function `syncToCloud(notes: Note[]): Promise<SyncResult>`
-  - [x] Export function `pullFromCloud(): Promise<Note[]>`
-  - [x] Export function `resolveConflicts(local: Note, remote: Note): Note`
-  - [x] Implement optimistic locking with version numbers
-
-#### Phase 2: Authentication
-
-- [x] Create `src/components/Auth/LoginModal.tsx`
-  - [x] Email/password login form
-  - [x] "Sign up" / "Log in" toggle
-  - [x] OAuth buttons (Google, GitHub) if configured
-  - [x] "Continue offline" option
-
-- [x] Create `src/hooks/useAuth.ts`
-  - [x] Wrap Supabase auth methods
-  - [x] Track auth state: `{ user, loading, error }`
-  - [x] Expose: `signIn`, `signUp`, `signOut`, `resetPassword`
-
-- [x] Create `src/context/AuthContext.tsx`
-  - [x] Provide auth state to entire app
-  - [x] Redirect to login if required
-
-#### Phase 3: Sync Engine
-
-- [x] Create `src/services/syncEngine.ts`
-  - [x] Implement background sync loop (every 30 seconds)
-  - [x] Queue local changes when offline
-  - [x] Replay queue when connection restored
-  - [x] Handle conflict resolution UI
-
-- [x] Add online/offline detection
-  - [x] Use `navigator.onLine` and `online`/`offline` events
-  - [x] Show status indicator in header
-  - [x] Queue writes when offline
-
-- [x] Implement conflict resolution UI
-  - [x] Create `src/components/ConflictResolutionModal.tsx`
-  - [x] Show diff between local and remote versions
-  - [x] Options: "Keep Mine", "Keep Theirs", "Merge"
-
-#### Phase 4: Real-time Collaboration (Advanced)
-
-- [ ] Install Yjs for CRDTs
+- [ ] Install Yjs dependencies
   ```bash
-  npm install yjs y-websocket y-indexeddb
+  npm install yjs y-indexeddb y-websocket @codemirror/collab
   ```
 
 - [ ] Create `src/services/collaboration.ts`
-  - [ ] Initialize Y.Doc per note
-  - [ ] Sync with WebSocket provider
-  - [ ] Map Y.Text to CodeMirror content
+  - [ ] Export function `createYDoc(noteId: string): Y.Doc`
+    - Initialize Y.Doc with shared text type
+    - Enable IndexedDB persistence via `y-indexeddb`
+  - [ ] Export function `connectToRoom(doc: Y.Doc, noteId: string): WebsocketProvider`
+    - Connect to Supabase Realtime or y-websocket server
+    - Room name: `note-${noteId}`
+  - [ ] Export function `syncDocToNote(doc: Y.Doc, noteId: string): void`
+    - Watch Y.Doc changes
+    - Debounced write to local DB + Supabase
+  - [ ] Export function `disconnectFromRoom(provider: WebsocketProvider): void`
 
-- [ ] Add awareness (presence) features
-  - [ ] Show other users' cursors in editor
-  - [ ] Display "X is editing" indicator
-  - [ ] Use different colors per user
+- [ ] Create `src/hooks/useCollaboration.ts`
+  ```typescript
+  function useCollaboration(noteId: string | null, isShared: boolean) {
+    const [doc, setDoc] = useState<Y.Doc | null>(null);
+    const [provider, setProvider] = useState<WebsocketProvider | null>(null);
+    const [peers, setPeers] = useState<Peer[]>([]);
+    // ... setup and cleanup logic
+    return { doc, peers, isConnected };
+  }
+  ```
 
-- [ ] Create share functionality
-  - [ ] Generate shareable link with note ID
-  - [ ] Permission levels: view, comment, edit
-  - [ ] Expiring links option
+- [ ] Integrate Yjs with CodeMirror in `src/components/Editor.tsx`
+  - [ ] Import `@codemirror/collab` extension
+  - [ ] Bind Y.Text to CodeMirror state
+  - [ ] Handle remote updates
+  - [ ] Reference: https://codemirror.net/examples/collab/
 
-**New Infrastructure Required:**
-- Supabase project (or Firebase project)
-- PostgreSQL database (provided by Supabase)
-- WebSocket server for real-time (Supabase Realtime or y-websocket)
-- Authentication system
+- [ ] Set up WebSocket infrastructure
+  - [ ] Option A: Supabase Realtime Channels (simpler, managed)
+  - [ ] Option B: Self-hosted y-websocket server (more control)
+  - [ ] Document choice in `.env.example`
 
-**Migration Notes:**
-- Existing IndexedDB data needs migration path to cloud
-- First sync should offer "Upload existing notes" option
-- Users can continue using local-only mode
-- No data loss - local remains source of truth until first sync
-
-**Acceptance Criteria:**
-- User can sign up / log in
-- Notes sync across devices within 30 seconds
-- Offline changes sync when reconnected
-- Conflicts are detected and user can resolve
-- Optional: real-time cursor presence
-- Optional: shareable note links
-
-**Estimated Effort:** 40 hours
-
-**Dependencies:** Backend service account (Supabase or Firebase)
+**Estimated Effort:** 16 hours
 
 ---
 
-### 3. Voice-First Capture
+#### Phase 3: Presence & Awareness
 
-**Goal:** Make voice recording a primary input method with quick capture, transcription, and AI summarization.
+- [ ] Extend `useCollaboration.ts` with awareness
+  ```typescript
+  interface Peer {
+    id: string;
+    name: string;
+    color: string;
+    cursor?: { line: number; ch: number };
+    selection?: { from: number; to: number };
+  }
+  ```
 
-**Tasks:**
+- [ ] Create `src/components/RemoteCursor.tsx`
+  - [ ] Render colored cursor at peer's position
+  - [ ] Show peer name label above cursor
+  - [ ] Animate cursor movement
 
-#### Phase 1: Quick Capture Button
+- [ ] Create `src/components/RemoteSelection.tsx`
+  - [ ] Highlight peer's text selection in their color
+  - [ ] Semi-transparent overlay on selected range
 
-- [x] Create `src/components/QuickCaptureButton.tsx`
-  - [x] Floating action button (FAB) in bottom-right corner
-  - [x] Microphone icon, pulsing animation when recording
-  - [x] Tap to start, tap again to stop
-  - [x] Long-press to cancel
+- [ ] Create `src/components/PresenceIndicator.tsx`
+  - [ ] Show avatars/initials of users viewing note
+  - [ ] Display in Editor header
+  - [ ] Tooltip with full names
 
-- [x] Enhance `src/components/AudioRecorder.tsx`
-  - [x] Add `onQuickCapture` mode prop
-  - [x] Simplified UI for quick capture: just waveform and timer
-  - [x] Auto-start recording on mount
-  - [x] Return transcription result on stop
+- [ ] Add color assignment logic
+  - [ ] Palette: `['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7']`
+  - [ ] Assign by user index in room
+  - [ ] Persist user color preference in localStorage
 
-- [x] Integrate quick capture flow
-  - [x] Recording → Transcription → AI Summary → New Note
-  - [x] Show progress: "Recording..." → "Transcribing..." → "Creating note..."
-  - [x] New note appears in inbox/unfiled
+- [ ] Broadcast local state
+  - [ ] On cursor move, broadcast position via awareness protocol
+  - [ ] On selection change, broadcast selection range
+  - [ ] Debounce broadcasts to 50ms
 
-#### Phase 2: Transcription Improvements
+**Estimated Effort:** 12 hours
 
-- [x] Add alternative transcription providers in `src/services/audio.ts`
-  - [x] Support Anthropic (when available) or fallback
-  - [x] Add browser's Web Speech API as free fallback
-    ```typescript
-    const recognition = new webkitSpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = true;
-    ```
+---
 
-- [x] Create `src/services/transcription.ts`
-  - [x] Abstract transcription provider interface
-  - [x] `transcribe(audio: Blob): Promise<TranscriptionResult>`
-  - [x] Provider selection based on config
+#### Phase 4: Collaborative Features
 
-- [x] Add transcription settings
-  - [x] Language selection dropdown
-  - [x] "Use local transcription" toggle for privacy
-  - [x] Quality vs speed preference
+- [ ] Create `src/components/CommentThread.tsx`
+  - [ ] Inline comments anchored to text positions
+  - [ ] Thread UI: original text, comments, reply input
+  - [ ] Store in Supabase `comments` table
 
-#### Phase 3: Voice Notes Processing
+- [ ] Create comments table in Supabase
+  ```sql
+  CREATE TABLE comments (
+    id UUID PRIMARY KEY,
+    note_id UUID REFERENCES notes(id),
+    user_id UUID REFERENCES auth.users(id),
+    from_pos INTEGER,
+    to_pos INTEGER,
+    content TEXT,
+    parent_id UUID REFERENCES comments(id),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+  );
+  ```
 
-- [x] Create `src/services/voiceNoteProcessor.ts`
-  - [x] Export function `processVoiceNote(transcription: string): Promise<ProcessedNote>`
-  - [x] Use AI to: clean up filler words, add punctuation, extract title
-  - [x] Optionally summarize if > 500 words
-  - [x] Extract action items and tags
+- [ ] Add version history
+  - [ ] Store snapshots on significant changes (every 100 chars or 5 minutes)
+  - [ ] Create `note_versions` table
+  - [ ] UI to browse and restore versions
 
-- [x] Add "Voice Note" type indicator
-  - [x] Badge or icon on notes created from voice
-  - [x] Store original audio blob option
-  - [x] Playback original recording from note
-
-#### Phase 4: Voice Queries
-
-- [x] Enhance `src/components/AskNotesDialog.tsx`
-  - [x] Add microphone button next to text input
-  - [x] "Ask with voice" records question
-  - [x] Transcription feeds into `askNotes()` function
-  - [x] Optional: read answer aloud using Web Speech Synthesis
-
-- [x] Create voice command system
-  - [x] "Create note about..." → new note
-  - [x] "Find notes about..." → search
-  - [x] "What did I write about..." → askNotes query
-
-#### Phase 5: Background Voice Capture
-
-- [x] Implement "Dictation Mode"
-  - [x] Continuous recording with silence detection
-  - [x] Auto-split into paragraphs on long pauses (2+ seconds)
-  - [x] Real-time transcription display
-  - [x] Edit while dictating
-
-**New Infrastructure Required:**
-- OpenAI Whisper API (already integrated)
-- Optional: Web Speech API (browser built-in)
-- Optional: audio blob storage for playback
-- PWA updates for background recording permission
-
-**Migration Notes:**
-- No database changes required
-- New notes created from voice use existing Note type
-- Audio blobs stored in IndexedDB if playback feature enabled
-
-**Acceptance Criteria:**
-- Floating capture button always visible
-- Tap once to record, tap again to create note
-- Transcription completes within 10 seconds for 30-second clip
-- AI summarization optional but works
-- Voice queries return relevant results
-- Works on mobile browsers
+- [ ] Add "Follow" mode
+  - [ ] Button: "Follow [peer name]"
+  - [ ] Auto-scroll to peer's cursor position
+  - [ ] Disable on manual scroll
 
 **Estimated Effort:** 20 hours
 
-**Dependencies:** OpenAI API key for Whisper (already supported)
+**New Infrastructure Required:**
+- WebSocket server (Supabase Realtime or y-websocket)
+- Supabase tables: `comments`, `note_versions`
+- Y.js persistence layer
+
+**Migration Notes:**
+- Existing notes continue working offline
+- Collaboration is opt-in (only for shared notes)
+- Local-first: changes sync when online
+
+**Acceptance Criteria:**
+- Two users can edit same note simultaneously
+- Cursor positions visible in real-time
+- Text selections highlighted with user colors
+- Changes merge without conflicts
+- Offline edits sync on reconnect
+
+**Total Estimated Effort:** 56 hours (across all phases)
+
+**Dependencies:** Supabase project, WebSocket infrastructure
+
+---
+
+### 2. Knowledge Graph Publishing
+
+**Goal:** Export interactive knowledge graphs as shareable web pages or self-contained HTML files.
+
+**Tasks:**
+
+#### Phase 1: Static Export
+
+- [ ] Create `src/services/graphExport.ts`
+  - [ ] Export interface `GraphExportOptions { theme, includeContent, nodeLimit, selectedTags }`
+  - [ ] Export function `generateGraphHTML(notes: Note[], options: GraphExportOptions): string`
+    - Build D3.js force-directed graph
+    - Embed minified visualization code
+    - Include note excerpts in data
+    - Self-contained HTML (no external dependencies)
+  - [ ] Export function `generateGraphData(notes: Note[]): GraphData`
+    - Parse wiki links for edges
+    - Build nodes with { id, title, tags, excerpt }
+    - Build edges with { source, target }
+
+- [ ] Create D3 visualization template
+  - [ ] Reference existing `KnowledgeGraph.tsx` for layout logic
+  - [ ] Implement in vanilla JS for portability
+  - [ ] Features: zoom, pan, node click → show excerpt
+  - [ ] Minify and inline in export
+
+- [ ] Add export options
+  - [ ] Theme: 'light' | 'dark'
+  - [ ] Content: 'full' | 'excerpts' | 'titles-only'
+  - [ ] Node limit: number (for large graphs)
+  - [ ] Tag filter: string[] (only include notes with tags)
+
+- [ ] Create `src/components/PublishGraphDialog.tsx`
+  - [ ] Accept props: `notes: Note[]`, `isOpen: boolean`, `onClose: () => void`
+  - [ ] Preview pane showing graph render
+  - [ ] Options form: theme, content level, tag filter
+  - [ ] "Download HTML" button
+  - [ ] "Copy embed code" button (iframe snippet)
+
+- [ ] Add to BrainDashboard
+  - [ ] "Publish Graph" button in header
+  - [ ] Opens PublishGraphDialog
+
+**Acceptance Criteria:**
+- One-click export to standalone HTML file
+- Graph renders in modern browsers without internet
+- Click node shows note title and excerpt
+- File size < 2MB for 100-node graph
+- Light and dark themes work
+
+**Estimated Effort:** 16 hours
+
+---
+
+#### Phase 2: Hosted Publishing (Future)
+
+- [ ] Design hosting infrastructure
+  - [ ] Subdomain: `{username}.patchpad.pub`
+  - [ ] Static hosting: S3 + CloudFront or Vercel
+  - [ ] API: `POST /api/publish`, `GET /api/graphs/:id`
+
+- [ ] Create publish API endpoints
+  - [ ] `POST /api/publish` - upload graph HTML + metadata
+  - [ ] `GET /api/graphs/:username/:slug` - serve published graph
+  - [ ] `DELETE /api/graphs/:id` - unpublish
+
+- [ ] Add authentication for publishing
+  - [ ] Require logged-in user
+  - [ ] Rate limit: 10 publishes per day
+  - [ ] Storage limit: 10MB per user (free tier)
+
+- [ ] Add custom domain support
+  - [ ] CNAME record verification
+  - [ ] SSL provisioning via Let's Encrypt
+  - [ ] Premium feature gate
+
+- [ ] Add analytics
+  - [ ] Track views per graph
+  - [ ] Most-clicked nodes
+  - [ ] Referrer tracking
+  - [ ] Display in dashboard
+
+**Open Questions:**
+- Should graphs be editable after publishing or read-only snapshots?
+- How to handle private notes referenced in public graph?
+- Content moderation for hosted version?
+- Pricing tiers: free (50 nodes, patchpad.pub subdomain) vs premium (unlimited, custom domain)?
+
+**Estimated Effort:** 40+ hours
+
+**New Infrastructure Required:**
+- CDN/static hosting service
+- Domain management
+- Usage analytics database
+
+**Migration Notes:**
+- POC requires no backend
+- Hosted version is additive feature
+
+---
+
+### 3. Template Intelligence
+
+**Goal:** Detect note structure patterns and offer AI-powered templates that auto-fill from existing knowledge.
+
+**Tasks:**
+
+#### Phase 1: Pattern Detection
+
+- [ ] Create `src/services/templateDetection.ts`
+  - [ ] Export interface `NotePattern { name, frequency, structure, exampleNoteIds }`
+  - [ ] Export function `detectPatterns(notes: Note[]): NotePattern[]`
+    - Analyze note titles for common prefixes ("Meeting:", "Research:", etc.)
+    - Analyze content for structural patterns (headers, bullet lists, checkboxes)
+    - Group notes with similar structures
+    - Return patterns with 3+ occurrences
+  - [ ] Export function `extractStructure(content: string): NoteStructure`
+    - Parse markdown headers
+    - Identify bullet point sections
+    - Detect code blocks, quotes, etc.
+
+- [ ] Implement pattern matching heuristics
+  - [ ] Title prefix matching: "Meeting with X" → "Meeting" pattern
+  - [ ] Header structure: notes with same H2 headers
+  - [ ] Content length clustering: short (< 200 chars) vs long (> 1000 chars)
+
+#### Phase 2: Template System
+
+- [ ] Create `src/types/template.ts`
+  ```typescript
+  interface Template {
+    id: string;
+    name: string;
+    description: string;
+    structure: string; // Markdown with {{placeholders}}
+    placeholders: Placeholder[];
+    aiEnhanced: boolean;
+    createdAt: Date;
+  }
+
+  interface Placeholder {
+    key: string;
+    label: string;
+    type: 'text' | 'date' | 'note-reference' | 'ai-fill';
+    aiPrompt?: string; // For ai-fill type
+  }
+  ```
+
+- [ ] Create `src/services/templates.ts`
+  - [ ] Export function `getTemplates(): Template[]` - load from localStorage
+  - [ ] Export function `saveTemplate(template: Template): void`
+  - [ ] Export function `deleteTemplate(id: string): void`
+  - [ ] Export function `applyTemplate(template: Template, values: Record<string, string>): string`
+  - [ ] Export async function `aiEnhanceTemplate(template: Template, values: Record<string, string>, notes: Note[]): string`
+    - Fill {{ai:topic}} placeholders using semantic search
+    - Inject relevant note excerpts
+
+- [ ] Update database schema
+  ```typescript
+  // Add to src/db/index.ts
+  templates: EntityTable<Template, 'id'>
+  // Version 8
+  ```
+
+#### Phase 3: Template UI
+
+- [ ] Create `src/components/TemplateDialog.tsx`
+  - [ ] Show detected patterns as suggested templates
+  - [ ] Form to customize template structure
+  - [ ] Preview pane showing rendered template
+  - [ ] "Save Template" button
+
+- [ ] Create `src/components/TemplatePicker.tsx`
+  - [ ] Grid of saved templates
+  - [ ] Quick-fill form for placeholders
+  - [ ] "Create from template" button
+
+- [ ] Add template trigger detection
+  - [ ] In Editor, detect when title matches pattern ("Meeting with")
+  - [ ] Show toast: "Use Meeting template?"
+  - [ ] On accept, scaffold template structure
+
+#### Phase 4: AI-Powered Templates
+
+- [ ] Create "Research Summary" template
+  - [ ] Placeholders: `{{topic}}`, `{{ai:related_notes}}`, `{{ai:open_questions}}`
+  - [ ] On apply, search notes for topic
+  - [ ] Inject relevant excerpts and questions from conversations
+
+- [ ] Create "Meeting Prep" template
+  - [ ] Placeholders: `{{company}}`, `{{participants}}`, `{{ai:context}}`
+  - [ ] On apply, search for company/participant mentions
+  - [ ] Generate talking points from AI
+
+- [ ] Add command palette entry
+  ```typescript
+  { id: 'new-from-template', name: 'New Note from Template', action: () => setTemplatePickerOpen(true) }
+  ```
+
+**Open Questions:**
+- Should templates sync to cloud?
+- How to share templates between users?
+- Template marketplace/library?
+
+**Acceptance Criteria:**
+- App detects patterns in note creation
+- Users can save and reuse templates
+- AI-enhanced templates auto-fill with relevant context
+- Template triggers appear when typing matching titles
+
+**Estimated Effort:** 24 hours
+
+**New Infrastructure Required:**
+- Templates table in database (v8 migration)
+
+**Migration Notes:**
+- Templates stored locally by default
+- Sync to cloud as part of user data (future)
 
 ---
 
@@ -562,370 +773,475 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 ---
 
-### 1. Knowledge Graph as Product
+### 1. Ambient Knowledge Capture
 
-**Goal:** Enable users to publish their knowledge graph as an interactive, shareable web page.
+**Goal:** Create a system tray / menu bar companion app that captures knowledge passively from user activity.
 
 **Tasks:**
 
 #### Research Phase
 
-- [ ] Evaluate static site generators for graph export
-  - [ ] Option A: Generate standalone HTML + JS bundle
-  - [ ] Option B: Generate Astro/Next.js static site
-  - [ ] Option C: Embed in iframe with hosted renderer
+- [ ] Evaluate cross-platform frameworks
+  - [ ] Electron: Full desktop app, largest bundle, most mature
+  - [ ] Tauri: Rust-based, smaller bundle, newer
+  - [ ] Native: Separate apps per platform
 
-- [ ] Research graph visualization libraries for publishing
-  - [ ] D3.js force layout (most flexible)
-  - [ ] vis.js (good defaults)
-  - [ ] Cytoscape.js (academic features)
+- [ ] Research system integration APIs
+  - [ ] Clipboard monitoring: macOS Pasteboard, Windows Clipboard API
+  - [ ] Browser integration: WebExtension API
+  - [ ] Calendar access: Google Calendar API, Outlook API
 
-#### Phase 1: Export Static Graph
+- [ ] Determine privacy boundaries
+  - [ ] What data is captured automatically?
+  - [ ] What requires explicit user action?
+  - [ ] Local-only vs cloud storage
 
-- [ ] Create `src/services/graphExport.ts`
-  - [ ] Export function `generateInteractiveGraph(graph: KnowledgeGraph, notes: Note[]): string`
-  - [ ] Generate self-contained HTML file
-  - [ ] Embed minified visualization JS
-  - [ ] Include note excerpts as node tooltips
+#### Phase 1: Menu Bar App (Electron)
 
-- [ ] Create export options
-  - [ ] Theme: light/dark
-  - [ ] Privacy: include full content vs titles only
-  - [ ] Interactivity level: static image vs interactive
+- [ ] Initialize Electron project
+  ```bash
+  npm create electron-app@latest patchpad-companion
+  ```
 
-- [ ] Add "Publish Graph" button to BrainDashboard
-  - [ ] Opens PublishGraphDialog
-  - [ ] Preview rendered graph
-  - [ ] Download HTML file
+- [ ] Implement system tray icon
+  - [ ] Tray icon with status indicator
+  - [ ] Right-click menu: "New Note", "Search Notes", "Settings", "Quit"
+  - [ ] Left-click: open quick capture
 
-#### Phase 2: Hosted Publishing (Future)
+- [ ] Create quick capture window
+  - [ ] Floating window, always-on-top option
+  - [ ] Text input that creates note
+  - [ ] Global keyboard shortcut (configurable)
 
-- [ ] Design hosting infrastructure
-  - [ ] Subdomain: `{username}.patchpad.pub`
-  - [ ] Static file hosting (S3/CloudFront or Vercel)
-  - [ ] Custom domain support
+- [ ] Implement clipboard monitoring
+  - [ ] Watch clipboard for changes
+  - [ ] On URL copy, suggest "Save to notes?"
+  - [ ] On text copy (> 50 chars), suggest "Create note?"
+  - [ ] User can enable/disable monitoring
 
-- [ ] Create publish API
-  - [ ] `POST /api/publish` - upload graph
-  - [ ] `GET /{username}/{graph-id}` - view published graph
-  - [ ] Version history and rollback
+#### Phase 2: Calendar Integration
 
-- [ ] Add analytics
-  - [ ] View count
-  - [ ] Most-clicked nodes
-  - [ ] Referrer tracking
+- [ ] Add Google Calendar OAuth
+  - [ ] Connect Google account
+  - [ ] Fetch upcoming events
+  - [ ] Trigger 15-min-before notification
+
+- [ ] Create meeting prep notification
+  - [ ] Before meeting, search notes for attendee names
+  - [ ] Generate brief via `generateMeetingBrief()`
+  - [ ] Notification: "Meeting with X in 15 min - prep brief ready"
+
+#### Phase 3: Browser Extension
+
+- [ ] Create WebExtension (Chrome + Firefox)
+  - [ ] Popup with quick note entry
+  - [ ] Right-click context menu: "Save to PatchPad"
+  - [ ] Sync with main app via API or localStorage
+
+- [ ] Implement page capture
+  - [ ] Save URL + title + selected text
+  - [ ] Optional: full page content as markdown
+  - [ ] Tag with "web-clip"
 
 **Open Questions:**
-- Should published graphs be editable or read-only?
-- How to handle note privacy (some notes public, some private)?
-- Monetization: free tier limits? Premium custom domains?
-- How to prevent abuse (hosting harmful content)?
+- Should companion app store data locally or require sync?
+- How to authenticate companion app with main app?
+- Privacy: Should clipboard monitoring be opt-in per-content-type?
+- Distribution: App stores vs direct download?
 
 **Proof of Concept Scope:**
-- Export knowledge graph as standalone HTML file
-- Interactive: click nodes to see note excerpt
-- Download and host anywhere (GitHub Pages, Netlify)
-- No backend required for MVP
+- Electron tray app with quick capture
+- Clipboard URL detection with "Save" toast
+- No calendar integration (manual for POC)
 
 **Acceptance Criteria:**
-- One-click export to interactive HTML
-- Graph renders correctly in modern browsers
-- Clicking node shows note title and excerpt
-- File size < 2MB for 100-node graph
-- Works offline once loaded
+- Tray app runs in background
+- Global hotkey captures thoughts
+- URLs auto-detected and offered for save
+- Notes sync with main PatchPad app
 
-**Estimated Effort:** 16 hours (POC), 60+ hours (hosted platform)
+**Estimated Effort:** 40 hours (POC), 100+ hours (full feature)
 
-**Dependencies:** None for POC; backend infrastructure for hosted version
+**Dependencies:**
+- Electron or Tauri framework
+- OAuth setup for calendar providers
+- Browser extension review process (if published)
 
 ---
 
-### 2. AI Research Partner
+### 2. Knowledge Agents
 
-**Goal:** Transform AI from one-shot actions to a conversational research assistant that knows your notes.
+**Goal:** Evolve the AI Research Partner into multiple specialized agents that proactively assist with knowledge work.
 
 **Tasks:**
 
 #### Research Phase
 
-- [x] Evaluate conversation memory approaches
-  - [x] Option A: Include all notes in context (limited by token count)
-  - [x] Option B: RAG with vector embeddings
-  - [x] Option C: Hierarchical summarization
+- [ ] Design agent architecture
+  - [ ] How do agents communicate with each other?
+  - [ ] How are tasks delegated and monitored?
+  - [ ] How do users configure agent permissions?
 
-- [x] Research vector database options
-  - [x] In-browser: vectra, hnswlib-wasm
-  - [x] Cloud: Pinecone, Supabase pgvector
+- [ ] Evaluate background processing
+  - [ ] Service Worker for background execution
+  - [ ] Scheduled tasks via cloud functions
+  - [ ] Local daemon process
 
-#### Phase 1: Conversational AI Interface
+#### Phase 1: Agent Framework
 
-- [x] Create `src/components/ResearchPartner/ChatInterface.tsx`
-  - [x] Full-screen or sidebar chat view
-  - [x] Message history with user/AI turns
-  - [x] Typing indicator
-  - [x] "New conversation" button
+- [ ] Create `src/services/agentFramework.ts`
+  - [ ] Export interface `Agent { id, name, description, capabilities, schedule, permissions }`
+  - [ ] Export interface `AgentTask { id, agentId, type, status, result, createdAt }`
+  - [ ] Export function `runAgent(agentId: string): Promise<AgentResult>`
+  - [ ] Export function `scheduleAgent(agentId: string, cron: string): void`
 
-- [x] Create `src/services/researchPartner.ts`
-  - [x] Maintain conversation history in memory
-  - [x] Build context from relevant notes
-  - [x] Format system prompt with note knowledge
+- [ ] Create agent registry
+  - [ ] `archivist`: Organizes and connects notes
+  - [ ] `researcher`: Monitors topics and creates briefings
+  - [ ] `writer`: Transforms notes into documents
 
-- [x] Implement basic conversation flow
-  - [x] User asks question
-  - [x] AI searches notes for relevant context
-  - [x] AI responds with citations `[Note: Title]`
-  - [x] User can follow up
+- [ ] Implement task queue
+  - [ ] Store pending tasks in IndexedDB
+  - [ ] Process during idle time (requestIdleCallback)
+  - [ ] Notify user on completion
 
-#### Phase 2: Note-Aware Context
+#### Phase 2: Archivist Agent
 
-- [x] Implement semantic search
-  - [x] Generate embeddings for all notes (on-demand or background)
-  - [x] Store embeddings in IndexedDB
-  - [x] Search by cosine similarity
+- [ ] Create `src/agents/archivist.ts`
+  - [ ] Capability: `suggestConnections` - find notes that should be linked
+  - [ ] Capability: `detectDuplicates` - find near-duplicate notes
+  - [ ] Capability: `surfaceContradictions` - find conflicting information
+  - [ ] Capability: `suggestMerges` - identify notes to combine
 
-- [x] Create `src/services/embeddings.ts`
-  - [x] Export function `generateEmbedding(text: string): Promise<number[]>`
-  - [x] Use OpenAI text-embedding-ada-002 or similar
-  - [x] Cache embeddings per note (invalidate on update)
+- [ ] Implement overnight processing
+  - [ ] Run when app idle for 30+ minutes
+  - [ ] Or: run at scheduled time (2am local)
+  - [ ] Store suggestions in `agentSuggestions` table
 
-- [x] Create `src/services/semanticSearch.ts`
-  - [x] Export function `searchNotes(query: string, k: number): Promise<Note[]>`
-  - [x] Return top-k most similar notes
-  - [x] Include relevance score
+- [ ] Create suggestions UI
+  - [ ] Panel in Second Brain Dashboard
+  - [ ] List suggestions by type
+  - [ ] One-click apply or dismiss
 
-#### Phase 3: Proactive Assistance
+#### Phase 3: Researcher Agent
 
-- [x] Implement "Research Brief" generation
-  - [x] "Prepare me for meeting with [Company]"
-  - [x] AI searches notes for company mentions
-  - [x] Generates structured brief with talking points
-  - [x] Creates new note with brief
+- [ ] Create `src/agents/researcher.ts`
+  - [ ] Capability: `monitorTopic` - track external sources for topic
+  - [ ] Capability: `createBriefing` - generate daily/weekly briefings
+  - [ ] Capability: `findGaps` - identify knowledge gaps
 
-- [x] Add task creation from conversation
-  - [x] AI can suggest creating tasks
-  - [x] "Add as task" button on suggestions
-  - [x] Tasks linked to relevant notes
+- [ ] Add topic monitoring
+  - [ ] User configures topics of interest
+  - [ ] Agent periodically searches web (if enabled)
+  - [ ] Creates "Research Update" notes
 
-- [x] Implement follow-up suggestions
-  - [x] After AI response, suggest related questions
-  - [x] "You might also want to know..."
-  - [x] Based on note connections
+- [ ] Implement briefing generation
+  - [ ] Daily: summarize changes to notes
+  - [ ] Weekly: synthesize week's learning
+  - [ ] Store as notes with "agent-briefing" tag
 
-#### Phase 4: Long-term Memory (Advanced)
+#### Phase 4: Writer Agent
 
-- [x] Implement conversation persistence
-  - [x] Save conversation history to IndexedDB
-  - [x] Resume previous conversations
-  - [x] Reference past conversations in new ones
+- [ ] Create `src/agents/writer.ts`
+  - [ ] Capability: `draftDocument` - compile notes into document
+  - [ ] Capability: `suggestOutline` - propose structure for topic
+  - [ ] Capability: `refineText` - improve writing quality
 
-- [x] Add "AI knows" summary
-  - [x] Dashboard showing what AI has learned
-  - [x] Key facts extracted from notes
-  - [x] User can correct or remove facts
+- [ ] Implement document generation
+  - [ ] User selects notes to include
+  - [ ] Agent proposes outline
+  - [ ] Agent drafts sections from note content
+  - [ ] User reviews and edits
+
+- [ ] Add export formats
+  - [ ] Markdown document
+  - [ ] Google Docs (via API)
+  - [ ] PDF (via puppeteer/playwright)
 
 **Open Questions:**
-- How much note content to include in AI context? (cost vs quality)
-- Should AI have write access to notes or only suggest edits?
-- Privacy: should conversations be synced to cloud?
-- How to handle AI hallucinations about note content?
+- How much autonomous action should agents have?
+- How to prevent agents from overwhelming users with suggestions?
+- Should agents have "budgets" (max API calls per day)?
+- How to handle agent errors gracefully?
 
 **Proof of Concept Scope:**
-- Chat interface with conversation history (session only)
-- AI searches notes before responding
-- Responses cite source notes
-- Basic follow-up conversation works
+- Archivist agent with connection suggestions
+- Manual trigger only (no scheduling)
+- Suggestions displayed in dashboard
 
 **Acceptance Criteria:**
-- Ask "What do I know about X?" and get answer from notes
-- AI cites specific notes in responses
-- Can have multi-turn conversations
-- Response time < 5 seconds
-- Clear when AI doesn't find relevant notes
+- At least one agent runs and produces useful suggestions
+- Suggestions are actionable (one-click apply)
+- Users can enable/disable agents
+- Agents respect rate limits and budgets
 
-**Estimated Effort:** 24 hours (POC), 80+ hours (full feature)
+**Estimated Effort:** 60 hours (POC with one agent), 150+ hours (full agent ecosystem)
 
-**Dependencies:** OpenAI API (for embeddings and chat), or Anthropic API
+**Dependencies:**
+- Background processing solution
+- Additional API budget for agent operations
+- User permission system
 
 ---
 
 ## Moonshot
 
-**"Memory Palace as a Service"**
+**"Externalized Cognition" - Thinking Sessions as Recorded Artifacts**
 
-*A spatial VR/AR environment where you literally walk through your knowledge*
+*A system that captures not just what you know, but how you came to know it*
 
 ---
 
-### Phase 1: Foundation - Virtual Library (Web 3D)
+### Phase 1: Foundation - Session Recording
 
-**Goal:** Create a 3D navigable space representing your notes as a virtual library.
+**Goal:** Record user activity on the canvas as a temporal trace that can be replayed.
 
 **Tasks:**
 
-- [ ] Set up Three.js environment
-  ```bash
-  npm install three @types/three
-  npm install @react-three/fiber @react-three/drei
+- [ ] Design session event model
+  ```typescript
+  interface ThinkingEvent {
+    type: 'note-move' | 'note-create' | 'note-edit' | 'note-connect' | 'viewport-change' | 'ai-query' | 'ai-response';
+    timestamp: number; // ms since session start
+    payload: any; // type-specific data
+  }
+
+  interface ThinkingSession {
+    id: string;
+    startedAt: Date;
+    endedAt: Date | null;
+    events: ThinkingEvent[];
+    canvasSnapshot: CanvasState; // Initial state
+    annotations: SessionAnnotation[];
+  }
   ```
 
-- [ ] Create `src/components/MemoryPalace/Scene.tsx`
-  - [ ] Initialize Three.js scene with React Three Fiber
-  - [ ] Add ambient lighting and shadows
-  - [ ] Implement first-person camera controls
-  - [ ] WASD movement, mouse look
+- [ ] Create `src/services/sessionRecorder.ts`
+  - [ ] Export function `startRecording(): string` - returns sessionId
+  - [ ] Export function `stopRecording(sessionId: string): ThinkingSession`
+  - [ ] Export function `recordEvent(sessionId: string, event: ThinkingEvent): void`
+  - [ ] Buffer events in memory, flush to IndexedDB periodically
 
-- [ ] Create `src/components/MemoryPalace/Library.tsx`
-  - [ ] Generate 3D room geometry
-  - [ ] Bookshelves along walls
-  - [ ] Central reading table
-  - [ ] Skybox/environment
+- [ ] Instrument canvas for recording
+  - [ ] Hook into `saveNoteCanvasPosition()` - record 'note-move'
+  - [ ] Hook into `createNote()` - record 'note-create'
+  - [ ] Hook into wiki link creation - record 'note-connect'
+  - [ ] Debounce rapid events (< 100ms)
 
-- [ ] Create `src/components/MemoryPalace/Bookshelf.tsx`
-  - [ ] Render shelf unit with slots for books
-  - [ ] Each folder = one bookshelf section
-  - [ ] Unfiled notes on central table
-
-- [ ] Create `src/components/MemoryPalace/Book.tsx`
-  - [ ] 3D book model with spine label (note title)
-  - [ ] Color based on tags or folder
-  - [ ] Hover to see preview
-  - [ ] Click to "open" (shows note content)
-
-- [ ] Implement book interactions
-  - [ ] Raycasting for hover/click detection
-  - [ ] "Pull out book" animation
-  - [ ] Book opens to show content as 3D pages or overlay
-
-**Estimated Effort:** 40 hours
-
----
-
-### Phase 2: Core Feature - Spatial Navigation
-
-**Goal:** Enable meaningful spatial navigation with rooms representing projects and paths showing history.
-
-**Tasks:**
-
-- [ ] Create room generation system
-  - [ ] Each top-level folder = one room
-  - [ ] Doorways connect related folders
-  - [ ] Room size based on note count
-
-- [ ] Implement navigation map
-  - [ ] Mini-map showing room layout
-  - [ ] Current position indicator
-  - [ ] Click to teleport
-
-- [ ] Create `src/components/MemoryPalace/ConnectionBeam.tsx`
-  - [ ] Visualize wiki links as light beams between books
-  - [ ] Different colors for different relationship types
-  - [ ] Can "follow" beams to navigate
-
-- [ ] Implement breadcrumb trail
-  - [ ] Show path of recently visited notes
-  - [ ] Visual trail in 3D space
-  - [ ] Can retrace steps
-
-- [ ] Add spatial search
-  - [ ] Voice or text search
-  - [ ] Matching books glow/highlight
-  - [ ] Path illuminates to nearest match
-
-**Estimated Effort:** 60 hours
-
----
-
-### Phase 3: Full Vision - Immersive Knowledge
-
-**Goal:** Full VR/AR support with voice interaction and collaborative spaces.
-
-**Tasks:**
-
-- [ ] Add WebXR support
-  ```bash
-  npm install @react-three/xr
+- [ ] Add session storage
+  ```typescript
+  // Add to src/db/index.ts - version 9
+  sessions: EntityTable<ThinkingSession, 'id'>
   ```
-  - [ ] VR headset compatibility (Quest, etc.)
-  - [ ] AR mode for mobile
-  - [ ] Hand tracking for interactions
 
-- [ ] Implement voice commands
-  - [ ] "Show me notes about X" - highlights relevant books
-  - [ ] "Create new note" - spawns floating note card
-  - [ ] "Connect these" - draws link between held items
+- [ ] Create recording UI
+  - [ ] "Start Recording" button in canvas toolbar
+  - [ ] Recording indicator (red dot, duration counter)
+  - [ ] "Stop Recording" saves session
 
-- [ ] Create collaborative mode
-  - [ ] Multiple users in same space
-  - [ ] Avatar representations
-  - [ ] Voice chat
-  - [ ] Shared whiteboard
+**Estimated Effort:** 16 hours
 
-- [ ] Add spatial audio
-  - [ ] Notes can have audio annotations
-  - [ ] Spatialized playback based on position
-  - [ ] Ambient library sounds
+---
 
-- [ ] Implement memory techniques
-  - [ ] "Method of loci" mode
-  - [ ] Place notes at specific spatial positions
-  - [ ] Guided tours for memorization
-  - [ ] Spaced repetition integration
+### Phase 2: Core Feature - Session Playback
+
+**Goal:** Replay thinking sessions as animated visualizations.
+
+**Tasks:**
+
+- [ ] Create `src/components/SessionPlayer.tsx`
+  - [ ] Accept props: `session: ThinkingSession`, `onClose: () => void`
+  - [ ] Playback controls: play, pause, speed (0.5x, 1x, 2x, 4x), seek
+  - [ ] Timeline scrubber showing event density
+  - [ ] Display current time and total duration
+
+- [ ] Implement canvas replay
+  - [ ] Load initial canvasSnapshot
+  - [ ] Apply events in sequence at recorded timestamps
+  - [ ] Animate note movements (interpolate positions)
+  - [ ] Highlight newly created notes
+  - [ ] Show connection lines being drawn
+
+- [ ] Create `src/services/sessionPlayback.ts`
+  - [ ] Export class `SessionPlayer`
+  - [ ] Method `play()` - start playback loop
+  - [ ] Method `pause()` - stop at current position
+  - [ ] Method `seek(timestamp: number)` - jump to point
+  - [ ] Method `setSpeed(multiplier: number)`
+  - [ ] Use `requestAnimationFrame` for smooth playback
+
+- [ ] Add AI query visualization
+  - [ ] When 'ai-query' event, show query text
+  - [ ] When 'ai-response' event, animate response appearing
+  - [ ] Sidebar panel for AI conversation during playback
+
+- [ ] Create session library view
+  - [ ] List past sessions with date, duration, note count
+  - [ ] Preview thumbnail (canvas at midpoint)
+  - [ ] Search/filter sessions
+
+**Estimated Effort:** 24 hours
+
+---
+
+### Phase 3: Session Intelligence
+
+**Goal:** Add annotations, sharing, and insights to thinking sessions.
+
+**Tasks:**
+
+- [ ] Create `src/components/SessionAnnotation.tsx`
+  - [ ] User can pause and add annotation at any point
+  - [ ] Annotations: text note, highlight, voice memo
+  - [ ] Display annotations as markers on timeline
+
+- [ ] Implement annotation system
+  ```typescript
+  interface SessionAnnotation {
+    id: string;
+    timestamp: number;
+    type: 'note' | 'highlight' | 'voice';
+    content: string;
+    canvasPosition?: { x: number; y: number }; // If attached to location
+  }
+  ```
+
+- [ ] Add session sharing
+  - [ ] Export session as self-contained HTML (like graph export)
+  - [ ] Viewer: play-only, no editing
+  - [ ] Include all referenced notes (excerpts only for privacy)
+
+- [ ] Create session insights
+  - [ ] "You spent 10 minutes on this area before breakthrough"
+  - [ ] "You revisited this note 5 times"
+  - [ ] "Ideas clustered in 3 regions"
+  - [ ] Heatmap overlay showing activity density
+
+- [ ] AI session analysis
+  - [ ] "What was I trying to figure out?"
+  - [ ] Generate summary of thinking process
+  - [ ] Suggest: "You might want to explore X more"
+
+**Estimated Effort:** 32 hours
+
+---
+
+### Phase 4: Full Vision - Collaborative Thinking
+
+**Goal:** Share thinking sessions with others for collaborative sense-making.
+
+**Tasks:**
+
+- [ ] Enable live session broadcasting
+  - [ ] "Broadcast" mode: others watch your thinking live
+  - [ ] Viewer list with presence indicators
+  - [ ] Chat sidebar for questions/comments
+
+- [ ] Add collaborative annotation
+  - [ ] Multiple people can annotate same session
+  - [ ] Color-coded by contributor
+  - [ ] "Annotation conversation" threads
+
+- [ ] Create thinking session templates
+  - [ ] "Brainstorming" - optimized for rapid idea capture
+  - [ ] "Problem-solving" - structured with problem statement
+  - [ ] "Review" - for going through existing notes
+  - [ ] Templates set canvas layout and suggested flow
+
+- [ ] Implement session comparison
+  - [ ] Compare two sessions on same topic
+  - [ ] Visualize how thinking evolved
+  - [ ] "What did you learn between sessions?"
 
 **Open Questions:**
-- What hardware to target? (Quest 2/3, Vision Pro, phone AR)
-- How to make 3D navigation faster than 2D for most tasks?
-- Performance with 1000+ notes?
-- Motion sickness considerations?
+- How much session data can be stored before performance issues?
+- Should sessions be synced to cloud?
+- Privacy: How to handle sessions containing sensitive notes?
+- How to make playback performant for long (30+ min) sessions?
 
 **Proof of Concept Scope:**
-- Single 3D room with bookshelves
-- Notes as clickable books
-- Basic WASD + mouse navigation
-- No VR required - desktop browser only
+- Record canvas movements during a session
+- Basic playback with play/pause
+- Simple timeline scrubber
+- Export as JSON for analysis
 
-**Estimated Effort:** 200+ hours (full vision)
+**Acceptance Criteria:**
+- Can start/stop recording on canvas
+- Recorded sessions replay accurately
+- Playback speed is adjustable
+- Sessions persist across app restarts
+
+**Total Estimated Effort:** 80 hours (basic recording + playback), 160+ hours (full vision)
 
 **Dependencies:**
-- Three.js / React Three Fiber
-- WebXR API (for VR)
-- Real-time multiplayer infrastructure (for collaboration)
+- IndexedDB space for session storage
+- WebSocket for live broadcasting
+- Additional UI work for player controls
 
 ---
 
 ## Suggested Starting Point
 
-### Recommended First Task: **Link Suggestions Toast** (Horizon 1.1)
+### Recommended First Task: **Second Brain Dashboard** (Horizon 1.1)
 
 **Why start here:**
 
-1. **Highest signal-to-effort ratio**: This feature directly validates the core value proposition of PatchPad (building a connected knowledge graph) with minimal development time (~4 hours).
+1. **Immediate user value**: Users currently open PatchPad to a blank slate or last note. The dashboard makes every app launch feel intelligent and personalized.
 
-2. **Uses existing infrastructure**: The `findRelatedNotes()` function and concept extraction in `brain.ts` are already implemented. You're essentially wiring existing capabilities to the UI.
+2. **Leverages existing infrastructure**: All data is already collected (notes, timestamps, concepts, conversations). You're just surfacing it.
 
-3. **Immediately visible value**: Users will experience the "magic moment" of PatchPad automatically recognizing connections. This is the feature that converts casual users to power users.
+3. **Low technical risk**: No new dependencies, no database migrations, no external services. Pure React component work.
 
-4. **Low risk**: No database changes, no new dependencies, no breaking changes. If it doesn't resonate, easy to remove.
+4. **Sets up for other features**: The analytics service created here (`dashboardAnalytics.ts`) will power the Thinking Timeline and other features.
 
-5. **Validates before Canvas Mode**: Before investing 24+ hours in Canvas Mode, you want to confirm users care about note connections. Link Suggestions tests this assumption cheaply.
+5. **Validates vision**: If users engage with "Brewing Ideas" and "Fading Memories", it validates that PatchPad's future is about intelligence, not just storage.
 
 **What it unblocks:**
+- Pattern for surfacing insights from existing data
+- Analytics service reusable across features
+- User engagement metrics for prioritizing roadmap
+- Foundation for Template Intelligence (pattern detection)
 
-- Validates demand for automatic linking → informs priority of Canvas Mode
-- Creates more `[[wiki links]]` in notes → richer knowledge graph
-- Teaches users about existing RelatedNotes feature → increases feature discovery
-- Sets up hook patterns (`useLinkSuggestions`) reusable for other idle-time features
+**Estimated time to first demo:** 4 hours (core dashboard with static data), 8 hours (full feature with live data)
 
 **How to start:**
 
 ```bash
-# Create the hook file
-touch src/hooks/useLinkSuggestions.ts
+# Create the dashboard component
+touch src/components/SecondBrainDashboard.tsx
 
-# Create the toast component
-touch src/components/LinkSuggestionToast.tsx
+# Create the analytics service
+touch src/services/dashboardAnalytics.ts
+touch src/services/dashboardAnalytics.test.ts
 
 # Run dev server
 npm run dev
 ```
 
-Then implement the hook following the task checklist above, starting with simple exact title matching before adding concept matching.
+Then implement in order:
+1. Basic dashboard layout with mock data
+2. `getMostEditedNotes()` with real data
+3. `getUnconnectedNotes()` with connection suggestions
+4. `getFadingNotes()` with concept cross-reference
+5. Integration with App.tsx and command palette
+
+**Success metric:** Users spend >30 seconds on dashboard instead of immediately closing it.
+
+---
+
+## Quick Reference: File Paths
+
+| Feature | Key Files |
+|---------|-----------|
+| Main App | `src/App.tsx` |
+| Note Types | `src/types/note.ts` |
+| Database | `src/db/index.ts` |
+| AI Service | `src/services/ai.ts` |
+| Brain/Concepts | `src/services/brain.ts` |
+| Embeddings | `src/services/embeddings.ts` |
+| Semantic Search | `src/services/semanticSearch.ts` |
+| Research Partner | `src/services/researchPartner.ts` |
+| Canvas | `src/services/canvas.ts`, `src/components/Canvas/` |
+| Sync | `src/services/sync.ts`, `src/services/syncEngine.ts` |
+| Notes Hook | `src/hooks/useNotes.ts` |
+| Supabase Config | `src/config/supabase.ts` |
