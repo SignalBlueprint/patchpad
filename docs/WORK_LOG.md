@@ -2,6 +2,50 @@
 
 ---
 
+## AI Research Partner (Horizon 3.2)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/services/embeddings.ts` — New service for vector embeddings with OpenAI API, caching in IndexedDB, cosine similarity
+- `src/services/semanticSearch.ts` — Semantic and hybrid search with keyword fallback, relevance scoring
+- `src/services/researchPartner.ts` — Conversational AI service with conversation persistence, citations, research briefs
+- `src/components/ResearchPartner/ChatInterface.tsx` — Full-screen chat interface with sidebar, conversation list, message history
+- `src/components/ResearchPartner/index.ts` — Barrel export for Research Partner components
+- `src/db/index.ts` — Added versions 6 and 7 for embeddings and conversations tables
+- `src/App.tsx` — Integrated Research Partner with state, command palette entry, keyboard shortcut (Ctrl+Shift+P)
+
+**Implementation Notes:**
+- Embeddings service uses OpenAI text-embedding-3-small model (1536 dimensions)
+- Embeddings cached in IndexedDB `embeddings` table with noteId and contentHash for invalidation
+- Cosine similarity for vector comparison
+- Semantic search returns top-k most similar notes with relevance scores
+- Hybrid search combines semantic similarity with keyword matching for better results
+- Research Partner maintains conversation history in IndexedDB `conversations` table
+- Each message includes optional citations linking to source notes
+- System prompt includes context from relevant notes found via semantic search
+- ChatInterface provides:
+  - Sidebar with conversation list and "New Conversation" button
+  - Message history with user/AI turns and typing indicator
+  - Citation links that navigate to source notes
+  - Follow-up suggestions after AI responses
+  - Responsive design with collapsible sidebar on mobile
+- Command palette entry "Research Partner" and keyboard shortcut Ctrl+Shift+P
+- Research brief generation for summarizing notes about a topic
+- Quick answer mode for single-turn questions
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- Build succeeds (`npm run build`)
+- All acceptance criteria for Phases 1-2 met:
+  - Chat interface with conversation history
+  - AI searches notes before responding
+  - Responses cite source notes with `[Note: Title]` format
+  - Multi-turn conversations work
+  - Semantic search with embeddings cached in IndexedDB
+
+**Note:** Phases 3 (Proactive Assistance) and 4 (Long-term Memory) are deferred to future work.
+
+---
+
 ## Sync & Collaboration Layer (Horizon 2.2)
 **Completed:** 2026-01-06
 **Files Changed:**

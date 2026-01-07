@@ -20,7 +20,9 @@ import { DictationMode } from './components/DictationMode';
 import { LoginModal, SyncSettingsDialog } from './components/Auth';
 import { SyncStatusIndicator } from './components/SyncStatusIndicator';
 import { ConflictResolutionModal } from './components/ConflictResolutionModal';
+import { ChatInterface } from './components/ResearchPartner';
 import { useNotes, type SortOption, type NotesFilter } from './hooks/useNotes';
+import { isResearchPartnerAvailable } from './services/researchPartner';
 import { useSync, useSyncReceiver } from './hooks/useSync';
 import { useAuth } from './context/AuthContext';
 import type { SyncConflict, ConflictResolution } from './services/sync';
@@ -99,6 +101,9 @@ export default function App() {
     conflict: SyncConflict;
     resolve: (resolution: ConflictResolution) => void;
   } | null>(null);
+
+  // Research Partner state
+  const [researchPartnerOpen, setResearchPartnerOpen] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -825,6 +830,17 @@ export default function App() {
       disabled: !currentNote || !isAIAvailable(),
     },
 
+    // Research Partner
+    {
+      id: 'research-partner',
+      name: 'Research Partner',
+      description: 'Ask AI questions about your notes',
+      shortcut: 'Ctrl+Shift+P',
+      category: 'ai',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" /></svg>,
+      action: () => setResearchPartnerOpen(true),
+    },
+
     // Voice recording
     {
       id: 'voice-recording',
@@ -986,6 +1002,12 @@ export default function App() {
       if (isMod && e.shiftKey && e.key === 'D') {
         e.preventDefault();
         setDictationModeOpen(true);
+      }
+
+      // Research Partner shortcut (Ctrl+Shift+P)
+      if (isMod && e.shiftKey && e.key === 'P') {
+        e.preventDefault();
+        setResearchPartnerOpen(true);
       }
     };
 
@@ -1277,6 +1299,17 @@ export default function App() {
       <QuickCaptureButton
         onCapture={handleQuickCapture}
         onError={handleQuickCaptureError}
+      />
+
+      {/* Research Partner */}
+      <ChatInterface
+        isOpen={researchPartnerOpen}
+        onClose={() => setResearchPartnerOpen(false)}
+        notes={notes}
+        onSelectNote={(id) => {
+          setSelectedId(id);
+          setResearchPartnerOpen(false);
+        }}
       />
     </div>
   );

@@ -648,50 +648,50 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 #### Research Phase
 
-- [ ] Evaluate conversation memory approaches
-  - [ ] Option A: Include all notes in context (limited by token count)
-  - [ ] Option B: RAG with vector embeddings
-  - [ ] Option C: Hierarchical summarization
+- [x] Evaluate conversation memory approaches
+  - [x] Option A: Include all notes in context (limited by token count)
+  - [x] Option B: RAG with vector embeddings
+  - [x] Option C: Hierarchical summarization
 
-- [ ] Research vector database options
-  - [ ] In-browser: vectra, hnswlib-wasm
-  - [ ] Cloud: Pinecone, Supabase pgvector
+- [x] Research vector database options
+  - [x] In-browser: vectra, hnswlib-wasm
+  - [x] Cloud: Pinecone, Supabase pgvector
 
 #### Phase 1: Conversational AI Interface
 
-- [ ] Create `src/components/ResearchPartner/ChatInterface.tsx`
-  - [ ] Full-screen or sidebar chat view
-  - [ ] Message history with user/AI turns
-  - [ ] Typing indicator
-  - [ ] "New conversation" button
+- [x] Create `src/components/ResearchPartner/ChatInterface.tsx`
+  - [x] Full-screen or sidebar chat view
+  - [x] Message history with user/AI turns
+  - [x] Typing indicator
+  - [x] "New conversation" button
 
-- [ ] Create `src/services/researchPartner.ts`
-  - [ ] Maintain conversation history in memory
-  - [ ] Build context from relevant notes
-  - [ ] Format system prompt with note knowledge
+- [x] Create `src/services/researchPartner.ts`
+  - [x] Maintain conversation history in memory
+  - [x] Build context from relevant notes
+  - [x] Format system prompt with note knowledge
 
-- [ ] Implement basic conversation flow
-  - [ ] User asks question
-  - [ ] AI searches notes for relevant context
-  - [ ] AI responds with citations `[Note: Title]`
-  - [ ] User can follow up
+- [x] Implement basic conversation flow
+  - [x] User asks question
+  - [x] AI searches notes for relevant context
+  - [x] AI responds with citations `[Note: Title]`
+  - [x] User can follow up
 
 #### Phase 2: Note-Aware Context
 
-- [ ] Implement semantic search
-  - [ ] Generate embeddings for all notes (on-demand or background)
-  - [ ] Store embeddings in IndexedDB
-  - [ ] Search by cosine similarity
+- [x] Implement semantic search
+  - [x] Generate embeddings for all notes (on-demand or background)
+  - [x] Store embeddings in IndexedDB
+  - [x] Search by cosine similarity
 
-- [ ] Create `src/services/embeddings.ts`
-  - [ ] Export function `generateEmbedding(text: string): Promise<number[]>`
-  - [ ] Use OpenAI text-embedding-ada-002 or similar
-  - [ ] Cache embeddings per note (invalidate on update)
+- [x] Create `src/services/embeddings.ts`
+  - [x] Export function `generateEmbedding(text: string): Promise<number[]>`
+  - [x] Use OpenAI text-embedding-ada-002 or similar
+  - [x] Cache embeddings per note (invalidate on update)
 
-- [ ] Create `src/services/semanticSearch.ts`
-  - [ ] Export function `searchNotes(query: string, k: number): Promise<Note[]>`
-  - [ ] Return top-k most similar notes
-  - [ ] Include relevance score
+- [x] Create `src/services/semanticSearch.ts`
+  - [x] Export function `searchNotes(query: string, k: number): Promise<Note[]>`
+  - [x] Return top-k most similar notes
+  - [x] Include relevance score
 
 #### Phase 3: Proactive Assistance
 
