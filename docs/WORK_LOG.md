@@ -2,6 +2,56 @@
 
 ---
 
+## Sync & Collaboration Layer (Horizon 2.2)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/config/supabase.ts` — New Supabase client configuration with database types, note converters, and setup SQL
+- `src/context/AuthContext.tsx` — Authentication context provider with sign in/up/out, OAuth, password reset
+- `src/components/Auth/LoginModal.tsx` — Login/signup form with email/password and OAuth buttons
+- `src/components/Auth/SyncSettingsDialog.tsx` — Dialog for configuring Supabase credentials and viewing sync status
+- `src/components/Auth/index.ts` — Barrel export for Auth components
+- `src/services/sync.ts` — Core sync service with push/pull, conflict detection, real-time subscription
+- `src/services/syncEngine.ts` — Background sync engine with offline queue, connection detection, event system
+- `src/components/ConflictResolutionModal.tsx` — Side-by-side conflict comparison with Keep Local/Remote/Both options
+- `src/components/SyncStatusIndicator.tsx` — Visual indicator showing sync status, pending count, online state
+- `src/hooks/useSync.ts` — React hooks for sync operations and receiving remote changes
+- `src/hooks/useNotes.ts` — Added `mergeNote` function for syncing remote notes
+- `src/main.tsx` — Wrapped app in AuthProvider, initialize sync engine on startup
+- `src/App.tsx` — Integrated login modal, sync settings, conflict resolution, status indicator, command palette entries
+
+**Implementation Notes:**
+- Supabase client with typed database schema for notes and sync_queue tables
+- Full SQL schema provided in SETUP_SQL constant for easy database setup
+- Row Level Security (RLS) policies ensure users can only access their own data
+- AuthContext provides user/session state and auth methods app-wide
+- OAuth support for Google and GitHub sign-in
+- Sync engine runs background sync loop every 30 seconds when authenticated
+- Offline queue stores operations in localStorage when disconnected
+- Queue replays automatically when connection is restored
+- Real-time subscription via Supabase channels for instant updates
+- Conflict detection compares timestamps and content
+- Conflict resolution modal shows word-level diff highlighting
+- "Keep Both" option creates a copy with "-conflict" suffix
+- SyncStatusIndicator shows: not configured, signed out, syncing, synced, pending, offline, error
+- Command palette entries for "Sync Settings" and "Sign In/Out"
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- Build succeeds (`npm run build`)
+- All acceptance criteria for Phases 1-3 met:
+  - Supabase client configured with typed database schema
+  - sync.ts exports syncToCloud, pullFromCloud, resolveConflicts
+  - LoginModal with email/password, OAuth, and continue offline
+  - AuthContext provides auth state to entire app
+  - SyncEngine with 30-second background loop
+  - Offline queue with localStorage persistence
+  - Online/offline detection with status indicator
+  - ConflictResolutionModal with diff view and Keep Mine/Theirs/Both
+
+**Note:** Phase 4 (Real-time Collaboration with Yjs CRDTs) is deferred to future work.
+
+---
+
 ## Voice-First Capture Phase 5: Dictation Mode (Horizon 2.3)
 **Completed:** 2026-01-06
 **Files Changed:**

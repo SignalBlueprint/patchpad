@@ -329,6 +329,30 @@ export function useNotes(searchQuery?: string, filter?: NotesFilter, sortBy: Sor
     });
   };
 
+  // Merge a note from remote (for sync)
+  const mergeNote = async (note: Note): Promise<void> => {
+    const existing = await db.notes.get(note.id);
+    if (existing) {
+      // Only update if remote is newer
+      if (note.updatedAt > existing.updatedAt) {
+        await db.notes.update(note.id, {
+          title: note.title,
+          content: note.content,
+          tags: note.tags,
+          favorite: note.favorite,
+          folderId: note.folderId,
+          parentId: note.parentId,
+          collapsed: note.collapsed,
+          canvasPosition: note.canvasPosition,
+          updatedAt: note.updatedAt,
+        });
+      }
+    } else {
+      // New note from remote - add it
+      await db.notes.add(note);
+    }
+  };
+
   return {
     notes: notes ?? [],
     folders: folders ?? [],
@@ -354,5 +378,6 @@ export function useNotes(searchQuery?: string, filter?: NotesFilter, sortBy: Sor
     getChildNotes,
     setNoteAudio,
     removeNoteAudio,
+    mergeNote,
   };
 }

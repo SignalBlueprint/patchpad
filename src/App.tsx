@@ -17,7 +17,13 @@ import { ExportDialog } from './components/ExportDialog';
 import { CanvasView } from './components/Canvas';
 import { TranscriptionSettingsDialog } from './components/TranscriptionSettingsDialog';
 import { DictationMode } from './components/DictationMode';
+import { LoginModal, SyncSettingsDialog } from './components/Auth';
+import { SyncStatusIndicator } from './components/SyncStatusIndicator';
+import { ConflictResolutionModal } from './components/ConflictResolutionModal';
 import { useNotes, type SortOption, type NotesFilter } from './hooks/useNotes';
+import { useSync, useSyncReceiver } from './hooks/useSync';
+import { useAuth } from './context/AuthContext';
+import type { SyncConflict, ConflictResolution } from './services/sync';
 import { saveNoteCanvasPosition, autoLayout } from './services/canvas';
 import type { CanvasPosition } from './types/note';
 import { useToast } from './hooks/useToast';
@@ -86,6 +92,14 @@ export default function App() {
   // Dictation mode state
   const [dictationModeOpen, setDictationModeOpen] = useState(false);
 
+  // Sync and auth state
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
+  const [syncSettingsOpen, setSyncSettingsOpen] = useState(false);
+  const [syncConflict, setSyncConflict] = useState<{
+    conflict: SyncConflict;
+    resolve: (resolution: ConflictResolution) => void;
+  } | null>(null);
+
   const searchInputRef = useRef<HTMLInputElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
   const { toasts, dismissToast, success, error, info, warning } = useToast();
@@ -103,7 +117,29 @@ export default function App() {
     toggleNoteCollapsed,
     setNotesParent,
     setNoteAudio,
+    mergeNote,
   } = useNotes(searchQuery, filter, sortBy);
+
+  // Auth and sync hooks
+  const { user, isConfigured: isSyncConfigured } = useAuth();
+  const { syncNote, deleteNote: syncDeleteNote, isEnabled: isSyncEnabled } = useSync();
+
+  // Handle notes received from other devices
+  const handleNoteReceived = useCallback((note: Note, operation: 'insert' | 'update') => {
+    // Merge the note into local state
+    mergeNote(note);
+    if (operation === 'insert') {
+      info('Note synced', `Received "${note.title}" from another device`);
+    }
+  }, [mergeNote, info]);
+
+  const handleNoteDeleted = useCallback((noteId: string) => {
+    // Note will be removed from list automatically when DB updates
+    info('Note deleted', 'A note was deleted from another device');
+  }, [info]);
+
+  // Subscribe to sync events
+  useSyncReceiver(handleNoteReceived, handleNoteDeleted);
 
   // Check and show daily digest on mount
   useEffect(() => {
@@ -854,6 +890,26 @@ export default function App() {
       action: () => setExportDialogOpen(true),
       disabled: notes.length === 0,
     },
+
+    // Sync settings
+    {
+      id: 'sync-settings',
+      name: 'Sync Settings',
+      description: 'Configure cloud sync and authentication',
+      category: 'view',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>,
+      action: () => setSyncSettingsOpen(true),
+    },
+
+    // Sign in / Sign out
+    {
+      id: 'auth-action',
+      name: user ? 'Sign Out' : 'Sign In',
+      description: user ? 'Sign out of your account' : 'Sign in to enable cloud sync',
+      category: 'view',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>,
+      action: () => user ? setSyncSettingsOpen(true) : setLoginModalOpen(true),
+    },
   ];
 
   // Keyboard shortcuts
@@ -1159,6 +1215,32 @@ export default function App() {
         onComplete={handleDictationComplete}
       />
 
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={loginModalOpen}
+        onClose={() => setLoginModalOpen(false)}
+        onContinueOffline={() => setLoginModalOpen(false)}
+      />
+
+      {/* Sync Settings Dialog */}
+      <SyncSettingsDialog
+        isOpen={syncSettingsOpen}
+        onClose={() => setSyncSettingsOpen(false)}
+        onOpenLogin={() => { setSyncSettingsOpen(false); setLoginModalOpen(true); }}
+      />
+
+      {/* Conflict Resolution Modal */}
+      {syncConflict && (
+        <ConflictResolutionModal
+          conflict={syncConflict.conflict}
+          onResolve={(resolution) => {
+            syncConflict.resolve(resolution);
+            setSyncConflict(null);
+          }}
+          onClose={() => setSyncConflict(null)}
+        />
+      )}
+
       {/* Loading overlay for AI actions - Glass morphism with glow */}
       {aiLoading && (
         <div className="fixed inset-0 glass-overlay flex items-center justify-center z-40">
@@ -1181,9 +1263,14 @@ export default function App() {
         </div>
       )}
 
-      {/* Keyboard hint */}
-      <div className="fixed bottom-4 left-4 text-xs text-gray-400">
-        Press <kbd className="px-1.5 py-0.5 bg-gray-200 rounded text-gray-600">Ctrl+K</kbd> to open command palette
+      {/* Keyboard hint and Sync Status */}
+      <div className="fixed bottom-4 left-4 flex items-center gap-4">
+        <div className="text-xs text-gray-400">
+          Press <kbd className="px-1.5 py-0.5 bg-gray-200 rounded text-gray-600">Ctrl+K</kbd> to open command palette
+        </div>
+        <SyncStatusIndicator
+          onClick={() => isSyncConfigured ? setSyncSettingsOpen(true) : setLoginModalOpen(true)}
+        />
       </div>
 
       {/* Quick Capture FAB */}

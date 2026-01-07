@@ -315,8 +315,8 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 #### Phase 1: Backend Setup
 
-- [ ] Choose and set up backend
-  - [ ] Option A: Supabase (recommended for speed)
+- [x] Choose and set up backend
+  - [x] Option A: Supabase (recommended for speed)
     ```bash
     npm install @supabase/supabase-js
     ```
@@ -325,11 +325,11 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
     npm install firebase
     ```
 
-- [ ] Create `src/config/supabase.ts`
-  - [ ] Initialize Supabase client with env variables
-  - [ ] Export typed client
+- [x] Create `src/config/supabase.ts`
+  - [x] Initialize Supabase client with env variables
+  - [x] Export typed client
 
-- [ ] Design database schema (Supabase SQL)
+- [x] Design database schema (Supabase SQL)
   ```sql
   -- Users table (handled by Supabase Auth)
 
@@ -362,46 +362,46 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
   ALTER TABLE notes ENABLE ROW LEVEL SECURITY;
   ```
 
-- [ ] Create `src/services/sync.ts`
-  - [ ] Export function `syncToCloud(notes: Note[]): Promise<SyncResult>`
-  - [ ] Export function `pullFromCloud(): Promise<Note[]>`
-  - [ ] Export function `resolveConflicts(local: Note, remote: Note): Note`
-  - [ ] Implement optimistic locking with version numbers
+- [x] Create `src/services/sync.ts`
+  - [x] Export function `syncToCloud(notes: Note[]): Promise<SyncResult>`
+  - [x] Export function `pullFromCloud(): Promise<Note[]>`
+  - [x] Export function `resolveConflicts(local: Note, remote: Note): Note`
+  - [x] Implement optimistic locking with version numbers
 
 #### Phase 2: Authentication
 
-- [ ] Create `src/components/Auth/LoginModal.tsx`
-  - [ ] Email/password login form
-  - [ ] "Sign up" / "Log in" toggle
-  - [ ] OAuth buttons (Google, GitHub) if configured
-  - [ ] "Continue offline" option
+- [x] Create `src/components/Auth/LoginModal.tsx`
+  - [x] Email/password login form
+  - [x] "Sign up" / "Log in" toggle
+  - [x] OAuth buttons (Google, GitHub) if configured
+  - [x] "Continue offline" option
 
-- [ ] Create `src/hooks/useAuth.ts`
-  - [ ] Wrap Supabase auth methods
-  - [ ] Track auth state: `{ user, loading, error }`
-  - [ ] Expose: `signIn`, `signUp`, `signOut`, `resetPassword`
+- [x] Create `src/hooks/useAuth.ts`
+  - [x] Wrap Supabase auth methods
+  - [x] Track auth state: `{ user, loading, error }`
+  - [x] Expose: `signIn`, `signUp`, `signOut`, `resetPassword`
 
-- [ ] Create `src/context/AuthContext.tsx`
-  - [ ] Provide auth state to entire app
-  - [ ] Redirect to login if required
+- [x] Create `src/context/AuthContext.tsx`
+  - [x] Provide auth state to entire app
+  - [x] Redirect to login if required
 
 #### Phase 3: Sync Engine
 
-- [ ] Create `src/services/syncEngine.ts`
-  - [ ] Implement background sync loop (every 30 seconds)
-  - [ ] Queue local changes when offline
-  - [ ] Replay queue when connection restored
-  - [ ] Handle conflict resolution UI
+- [x] Create `src/services/syncEngine.ts`
+  - [x] Implement background sync loop (every 30 seconds)
+  - [x] Queue local changes when offline
+  - [x] Replay queue when connection restored
+  - [x] Handle conflict resolution UI
 
-- [ ] Add online/offline detection
-  - [ ] Use `navigator.onLine` and `online`/`offline` events
-  - [ ] Show status indicator in header
-  - [ ] Queue writes when offline
+- [x] Add online/offline detection
+  - [x] Use `navigator.onLine` and `online`/`offline` events
+  - [x] Show status indicator in header
+  - [x] Queue writes when offline
 
-- [ ] Implement conflict resolution UI
-  - [ ] Create `src/components/ConflictResolutionModal.tsx`
-  - [ ] Show diff between local and remote versions
-  - [ ] Options: "Keep Mine", "Keep Theirs", "Merge"
+- [x] Implement conflict resolution UI
+  - [x] Create `src/components/ConflictResolutionModal.tsx`
+  - [x] Show diff between local and remote versions
+  - [x] Options: "Keep Mine", "Keep Theirs", "Merge"
 
 #### Phase 4: Real-time Collaboration (Advanced)
 
