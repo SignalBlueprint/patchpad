@@ -22,6 +22,7 @@ import { useToast } from './hooks/useToast';
 import { applyOps } from './utils/applyOps';
 import { generateStitch, generatePatch } from './api/patch';
 import { isAIAvailable, summarizeTranscription } from './services/ai';
+import { processVoiceNote } from './services/voiceNoteProcessor';
 import { isBrainAvailable } from './services/brain';
 import { generateDailyDigest, shouldShowDigest, markDigestShown, toggleDigestEnabled, isDigestEnabled, type DailyDigest } from './services/digest';
 import { findNoteByTitle } from './utils/linkParser';
@@ -366,27 +367,34 @@ export default function App() {
   const handleQuickCapture = useCallback(async (result: TranscriptionResult) => {
     info('Processing...', 'Creating note from voice capture');
 
-    // Try to summarize the transcription if AI is available
-    let noteContent = result.text;
-    if (isAIAvailable()) {
-      const summary = await summarizeTranscription(result.text);
-      if (summary) {
-        noteContent = summary;
+    // Process the voice note with AI (cleans up, extracts title, tags, tasks)
+    const processed = await processVoiceNote(result.text);
+
+    // Build note content with tasks section if tasks were extracted
+    let noteContent = processed.content;
+    if (processed.tasks.length > 0) {
+      noteContent += '\n\n## Tasks\n';
+      for (const task of processed.tasks) {
+        noteContent += `- [ ] ${task}\n`;
       }
     }
 
-    // Create a new note with the transcription
-    const title = `Voice Note - ${new Date().toLocaleDateString('en-US', {
+    // Create the note with processed title
+    const dateStr = new Date().toLocaleDateString('en-US', {
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-    })}`;
+    });
+    const title = processed.title || `Voice Note - ${dateStr}`;
 
-    const id = await createNote(noteContent, title);
+    // Create note with extracted tags
+    const id = await createNote(noteContent, title, undefined, processed.tags);
     setSelectedId(id);
     setMainView('notes'); // Switch to notes view to see the new note
-    success('Voice note created', `${Math.round(result.duration)}s of audio transcribed`);
+
+    const taskInfo = processed.tasks.length > 0 ? `, ${processed.tasks.length} tasks extracted` : '';
+    success('Voice note created', `${Math.round(result.duration)}s transcribed${taskInfo}`);
   }, [createNote, info, success]);
 
   const handleQuickCaptureError = useCallback((errorMessage: string) => {

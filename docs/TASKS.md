@@ -499,11 +499,11 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 #### Phase 3: Voice Notes Processing
 
-- [ ] Create `src/services/voiceNoteProcessor.ts`
-  - [ ] Export function `processVoiceNote(transcription: string): Promise<ProcessedNote>`
-  - [ ] Use AI to: clean up filler words, add punctuation, extract title
-  - [ ] Optionally summarize if > 500 words
-  - [ ] Extract action items and tags
+- [x] Create `src/services/voiceNoteProcessor.ts`
+  - [x] Export function `processVoiceNote(transcription: string): Promise<ProcessedNote>`
+  - [x] Use AI to: clean up filler words, add punctuation, extract title
+  - [x] Optionally summarize if > 500 words
+  - [x] Extract action items and tags
 
 - [ ] Add "Voice Note" type indicator
   - [ ] Badge or icon on notes created from voice

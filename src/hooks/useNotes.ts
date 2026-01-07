@@ -90,7 +90,7 @@ export function useNotes(searchQuery?: string, filter?: NotesFilter, sortBy: Sor
     return Array.from(tagSet).sort();
   }, []);
 
-  const createNote = async (initialContent?: string, initialTitle?: string, folderId?: string): Promise<string> => {
+  const createNote = async (initialContent?: string, initialTitle?: string, folderId?: string, initialTags?: string[]): Promise<string> => {
     const now = new Date();
     const note: Note = {
       id: uuidv4(),
@@ -100,7 +100,7 @@ export function useNotes(searchQuery?: string, filter?: NotesFilter, sortBy: Sor
       updatedAt: now,
       folder: folderId,
       favorite: false,
-      tags: [],
+      tags: initialTags ?? [],
     };
     await db.notes.add(note);
     return note.id;

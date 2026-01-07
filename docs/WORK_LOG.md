@@ -2,6 +2,29 @@
 
 ---
 
+## Voice-First Capture Phase 3: Voice Notes Processing (Horizon 2.3)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/services/voiceNoteProcessor.ts` — New service with AI-powered voice note processing: filler word cleanup, title/tags/tasks extraction
+- `src/hooks/useNotes.ts` — Extended createNote to accept initial tags parameter
+- `src/App.tsx` — Updated handleQuickCapture to use processVoiceNote for better voice notes
+
+**Implementation Notes:**
+- ProcessedNote interface returns title, content, tags, tasks, isVoiceNote flag
+- AI processing (when available): cleans filler words, formats with markdown, extracts title/tags/tasks
+- Non-AI fallback: regex-based filler word removal, task pattern extraction
+- Tasks extracted from patterns: "TODO:", "I need to...", "Don't forget...", etc.
+- Extracted tasks automatically formatted as markdown checkboxes in the note
+- Voice notes automatically tagged with `voice-note` tag (plus any AI-extracted tags)
+- createNote hook now supports optional initialTags parameter
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- Build succeeds (`npm run build`)
+- Voice notes now get intelligent processing with AI or simple cleanup without
+
+---
+
 ## Voice-First Capture Phase 2: Transcription Improvements (Horizon 2.3)
 **Completed:** 2026-01-06
 **Files Changed:**
