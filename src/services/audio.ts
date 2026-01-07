@@ -17,6 +17,7 @@ export interface TranscriptionResult {
   text: string;
   duration: number;
   language?: string;
+  audioBlob?: Blob; // Optional: the original audio blob for playback
 }
 
 export interface TranscriptionSegment {

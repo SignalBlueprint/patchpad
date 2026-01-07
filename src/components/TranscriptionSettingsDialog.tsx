@@ -38,6 +38,7 @@ export function TranscriptionSettingsDialog({ isOpen, onClose }: TranscriptionSe
   const [language, setLanguage] = useState('en-US');
   const [preferLocalTranscription, setPreferLocalTranscription] = useState(false);
   const [qualityPreference, setQualityPreference] = useState<QualityPreference>('balanced');
+  const [storeOriginalAudio, setStoreOriginalAudio] = useState(false);
   const [hasChanges, setHasChanges] = useState(false);
 
   // Load current preferences on mount
@@ -47,6 +48,7 @@ export function TranscriptionSettingsDialog({ isOpen, onClose }: TranscriptionSe
       setLanguage(prefs.language);
       setPreferLocalTranscription(prefs.preferLocalTranscription);
       setQualityPreference(prefs.qualityPreference);
+      setStoreOriginalAudio(prefs.storeOriginalAudio);
       setHasChanges(false);
     }
   }, [isOpen]);
@@ -66,7 +68,7 @@ export function TranscriptionSettingsDialog({ isOpen, onClose }: TranscriptionSe
   }, [isOpen, onClose]);
 
   const handleSave = () => {
-    savePreferences({ language, preferLocalTranscription, qualityPreference });
+    savePreferences({ language, preferLocalTranscription, qualityPreference, storeOriginalAudio });
     setHasChanges(false);
     onClose();
   };
@@ -83,6 +85,11 @@ export function TranscriptionSettingsDialog({ isOpen, onClose }: TranscriptionSe
 
   const handleQualityChange = (value: QualityPreference) => {
     setQualityPreference(value);
+    setHasChanges(true);
+  };
+
+  const handleStoreAudioChange = (value: boolean) => {
+    setStoreOriginalAudio(value);
     setHasChanges(true);
   };
 
@@ -231,6 +238,44 @@ export function TranscriptionSettingsDialog({ isOpen, onClose }: TranscriptionSe
                 </svg>
               </label>
             </div>
+          </div>
+
+          {/* Store Original Audio Toggle */}
+          <div>
+            <div className="flex items-center justify-between">
+              <div>
+                <label htmlFor="storeAudio" className="block text-sm font-medium text-gray-700">
+                  Store Original Audio
+                </label>
+                <p className="text-xs text-gray-500 mt-1">
+                  Save recordings for playback in voice notes
+                </p>
+              </div>
+              <button
+                id="storeAudio"
+                type="button"
+                onClick={() => handleStoreAudioChange(!storeOriginalAudio)}
+                className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
+                  storeOriginalAudio ? 'bg-indigo-600' : 'bg-gray-200'
+                }`}
+                role="switch"
+                aria-checked={storeOriginalAudio}
+              >
+                <span
+                  className={`pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out ${
+                    storeOriginalAudio ? 'translate-x-5' : 'translate-x-0'
+                  }`}
+                />
+              </button>
+            </div>
+            {storeOriginalAudio && (
+              <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-xs text-blue-700">
+                  Audio files will be stored locally. This uses more storage but allows you to
+                  replay your original recordings from voice notes.
+                </p>
+              </div>
+            )}
           </div>
         </div>
 

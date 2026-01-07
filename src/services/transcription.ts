@@ -21,6 +21,7 @@ export interface TranscriptionProvider {
 // Storage key for transcription preferences
 const TRANSCRIPTION_PREFS_KEY = 'patchpad_transcription_prefs';
 const TRANSCRIPTION_QUALITY_KEY = 'patchpad_transcription_quality';
+const STORE_AUDIO_KEY = 'patchpad_store_audio';
 
 export type QualityPreference = 'speed' | 'balanced' | 'quality';
 
@@ -28,17 +29,20 @@ export interface TranscriptionPreferences {
   preferLocalTranscription: boolean;
   language: string;
   qualityPreference: QualityPreference;
+  storeOriginalAudio: boolean; // Whether to store audio blobs for playback
 }
 
 function getPreferences(): TranscriptionPreferences {
   try {
     const saved = localStorage.getItem(TRANSCRIPTION_PREFS_KEY);
     const quality = localStorage.getItem(TRANSCRIPTION_QUALITY_KEY) as QualityPreference;
+    const storeAudio = localStorage.getItem(STORE_AUDIO_KEY);
     if (saved) {
       const parsed = JSON.parse(saved);
       return {
         ...parsed,
         qualityPreference: quality || 'balanced',
+        storeOriginalAudio: storeAudio === 'true',
       };
     }
   } catch {
@@ -48,16 +52,24 @@ function getPreferences(): TranscriptionPreferences {
     preferLocalTranscription: false,
     language: 'en-US',
     qualityPreference: 'balanced',
+    storeOriginalAudio: false,
   };
 }
 
 export function savePreferences(prefs: Partial<TranscriptionPreferences>): void {
   const current = getPreferences();
-  const { qualityPreference, ...rest } = { ...current, ...prefs };
+  const { qualityPreference, storeOriginalAudio, ...rest } = { ...current, ...prefs };
   localStorage.setItem(TRANSCRIPTION_PREFS_KEY, JSON.stringify(rest));
-  if (prefs.qualityPreference) {
+  if (prefs.qualityPreference !== undefined) {
     localStorage.setItem(TRANSCRIPTION_QUALITY_KEY, prefs.qualityPreference);
   }
+  if (prefs.storeOriginalAudio !== undefined) {
+    localStorage.setItem(STORE_AUDIO_KEY, String(prefs.storeOriginalAudio));
+  }
+}
+
+export function shouldStoreAudio(): boolean {
+  return getPreferences().storeOriginalAudio;
 }
 
 export function getTranscriptionPreferences(): TranscriptionPreferences {

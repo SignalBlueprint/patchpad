@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { db } from '../db';
 import type { Note, Folder, Highlight, HighlightColor } from '../types/note';
 import { updateLinksOnRename } from '../utils/linkParser';
+import { storeAudioForNote, deleteAudioForNote } from '../services/audioStorage';
 
 function extractTitle(content: string): string {
   const firstLine = content.split('\n')[0].trim();
@@ -303,6 +304,31 @@ export function useNotes(searchQuery?: string, filter?: NotesFilter, sortBy: Sor
     return db.notes.where('parentId').equals(parentId).toArray();
   };
 
+  // Audio operations for voice notes
+  const setNoteAudio = async (noteId: string, audioBlob: Blob, duration: number): Promise<string> => {
+    // Store the audio blob
+    const audioId = await storeAudioForNote(noteId, audioBlob, duration);
+
+    // Update the note with the audio ID
+    await db.notes.update(noteId, {
+      audioId,
+      updatedAt: new Date(),
+    });
+
+    return audioId;
+  };
+
+  const removeNoteAudio = async (noteId: string): Promise<void> => {
+    // Delete from audio storage
+    await deleteAudioForNote(noteId);
+
+    // Update the note to remove audio ID
+    await db.notes.update(noteId, {
+      audioId: undefined,
+      updatedAt: new Date(),
+    });
+  };
+
   return {
     notes: notes ?? [],
     folders: folders ?? [],
@@ -326,5 +352,7 @@ export function useNotes(searchQuery?: string, filter?: NotesFilter, sortBy: Sor
     setNotesParent,
     toggleNoteCollapsed,
     getChildNotes,
+    setNoteAudio,
+    removeNoteAudio,
   };
 }

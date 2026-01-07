@@ -11,6 +11,7 @@ import { parseWikiLinks, getWikiLinkDisplayText, type ParsedWikiLink } from '../
 import { LinkPreviewCard } from './LinkPreviewCard';
 import { useLinkSuggestions, type LinkSuggestion } from '../hooks/useLinkSuggestions';
 import { LinkSuggestionToast } from './LinkSuggestionToast';
+import { AudioPlaybackButton } from './AudioPlaybackButton';
 
 interface EditorProps {
   note: Note | null;
@@ -701,6 +702,13 @@ export function Editor({ note, onSave, showPreview, onTogglePreview, onSelection
           </button>
         </div>
       </div>
+
+      {/* Audio Playback for voice notes */}
+      {note.audioId && (
+        <div className={`px-4 py-2 border-b ${darkMode ? 'border-gray-700 bg-[#252526]' : 'border-gray-200 bg-gray-50'}`}>
+          <AudioPlaybackButton noteId={note.id} />
+        </div>
+      )}
 
       {/* Editor area */}
       <div ref={(el) => {

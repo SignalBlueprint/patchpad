@@ -96,11 +96,13 @@ export function AudioRecorder({ onTranscriptionComplete, onClose, quickCapture =
 
       // Transcribe the audio
       const result = await audioRecorder.transcribe(blob);
-      setTranscription(result);
+      // Include the audio blob for optional storage
+      const resultWithBlob = { ...result, audioBlob: blob };
+      setTranscription(resultWithBlob);
 
       // In quick capture mode, skip review and directly complete
       if (quickCapture) {
-        onTranscriptionComplete(result);
+        onTranscriptionComplete(resultWithBlob);
       } else {
         setStep('review');
       }

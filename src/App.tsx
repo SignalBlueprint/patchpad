@@ -26,6 +26,7 @@ import { isAIAvailable, summarizeTranscription } from './services/ai';
 import { processVoiceNote } from './services/voiceNoteProcessor';
 import { isBrainAvailable } from './services/brain';
 import { generateDailyDigest, shouldShowDigest, markDigestShown, toggleDigestEnabled, isDigestEnabled, type DailyDigest } from './services/digest';
+import { shouldStoreAudio } from './services/transcription';
 import { findNoteByTitle } from './utils/linkParser';
 import type { Note, HighlightColor } from './types/note';
 import type { PatchAction } from './types/patch';
@@ -96,6 +97,7 @@ export default function App() {
     addHighlight,
     toggleNoteCollapsed,
     setNotesParent,
+    setNoteAudio,
   } = useNotes(searchQuery, filter, sortBy);
 
   // Check and show daily digest on mount
@@ -364,8 +366,14 @@ export default function App() {
 
     const id = await createNote(noteContent, title);
     setSelectedId(id);
+
+    // Store audio if enabled in settings
+    if (shouldStoreAudio() && result.audioBlob) {
+      await setNoteAudio(id, result.audioBlob, result.duration);
+    }
+
     success('Voice note created', `${Math.round(result.duration)}s of audio transcribed`);
-  }, [createNote, info, success]);
+  }, [createNote, info, success, setNoteAudio]);
 
   // Handle quick capture from floating button
   const handleQuickCapture = useCallback(async (result: TranscriptionResult) => {
@@ -397,9 +405,14 @@ export default function App() {
     setSelectedId(id);
     setMainView('notes'); // Switch to notes view to see the new note
 
+    // Store audio if enabled in settings
+    if (shouldStoreAudio() && result.audioBlob) {
+      await setNoteAudio(id, result.audioBlob, result.duration);
+    }
+
     const taskInfo = processed.tasks.length > 0 ? `, ${processed.tasks.length} tasks extracted` : '';
     success('Voice note created', `${Math.round(result.duration)}s transcribed${taskInfo}`);
-  }, [createNote, info, success]);
+  }, [createNote, info, success, setNoteAudio]);
 
   const handleQuickCaptureError = useCallback((errorMessage: string) => {
     error('Voice capture failed', errorMessage);

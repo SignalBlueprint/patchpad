@@ -37,6 +37,7 @@ export interface Note {
   parentId?: string; // For sub-notes (merged notes become children)
   collapsed?: boolean; // Whether children are collapsed in sidebar
   canvasPosition?: CanvasPosition; // Position on canvas view
+  audioId?: string; // ID of stored audio blob for voice notes
 }
 
 export interface Folder {

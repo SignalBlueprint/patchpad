@@ -507,8 +507,8 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 - [x] Add "Voice Note" type indicator
   - [x] Badge or icon on notes created from voice
-  - [ ] Store original audio blob option
-  - [ ] Playback original recording from note
+  - [x] Store original audio blob option
+  - [x] Playback original recording from note
 
 #### Phase 4: Voice Queries
 

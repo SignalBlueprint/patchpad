@@ -2,6 +2,37 @@
 
 ---
 
+## Voice-First Capture Phase 3: Audio Storage & Playback (Horizon 2.3)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/services/audioStorage.ts` — New IndexedDB service for storing audio blobs separately from main database
+- `src/components/AudioPlaybackButton.tsx` — New component with play/pause, progress bar, seek functionality
+- `src/components/TranscriptionSettingsDialog.tsx` — Added "Store Original Audio" toggle setting
+- `src/components/Editor.tsx` — Integrated AudioPlaybackButton for notes with stored audio
+- `src/components/AudioRecorder.tsx` — Updated to include audioBlob in transcription result
+- `src/services/transcription.ts` — Added storeOriginalAudio preference and shouldStoreAudio() helper
+- `src/services/audio.ts` — Extended TranscriptionResult interface with optional audioBlob
+- `src/hooks/useNotes.ts` — Added setNoteAudio and removeNoteAudio functions
+- `src/types/note.ts` — Added audioId field to Note interface
+- `src/App.tsx` — Updated voice note handlers to store audio when setting enabled
+
+**Implementation Notes:**
+- Audio blobs stored in separate IndexedDB (PatchPadAudioDB) to avoid bloating main database
+- AudioRecord stores: id, noteId, blob, duration, mimeType, createdAt
+- Store Original Audio toggle in Transcription Settings (default: off to save storage)
+- AudioPlaybackButton appears below editor toolbar for notes with audioId
+- Play/pause control, seek via progress bar, time display
+- Audio URL created via Object URL, cleaned up on unmount
+- Handlers in App.tsx check shouldStoreAudio() before calling setNoteAudio()
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- Build succeeds (`npm run build`)
+- Audio storage setting appears in Transcription Settings dialog
+- Notes with stored audio show playback controls in editor
+
+---
+
 ## Voice-First Capture Phase 2: Transcription Settings (Horizon 2.3)
 **Completed:** 2026-01-06
 **Files Changed:**
