@@ -2,6 +2,38 @@
 
 ---
 
+## Voice-First Capture Phase 5: Dictation Mode (Horizon 2.3)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/services/silenceDetection.ts` — New service for audio level monitoring and silence detection with configurable thresholds
+- `src/components/DictationMode.tsx` — Full-screen dictation modal with Web Speech API, silence detection, real-time transcription, and edit-while-dictating
+- `src/App.tsx` — Added dictation mode state, handler for completion, keyboard shortcut (Ctrl+Shift+D), command palette entry, and DictationMode component
+
+**Implementation Notes:**
+- SilenceDetector class uses AudioContext and AnalyserNode to monitor audio levels in real-time
+- Configurable thresholds: silenceThreshold (0.02), shortPauseDuration (500ms), longPauseDuration (2000ms)
+- Callbacks for audio level changes, short pauses, and long pauses
+- DictationMode component uses Web Speech Recognition API for continuous real-time transcription
+- States: idle, listening, paused with appropriate UI for each
+- Long pauses (2+ seconds) automatically insert paragraph breaks
+- Real-time interim results shown while speaking (italicized)
+- Textarea is editable while dictating - users can type, delete, or modify text
+- Audio level visualization with color-coded bars (green/yellow/red)
+- Word count display and helpful hints in footer
+- On completion, creates new note with 'dictation' and 'voice-note' tags
+- Command palette entry "Dictation Mode" and keyboard shortcut Ctrl+Shift+D
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- Build succeeds (`npm run build`)
+- All acceptance criteria for Phase 5 met:
+  - Continuous recording with silence detection
+  - Auto-split into paragraphs on long pauses (2+ seconds)
+  - Real-time transcription display with interim results
+  - Edit while dictating (textarea is fully editable)
+
+---
+
 ## Voice-First Capture Phase 4: Voice Commands (Horizon 2.3)
 **Completed:** 2026-01-06
 **Files Changed:**

@@ -525,11 +525,11 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 #### Phase 5: Background Voice Capture
 
-- [ ] Implement "Dictation Mode"
-  - [ ] Continuous recording with silence detection
-  - [ ] Auto-split into paragraphs on long pauses (2+ seconds)
-  - [ ] Real-time transcription display
-  - [ ] Edit while dictating
+- [x] Implement "Dictation Mode"
+  - [x] Continuous recording with silence detection
+  - [x] Auto-split into paragraphs on long pauses (2+ seconds)
+  - [x] Real-time transcription display
+  - [x] Edit while dictating
 
 **New Infrastructure Required:**
 - OpenAI Whisper API (already integrated)

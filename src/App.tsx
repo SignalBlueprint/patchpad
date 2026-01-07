@@ -16,6 +16,7 @@ import { DailyDigestModal } from './components/DailyDigestModal';
 import { ExportDialog } from './components/ExportDialog';
 import { CanvasView } from './components/Canvas';
 import { TranscriptionSettingsDialog } from './components/TranscriptionSettingsDialog';
+import { DictationMode } from './components/DictationMode';
 import { useNotes, type SortOption, type NotesFilter } from './hooks/useNotes';
 import { saveNoteCanvasPosition, autoLayout } from './services/canvas';
 import type { CanvasPosition } from './types/note';
@@ -81,6 +82,9 @@ export default function App() {
 
   // Transcription settings dialog state
   const [transcriptionSettingsOpen, setTranscriptionSettingsOpen] = useState(false);
+
+  // Dictation mode state
+  const [dictationModeOpen, setDictationModeOpen] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -472,6 +476,26 @@ export default function App() {
     error('Voice capture failed', errorMessage);
   }, [error]);
 
+  // Handle dictation mode completion
+  const handleDictationComplete = useCallback(async (content: string) => {
+    if (!content.trim()) {
+      return;
+    }
+
+    // Create a new note with the dictation content
+    const title = `Dictation - ${new Date().toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })}`;
+
+    const id = await createNote(content, title, undefined, ['dictation', 'voice-note']);
+    setSelectedId(id);
+    setMainView('notes');
+    success('Note created from dictation', `${content.split(/\s+/).filter(Boolean).length} words captured`);
+  }, [createNote, success]);
+
   // Canvas handlers
   const handleCanvasNoteClick = useCallback((id: string) => {
     setSelectedId(id);
@@ -786,6 +810,17 @@ export default function App() {
       action: () => setTranscriptionSettingsOpen(true),
     },
 
+    // Dictation mode
+    {
+      id: 'dictation-mode',
+      name: 'Dictation Mode',
+      description: 'Continuous voice recording with auto-paragraphs',
+      shortcut: 'Ctrl+Shift+D',
+      category: 'note',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" /></svg>,
+      action: () => setDictationModeOpen(true),
+    },
+
     // Knowledge Brain
     {
       id: 'knowledge-brain',
@@ -889,6 +924,12 @@ export default function App() {
       if (isMod && e.shiftKey && e.key === 'E' && notes.length > 0) {
         e.preventDefault();
         setExportDialogOpen(true);
+      }
+
+      // Dictation mode shortcut (Ctrl+Shift+D)
+      if (isMod && e.shiftKey && e.key === 'D') {
+        e.preventDefault();
+        setDictationModeOpen(true);
       }
     };
 
@@ -1109,6 +1150,13 @@ export default function App() {
       <TranscriptionSettingsDialog
         isOpen={transcriptionSettingsOpen}
         onClose={() => setTranscriptionSettingsOpen(false)}
+      />
+
+      {/* Dictation Mode */}
+      <DictationMode
+        isOpen={dictationModeOpen}
+        onClose={() => setDictationModeOpen(false)}
+        onComplete={handleDictationComplete}
       />
 
       {/* Loading overlay for AI actions - Glass morphism with glow */}
