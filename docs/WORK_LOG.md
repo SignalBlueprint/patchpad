@@ -2,6 +2,30 @@
 
 ---
 
+## Voice-First Capture Phase 4: Voice Queries (Horizon 2.3)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/components/AskNotesDialog.tsx` — Added microphone button for voice queries, recording state, transcription flow
+- `src/components/NotesList.tsx` — Added voice note indicator (microphone icon) for notes with 'voice-note' tag
+
+**Implementation Notes:**
+- AskNotesDialog now shows microphone button next to text input (when transcription available)
+- Click mic to start recording, click again to stop and transcribe
+- Recording indicator shows duration and cancel option
+- Transcribed text fills the question input automatically
+- Voice note indicator in notes list: indigo microphone icon appears for notes tagged 'voice-note'
+- Icon displays next to favorite star and parent indicator
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- Build succeeds (`npm run build`)
+- Phase 4 core features complete:
+  - Microphone button in Ask Notes dialog
+  - Voice question recording and transcription
+  - Transcription feeds into askNotes query
+
+---
+
 ## Voice-First Capture Phase 3: Voice Notes Processing (Horizon 2.3)
 **Completed:** 2026-01-06
 **Files Changed:**

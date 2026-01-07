@@ -1,6 +1,7 @@
-import { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import type { Note } from '../types/note';
 import { askNotes, type AskNotesResult } from '../services/ai';
+import { audioRecorder, isTranscriptionAvailable, type RecordingState } from '../services/audio';
 
 interface AskNotesDialogProps {
   isOpen: boolean;
@@ -19,8 +20,17 @@ export function AskNotesDialog({ isOpen, onClose, notes, onSelectNote }: AskNote
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
   const [conversation, setConversation] = useState<ConversationMessage[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingState, setRecordingState] = useState<RecordingState>({
+    isRecording: false,
+    isPaused: false,
+    duration: 0,
+    audioLevel: 0,
+  });
+  const [transcribing, setTranscribing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const canUseVoice = isTranscriptionAvailable();
 
   useEffect(() => {
     if (isOpen) {
@@ -72,6 +82,67 @@ export function AskNotesDialog({ isOpen, onClose, notes, onSelectNote }: AskNote
     setConversation([]);
     setQuestion('');
   };
+
+  // Voice recording handlers
+  const startRecording = useCallback(async () => {
+    if (!audioRecorder.isSupported()) {
+      return;
+    }
+
+    try {
+      const hasPermission = await audioRecorder.requestPermission();
+      if (!hasPermission) {
+        return;
+      }
+
+      await audioRecorder.startRecording(setRecordingState);
+      setIsRecording(true);
+    } catch (err) {
+      console.error('Failed to start recording:', err);
+    }
+  }, []);
+
+  const stopRecording = useCallback(async () => {
+    if (!isRecording) return;
+
+    try {
+      setTranscribing(true);
+      const blob = await audioRecorder.stopRecording();
+      const result = await audioRecorder.transcribe(blob);
+      setQuestion(result.text);
+      // Auto-focus the input after transcription
+      inputRef.current?.focus();
+    } catch (err) {
+      console.error('Failed to transcribe:', err);
+    } finally {
+      setIsRecording(false);
+      setTranscribing(false);
+      setRecordingState({
+        isRecording: false,
+        isPaused: false,
+        duration: 0,
+        audioLevel: 0,
+      });
+    }
+  }, [isRecording]);
+
+  const cancelRecording = useCallback(() => {
+    audioRecorder.cancelRecording();
+    setIsRecording(false);
+    setRecordingState({
+      isRecording: false,
+      isPaused: false,
+      duration: 0,
+      audioLevel: 0,
+    });
+  }, []);
+
+  // Cleanup recording on close
+  useEffect(() => {
+    if (!isOpen && isRecording) {
+      cancelRecording();
+    }
+  }, [isOpen, isRecording, cancelRecording]);
 
   if (!isOpen) return null;
 
@@ -190,19 +261,72 @@ export function AskNotesDialog({ isOpen, onClose, notes, onSelectNote }: AskNote
 
         {/* Input area */}
         <form onSubmit={handleSubmit} className="p-4 border-t border-gray-200">
+          {/* Recording indicator */}
+          {(isRecording || transcribing) && (
+            <div className="mb-2 flex items-center justify-center gap-2 text-sm">
+              {isRecording && (
+                <>
+                  <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                  <span className="text-red-600 font-medium">
+                    Recording... {Math.floor(recordingState.duration / 60)}:{String(recordingState.duration % 60).padStart(2, '0')}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={cancelRecording}
+                    className="text-xs text-gray-500 hover:text-gray-700 underline"
+                  >
+                    Cancel
+                  </button>
+                </>
+              )}
+              {transcribing && (
+                <>
+                  <svg className="w-4 h-4 animate-spin text-purple-500" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                  </svg>
+                  <span className="text-purple-600">Transcribing...</span>
+                </>
+              )}
+            </div>
+          )}
           <div className="flex gap-2">
             <input
               ref={inputRef}
               type="text"
               value={question}
               onChange={e => setQuestion(e.target.value)}
-              placeholder="Ask a question about your notes..."
+              placeholder={isRecording ? 'Recording your question...' : 'Ask a question about your notes...'}
               className="flex-1 px-4 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-              disabled={loading}
+              disabled={loading || isRecording || transcribing}
             />
+            {/* Microphone button */}
+            {canUseVoice && (
+              <button
+                type="button"
+                onClick={isRecording ? stopRecording : startRecording}
+                disabled={loading || transcribing}
+                className={`px-3 py-2 text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ${
+                  isRecording
+                    ? 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500'
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200 focus:ring-gray-500'
+                }`}
+                title={isRecording ? 'Stop recording' : 'Ask with voice'}
+              >
+                {isRecording ? (
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                    <rect x="6" y="6" width="12" height="12" rx="2" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                  </svg>
+                )}
+              </button>
+            )}
             <button
               type="submit"
-              disabled={!question.trim() || loading}
+              disabled={!question.trim() || loading || isRecording || transcribing}
               className="px-4 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

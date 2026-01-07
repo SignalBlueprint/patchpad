@@ -505,17 +505,17 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
   - [x] Optionally summarize if > 500 words
   - [x] Extract action items and tags
 
-- [ ] Add "Voice Note" type indicator
-  - [ ] Badge or icon on notes created from voice
+- [x] Add "Voice Note" type indicator
+  - [x] Badge or icon on notes created from voice
   - [ ] Store original audio blob option
   - [ ] Playback original recording from note
 
 #### Phase 4: Voice Queries
 
-- [ ] Enhance `src/components/AskNotesDialog.tsx`
-  - [ ] Add microphone button next to text input
-  - [ ] "Ask with voice" records question
-  - [ ] Transcription feeds into `askNotes()` function
+- [x] Enhance `src/components/AskNotesDialog.tsx`
+  - [x] Add microphone button next to text input
+  - [x] "Ask with voice" records question
+  - [x] Transcription feeds into `askNotes()` function
   - [ ] Optional: read answer aloud using Web Speech Synthesis
 
 - [ ] Create voice command system

@@ -387,6 +387,11 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
                                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                                 </svg>
                               )}
+                              {note.tags?.includes('voice-note') && (
+                                <svg className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" title="Voice note">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                                </svg>
+                              )}
                               {hasChildren && (
                                 <span className="text-[10px] text-gray-400 flex-shrink-0">
                                   {children.length}
