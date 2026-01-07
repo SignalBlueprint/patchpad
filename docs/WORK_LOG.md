@@ -2,7 +2,46 @@
 
 ---
 
-## AI Research Partner (Horizon 3.2)
+## AI Research Partner Phases 3-4: Proactive Assistance & Long-term Memory (Horizon 3.2)
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/services/researchPartner.ts` — Extended with Phase 3-4 features: task extraction, AI follow-up suggestions, meeting briefs, key facts extraction, AI knowledge storage
+- `src/components/ResearchPartner/ChatInterface.tsx` — Added tools menu, brief generation dialog, task extraction display, "Add as note" button
+- `src/components/ResearchPartner/AIKnowledgeDashboard.tsx` — New component showing extracted facts with edit/remove, topic overview, category filtering
+- `src/components/ResearchPartner/index.ts` — Added AIKnowledgeDashboard export
+- `src/App.tsx` — Added AI Knowledge command, state, component integration, onCreateNote handler for ChatInterface
+
+**Phase 3: Proactive Assistance:**
+- Research Brief generation via Tools menu in chat header
+- Meeting Preparation brief with participant context and talking points
+- Task extraction from conversation with priority levels (high/medium/low)
+- "Add as note" button creates task note with priority tags
+- AI-powered follow-up suggestions based on conversation context and available notes
+- Briefs automatically create notes with `research-brief` and `ai-generated` tags
+
+**Phase 4: Long-term Memory:**
+- Conversation persistence already implemented in Phase 1-2 via IndexedDB
+- AI Knowledge Dashboard (command palette: "AI Knowledge") shows extracted key facts
+- Facts categorized: person, project, date, decision, theme
+- Facts can be edited or removed by user
+- Topic overview shows tags with note counts
+- Knowledge stored in localStorage and refreshable on demand
+- Reference past conversations via keyword matching
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- Build succeeds (`npm run build`)
+- All acceptance criteria for Phases 3-4 met:
+  - Research briefs generate from topic input
+  - Meeting briefs include participant-related notes
+  - Tasks extracted and can be added as notes
+  - AI-powered follow-up suggestions work
+  - AI Knowledge Dashboard shows extracted facts
+  - Facts editable and removable
+
+---
+
+## AI Research Partner Phases 1-2: Conversational AI & Semantic Search (Horizon 3.2)
 **Completed:** 2026-01-06
 **Files Changed:**
 - `src/services/embeddings.ts` — New service for vector embeddings with OpenAI API, caching in IndexedDB, cosine similarity
@@ -41,8 +80,6 @@
   - Responses cite source notes with `[Note: Title]` format
   - Multi-turn conversations work
   - Semantic search with embeddings cached in IndexedDB
-
-**Note:** Phases 3 (Proactive Assistance) and 4 (Long-term Memory) are deferred to future work.
 
 ---
 

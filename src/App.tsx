@@ -20,7 +20,7 @@ import { DictationMode } from './components/DictationMode';
 import { LoginModal, SyncSettingsDialog } from './components/Auth';
 import { SyncStatusIndicator } from './components/SyncStatusIndicator';
 import { ConflictResolutionModal } from './components/ConflictResolutionModal';
-import { ChatInterface } from './components/ResearchPartner';
+import { ChatInterface, AIKnowledgeDashboard } from './components/ResearchPartner';
 import { useNotes, type SortOption, type NotesFilter } from './hooks/useNotes';
 import { isResearchPartnerAvailable } from './services/researchPartner';
 import { useSync, useSyncReceiver } from './hooks/useSync';
@@ -104,6 +104,7 @@ export default function App() {
 
   // Research Partner state
   const [researchPartnerOpen, setResearchPartnerOpen] = useState(false);
+  const [aiKnowledgeOpen, setAIKnowledgeOpen] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -841,6 +842,16 @@ export default function App() {
       action: () => setResearchPartnerOpen(true),
     },
 
+    // AI Knowledge Dashboard
+    {
+      id: 'ai-knowledge',
+      name: 'AI Knowledge',
+      description: 'View what AI knows from your notes',
+      category: 'ai',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>,
+      action: () => setAIKnowledgeOpen(true),
+    },
+
     // Voice recording
     {
       id: 'voice-recording',
@@ -1309,6 +1320,24 @@ export default function App() {
         onSelectNote={(id) => {
           setSelectedId(id);
           setResearchPartnerOpen(false);
+        }}
+        onCreateNote={async (title, content, tags) => {
+          const id = await createNote(content, title, undefined, tags);
+          setSelectedId(id);
+          setMainView('notes');
+          success('Note created', `Created "${title}"`);
+        }}
+      />
+
+      {/* AI Knowledge Dashboard */}
+      <AIKnowledgeDashboard
+        isOpen={aiKnowledgeOpen}
+        onClose={() => setAIKnowledgeOpen(false)}
+        notes={notes}
+        onSelectNote={(id) => {
+          setSelectedId(id);
+          setAIKnowledgeOpen(false);
+          setMainView('notes');
         }}
       />
     </div>

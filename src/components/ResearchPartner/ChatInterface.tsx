@@ -12,12 +12,17 @@ import {
   type Message,
   type Conversation,
   type Citation,
+  type ExtractedTask,
   createConversation,
   getConversation,
   getAllConversations,
   deleteConversation,
   sendMessage,
-  getFollowUpSuggestions,
+  getAIFollowUpSuggestions,
+  extractTasksFromConversation,
+  generateMeetingBrief,
+  generateResearchBrief,
+  briefToNoteContent,
   isResearchPartnerAvailable,
 } from '../../services/researchPartner';
 
@@ -26,9 +31,10 @@ interface ChatInterfaceProps {
   onClose: () => void;
   notes: Note[];
   onSelectNote: (id: string) => void;
+  onCreateNote?: (title: string, content: string, tags: string[]) => void;
 }
 
-export function ChatInterface({ isOpen, onClose, notes, onSelectNote }: ChatInterfaceProps) {
+export function ChatInterface({ isOpen, onClose, notes, onSelectNote, onCreateNote }: ChatInterfaceProps) {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [currentConversation, setCurrentConversation] = useState<Conversation | null>(null);
   const [input, setInput] = useState('');
@@ -36,6 +42,12 @@ export function ChatInterface({ isOpen, onClose, notes, onSelectNote }: ChatInte
   const [error, setError] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [showSidebar, setShowSidebar] = useState(true);
+  const [extractedTasks, setExtractedTasks] = useState<ExtractedTask[]>([]);
+  const [showToolsMenu, setShowToolsMenu] = useState(false);
+  const [briefTopic, setBriefTopic] = useState('');
+  const [showBriefDialog, setShowBriefDialog] = useState(false);
+  const [briefType, setBriefType] = useState<'research' | 'meeting'>('research');
+  const [briefParticipants, setBriefParticipants] = useState('');
 
   const inputRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -54,12 +66,21 @@ export function ChatInterface({ isOpen, onClose, notes, onSelectNote }: ChatInte
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [currentConversation?.messages]);
 
-  // Get follow-up suggestions after AI response
+  // Get AI-powered follow-up suggestions after AI response
   useEffect(() => {
     if (currentConversation && currentConversation.messages.length > 0) {
-      getFollowUpSuggestions(currentConversation.id).then(setSuggestions);
+      getAIFollowUpSuggestions(currentConversation.id, notes).then(setSuggestions);
     }
-  }, [currentConversation?.messages.length]);
+  }, [currentConversation?.messages.length, notes]);
+
+  // Extract tasks from conversation after exchanges
+  useEffect(() => {
+    if (currentConversation && currentConversation.messages.length >= 2) {
+      extractTasksFromConversation(currentConversation.id, notes)
+        .then(setExtractedTasks)
+        .catch(() => setExtractedTasks([]));
+    }
+  }, [currentConversation?.messages.length, notes]);
 
   const loadConversations = async () => {
     const convos = await getAllConversations();
@@ -135,6 +156,64 @@ export function ChatInterface({ isOpen, onClose, notes, onSelectNote }: ChatInte
   const handleCitationClick = (citation: Citation) => {
     onSelectNote(citation.noteId);
     onClose();
+  };
+
+  const handleGenerateBrief = async () => {
+    if (!briefTopic.trim()) return;
+
+    setShowBriefDialog(false);
+    setLoading(true);
+    setError(null);
+
+    try {
+      let brief: string;
+      let citations: Citation[];
+
+      if (briefType === 'meeting') {
+        const participants = briefParticipants.split(',').map(p => p.trim()).filter(Boolean);
+        const result = await generateMeetingBrief(briefTopic, participants, notes);
+        brief = result.brief;
+        citations = result.citations;
+      } else {
+        const result = await generateResearchBrief(briefTopic, notes);
+        brief = result.brief;
+        citations = result.citations;
+      }
+
+      // Create a note with the brief if handler available
+      if (onCreateNote) {
+        const noteContent = briefToNoteContent(briefTopic, brief, citations);
+        onCreateNote(noteContent.title, noteContent.content, noteContent.tags);
+      }
+
+      // Also show in conversation
+      if (currentConversation) {
+        const systemMsg: Message = {
+          id: uuidv4(),
+          role: 'assistant',
+          content: `📋 **${briefType === 'meeting' ? 'Meeting' : 'Research'} Brief: ${briefTopic}**\n\n${brief}`,
+          citations,
+          timestamp: new Date(),
+        };
+        currentConversation.messages.push(systemMsg);
+        const updated = await getConversation(currentConversation.id);
+        if (updated) setCurrentConversation(updated);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to generate brief');
+    } finally {
+      setLoading(false);
+      setBriefTopic('');
+      setBriefParticipants('');
+    }
+  };
+
+  const handleAddTaskToNote = (task: ExtractedTask) => {
+    if (onCreateNote) {
+      const content = `# Task\n\n- [ ] ${task.task}\n\nPriority: ${task.priority}`;
+      onCreateNote(`Task: ${task.task.slice(0, 30)}...`, content, ['task', `priority-${task.priority}`]);
+      setExtractedTasks(prev => prev.filter(t => t.id !== task.id));
+    }
   };
 
   const formatMessage = (content: string) => {
@@ -226,15 +305,106 @@ export function ChatInterface({ isOpen, onClose, notes, onSelectNote }: ChatInte
               </div>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 rounded transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Tools menu */}
+            <div className="relative">
+              <button
+                onClick={() => setShowToolsMenu(!showToolsMenu)}
+                className="p-2 text-gray-400 hover:text-gray-600 rounded transition-colors"
+                title="Tools"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+                </svg>
+              </button>
+              {showToolsMenu && (
+                <div className="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-10">
+                  <button
+                    onClick={() => { setShowToolsMenu(false); setBriefType('research'); setShowBriefDialog(true); }}
+                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Generate Research Brief
+                  </button>
+                  <button
+                    onClick={() => { setShowToolsMenu(false); setBriefType('meeting'); setShowBriefDialog(true); }}
+                    className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-100 flex items-center gap-2"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    Prepare for Meeting
+                  </button>
+                </div>
+              )}
+            </div>
+            <button
+              onClick={onClose}
+              className="p-2 text-gray-400 hover:text-gray-600 rounded transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
+
+        {/* Brief generation dialog */}
+        {showBriefDialog && (
+          <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/30">
+            <div className="bg-white rounded-xl shadow-xl p-6 w-full max-w-md mx-4">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">
+                {briefType === 'meeting' ? 'Prepare for Meeting' : 'Generate Research Brief'}
+              </h3>
+              <div className="space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    {briefType === 'meeting' ? 'Meeting Topic' : 'Research Topic'}
+                  </label>
+                  <input
+                    type="text"
+                    value={briefTopic}
+                    onChange={(e) => setBriefTopic(e.target.value)}
+                    placeholder={briefType === 'meeting' ? 'e.g., Q1 Planning, Product Review' : 'e.g., Marketing Strategy, Project Phoenix'}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    autoFocus
+                  />
+                </div>
+                {briefType === 'meeting' && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Participants (optional, comma-separated)
+                    </label>
+                    <input
+                      type="text"
+                      value={briefParticipants}
+                      onChange={(e) => setBriefParticipants(e.target.value)}
+                      placeholder="e.g., John, Sarah, Marketing Team"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    />
+                  </div>
+                )}
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button
+                  onClick={() => setShowBriefDialog(false)}
+                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleGenerateBrief}
+                  disabled={!briefTopic.trim()}
+                  className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 disabled:opacity-50"
+                >
+                  Generate
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Not available warning */}
         {!isAvailable && (
@@ -363,6 +533,38 @@ export function ChatInterface({ isOpen, onClose, notes, onSelectNote }: ChatInte
         {error && (
           <div className="mx-4 mb-2 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
             {error}
+          </div>
+        )}
+
+        {/* Extracted tasks */}
+        {extractedTasks.length > 0 && currentConversation && !loading && onCreateNote && (
+          <div className="mx-4 mb-2 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-4 h-4 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+              </svg>
+              <span className="text-sm font-medium text-purple-700">Tasks detected</span>
+            </div>
+            <div className="space-y-1">
+              {extractedTasks.map(task => (
+                <div key={task.id} className="flex items-center justify-between gap-2 text-sm">
+                  <span className="text-gray-700 flex-1">{task.task}</span>
+                  <span className={`px-1.5 py-0.5 text-xs rounded ${
+                    task.priority === 'high' ? 'bg-red-100 text-red-700' :
+                    task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700' :
+                    'bg-gray-100 text-gray-600'
+                  }`}>
+                    {task.priority}
+                  </span>
+                  <button
+                    onClick={() => handleAddTaskToNote(task)}
+                    className="px-2 py-1 text-xs text-purple-600 hover:bg-purple-100 rounded transition-colors"
+                  >
+                    Add as note
+                  </button>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

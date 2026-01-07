@@ -695,33 +695,33 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 #### Phase 3: Proactive Assistance
 
-- [ ] Implement "Research Brief" generation
-  - [ ] "Prepare me for meeting with [Company]"
-  - [ ] AI searches notes for company mentions
-  - [ ] Generates structured brief with talking points
-  - [ ] Creates new note with brief
+- [x] Implement "Research Brief" generation
+  - [x] "Prepare me for meeting with [Company]"
+  - [x] AI searches notes for company mentions
+  - [x] Generates structured brief with talking points
+  - [x] Creates new note with brief
 
-- [ ] Add task creation from conversation
-  - [ ] AI can suggest creating tasks
-  - [ ] "Add as task" button on suggestions
-  - [ ] Tasks linked to relevant notes
+- [x] Add task creation from conversation
+  - [x] AI can suggest creating tasks
+  - [x] "Add as task" button on suggestions
+  - [x] Tasks linked to relevant notes
 
-- [ ] Implement follow-up suggestions
-  - [ ] After AI response, suggest related questions
-  - [ ] "You might also want to know..."
-  - [ ] Based on note connections
+- [x] Implement follow-up suggestions
+  - [x] After AI response, suggest related questions
+  - [x] "You might also want to know..."
+  - [x] Based on note connections
 
 #### Phase 4: Long-term Memory (Advanced)
 
-- [ ] Implement conversation persistence
-  - [ ] Save conversation history to IndexedDB
-  - [ ] Resume previous conversations
-  - [ ] Reference past conversations in new ones
+- [x] Implement conversation persistence
+  - [x] Save conversation history to IndexedDB
+  - [x] Resume previous conversations
+  - [x] Reference past conversations in new ones
 
-- [ ] Add "AI knows" summary
-  - [ ] Dashboard showing what AI has learned
-  - [ ] Key facts extracted from notes
-  - [ ] User can correct or remove facts
+- [x] Add "AI knows" summary
+  - [x] Dashboard showing what AI has learned
+  - [x] Key facts extracted from notes
+  - [x] User can correct or remove facts
 
 **Open Questions:**
 - How much note content to include in AI context? (cost vs quality)
