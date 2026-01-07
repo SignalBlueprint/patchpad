@@ -4,12 +4,14 @@ import { audioRecorder, formatDuration, isTranscriptionAvailable, type Recording
 interface AudioRecorderProps {
   onTranscriptionComplete: (result: TranscriptionResult & { summary?: string }) => void;
   onClose: () => void;
+  /** Quick capture mode: simplified UI, auto-start, no review step */
+  quickCapture?: boolean;
 }
 
 type RecorderStep = 'idle' | 'recording' | 'processing' | 'review';
 
-export function AudioRecorder({ onTranscriptionComplete, onClose }: AudioRecorderProps) {
-  const [step, setStep] = useState<RecorderStep>('idle');
+export function AudioRecorder({ onTranscriptionComplete, onClose, quickCapture = false }: AudioRecorderProps) {
+  const [step, setStep] = useState<RecorderStep>(quickCapture ? 'recording' : 'idle');
   const [recordingState, setRecordingState] = useState<RecordingState>({
     isRecording: false,
     isPaused: false,
@@ -22,6 +24,32 @@ export function AudioRecorder({ onTranscriptionComplete, onClose }: AudioRecorde
 
   // Check for transcription support
   const transcriptionAvailable = isTranscriptionAvailable();
+
+  // Auto-start recording in quick capture mode
+  useEffect(() => {
+    if (quickCapture) {
+      const startQuickCapture = async () => {
+        if (!audioRecorder.isSupported()) {
+          setError('Audio recording is not supported in this browser');
+          return;
+        }
+
+        try {
+          const hasPermission = await audioRecorder.requestPermission();
+          if (!hasPermission) {
+            setError('Microphone permission denied');
+            return;
+          }
+
+          await audioRecorder.startRecording(setRecordingState);
+        } catch (err) {
+          setError(err instanceof Error ? err.message : 'Failed to start recording');
+        }
+      };
+
+      startQuickCapture();
+    }
+  }, [quickCapture]);
 
   useEffect(() => {
     // Cleanup on unmount
@@ -69,12 +97,18 @@ export function AudioRecorder({ onTranscriptionComplete, onClose }: AudioRecorde
       // Transcribe the audio
       const result = await audioRecorder.transcribe(blob);
       setTranscription(result);
-      setStep('review');
+
+      // In quick capture mode, skip review and directly complete
+      if (quickCapture) {
+        onTranscriptionComplete(result);
+      } else {
+        setStep('review');
+      }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to process recording');
-      setStep('idle');
+      setStep(quickCapture ? 'recording' : 'idle');
     }
-  }, []);
+  }, [quickCapture, onTranscriptionComplete]);
 
   const handleCancelRecording = useCallback(() => {
     audioRecorder.cancelRecording();

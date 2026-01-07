@@ -9,6 +9,7 @@ import { SelectionToolbar } from './components/SelectionToolbar';
 import { AskAIDialog } from './components/AskAIDialog';
 import { AskNotesDialog } from './components/AskNotesDialog';
 import { AudioRecorder } from './components/AudioRecorder';
+import { QuickCaptureButton } from './components/QuickCaptureButton';
 import { BrainDashboard } from './components/BrainDashboard';
 import { BacklinksPanel } from './components/BacklinksPanel';
 import { DailyDigestModal } from './components/DailyDigestModal';
@@ -360,6 +361,37 @@ export default function App() {
     setSelectedId(id);
     success('Voice note created', `${Math.round(result.duration)}s of audio transcribed`);
   }, [createNote, info, success]);
+
+  // Handle quick capture from floating button
+  const handleQuickCapture = useCallback(async (result: TranscriptionResult) => {
+    info('Processing...', 'Creating note from voice capture');
+
+    // Try to summarize the transcription if AI is available
+    let noteContent = result.text;
+    if (isAIAvailable()) {
+      const summary = await summarizeTranscription(result.text);
+      if (summary) {
+        noteContent = summary;
+      }
+    }
+
+    // Create a new note with the transcription
+    const title = `Voice Note - ${new Date().toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    })}`;
+
+    const id = await createNote(noteContent, title);
+    setSelectedId(id);
+    setMainView('notes'); // Switch to notes view to see the new note
+    success('Voice note created', `${Math.round(result.duration)}s of audio transcribed`);
+  }, [createNote, info, success]);
+
+  const handleQuickCaptureError = useCallback((errorMessage: string) => {
+    error('Voice capture failed', errorMessage);
+  }, [error]);
 
   // Canvas handlers
   const handleCanvasNoteClick = useCallback((id: string) => {
@@ -1010,6 +1042,12 @@ export default function App() {
       <div className="fixed bottom-4 left-4 text-xs text-gray-400">
         Press <kbd className="px-1.5 py-0.5 bg-gray-200 rounded text-gray-600">Ctrl+K</kbd> to open command palette
       </div>
+
+      {/* Quick Capture FAB */}
+      <QuickCaptureButton
+        onCapture={handleQuickCapture}
+        onError={handleQuickCaptureError}
+      />
     </div>
   );
 }

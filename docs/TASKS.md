@@ -459,22 +459,22 @@ PatchPad is an AI-augmented markdown note editor designed to transform raw thoug
 
 #### Phase 1: Quick Capture Button
 
-- [ ] Create `src/components/QuickCaptureButton.tsx`
-  - [ ] Floating action button (FAB) in bottom-right corner
-  - [ ] Microphone icon, pulsing animation when recording
-  - [ ] Tap to start, tap again to stop
-  - [ ] Long-press to cancel
+- [x] Create `src/components/QuickCaptureButton.tsx`
+  - [x] Floating action button (FAB) in bottom-right corner
+  - [x] Microphone icon, pulsing animation when recording
+  - [x] Tap to start, tap again to stop
+  - [x] Long-press to cancel
 
-- [ ] Enhance `src/components/AudioRecorder.tsx`
-  - [ ] Add `onQuickCapture` mode prop
-  - [ ] Simplified UI for quick capture: just waveform and timer
-  - [ ] Auto-start recording on mount
-  - [ ] Return transcription result on stop
+- [x] Enhance `src/components/AudioRecorder.tsx`
+  - [x] Add `onQuickCapture` mode prop
+  - [x] Simplified UI for quick capture: just waveform and timer
+  - [x] Auto-start recording on mount
+  - [x] Return transcription result on stop
 
-- [ ] Integrate quick capture flow
-  - [ ] Recording → Transcription → AI Summary → New Note
-  - [ ] Show progress: "Recording..." → "Transcribing..." → "Creating note..."
-  - [ ] New note appears in inbox/unfiled
+- [x] Integrate quick capture flow
+  - [x] Recording → Transcription → AI Summary → New Note
+  - [x] Show progress: "Recording..." → "Transcribing..." → "Creating note..."
+  - [x] New note appears in inbox/unfiled
 
 #### Phase 2: Transcription Improvements
 

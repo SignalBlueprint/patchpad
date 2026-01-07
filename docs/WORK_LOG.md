@@ -2,6 +2,39 @@
 
 ---
 
+## Voice-First Capture Phase 1: Quick Capture Button (Horizon 2.3)
+**Completed:** 2026-01-06
+**Files Changed:**
+- `src/components/QuickCaptureButton.tsx` — New floating action button component with recording state, audio level visualization, long-press to cancel
+- `src/components/AudioRecorder.tsx` — Enhanced with `quickCapture` prop for auto-start and skip-review modes
+- `src/App.tsx` — Added QuickCaptureButton import and integration, handleQuickCapture and handleQuickCaptureError handlers
+
+**Implementation Notes:**
+- QuickCaptureButton is a floating action button (FAB) positioned in bottom-right corner
+- Tap once to start recording, tap again to stop and transcribe
+- Long-press (500ms) while recording to cancel without transcription
+- Pulsing animation and ring effect while recording
+- Audio level visualization with 8 animated bars
+- Duration display above button while recording
+- Processing indicator with spinner while transcribing
+- On completion, creates new Voice Note with AI summarization (if available)
+- Error handling via toast notifications
+- AudioRecorder enhanced with `quickCapture` prop that:
+  - Auto-starts recording on mount
+  - Skips review step and directly calls onTranscriptionComplete
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- Build succeeds (`npm run build`)
+- Phase 1 acceptance criteria met:
+  - Floating capture button always visible
+  - Tap once to record, tap again to create note
+  - Recording → Transcription → AI Summary → New Note flow
+  - Progress shown: Recording... → Transcribing... → Creating note...
+  - New note appears and view switches to notes
+
+---
+
 ## Link Suggestions Toast (Horizon 1.1)
 **Completed:** 2026-01-06
 **Files Changed:**
