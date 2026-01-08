@@ -309,60 +309,62 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 #### Phase 1: Shareable Links (Validation Experiment)
 
-- [ ] Update Supabase schema - add columns to notes table
+- [x] Update Supabase schema - add columns to notes table
   ```sql
   ALTER TABLE notes ADD COLUMN shared BOOLEAN DEFAULT FALSE;
   ALTER TABLE notes ADD COLUMN share_token UUID;
+  ALTER TABLE notes ADD COLUMN share_view_count INTEGER DEFAULT 0;
   CREATE INDEX idx_notes_share_token ON notes(share_token);
   ```
 
-- [ ] Update `src/config/supabase.ts` - extend Note type
+- [x] Update `src/config/supabase.ts` - extend Note type
   ```typescript
   interface SupabaseNote {
     // ... existing fields
     shared: boolean;
     share_token: string | null;
+    share_view_count: number;
   }
   ```
 
-- [ ] Create `src/services/sharing.ts`
-  - [ ] Export async function `generateShareLink(noteId: string): Promise<string>`
+- [x] Create `src/services/sharing.ts`
+  - [x] Export async function `generateShareLink(noteId: string): Promise<string>`
     - Generate UUID for share_token
     - Update note in Supabase with `shared: true, share_token: token`
     - Return URL: `${window.location.origin}/shared/${token}`
-  - [ ] Export async function `getSharedNote(token: string): Promise<Note | null>`
+  - [x] Export async function `getSharedNote(token: string): Promise<Note | null>`
     - Query Supabase by share_token
     - Return null if not found or `shared: false`
-  - [ ] Export async function `revokeShareLink(noteId: string): Promise<void>`
+  - [x] Export async function `revokeShareLink(noteId: string): Promise<void>`
     - Set `shared: false, share_token: null`
 
-- [ ] Create `src/components/ShareNoteDialog.tsx`
-  - [ ] Accept props: `noteId: string`, `isOpen: boolean`, `onClose: () => void`
-  - [ ] Show toggle: "Enable sharing"
-  - [ ] Display generated link with copy button
-  - [ ] "Revoke" button to disable sharing
-  - [ ] Analytics display: view count (future)
+- [x] Create `src/components/ShareNoteDialog.tsx`
+  - [x] Accept props: `noteId: string`, `isOpen: boolean`, `onClose: () => void`
+  - [x] Show toggle: "Enable sharing"
+  - [x] Display generated link with copy button
+  - [x] "Revoke" button to disable sharing
+  - [x] Analytics display: view count
 
-- [ ] Create `src/pages/SharedNote.tsx` (or route handler)
-  - [ ] Parse `share_token` from URL
-  - [ ] Fetch note via `getSharedNote()`
-  - [ ] Render read-only markdown view using `MarkdownPreview.tsx`
-  - [ ] Show "Open in PatchPad" prompt for non-users
-  - [ ] 404 page for invalid/revoked tokens
+- [x] Create `src/pages/SharedNote.tsx` (or route handler)
+  - [x] Parse `share_token` from URL
+  - [x] Fetch note via `getSharedNote()`
+  - [x] Render read-only markdown view using `MarkdownPreview.tsx`
+  - [x] Show "Open in PatchPad" prompt for non-users
+  - [x] 404 page for invalid/revoked tokens
 
-- [ ] Add routing for `/shared/:token`
-  - [ ] Update `src/main.tsx` or create router
-  - [ ] Lazy load SharedNote component
+- [x] Add routing for `/shared/:token`
+  - [x] Update `src/main.tsx` with BrowserRouter
+  - [x] SharedNoteRoute wrapper component
 
-- [ ] Add "Share" button to Editor toolbar
-  - [ ] Icon: share/link icon
-  - [ ] Opens ShareNoteDialog
-  - [ ] Only visible when sync is enabled
+- [x] Add "Share" button to Editor toolbar
+  - [x] Icon: share/link icon
+  - [x] Opens ShareNoteDialog
+  - [x] Only visible when sync is enabled
 
-- [ ] Track sharing analytics
-  - [ ] Log share creation events to localStorage
-  - [ ] Log share view events (increment counter in Supabase)
-  - [ ] Key: `patchpad_share_analytics`
+- [x] Track sharing analytics
+  - [x] Log share creation events to localStorage
+  - [x] Log share view events (increment counter in Supabase)
+  - [x] Key: `patchpad_share_analytics`
 
 **Acceptance Criteria:**
 - "Share" button generates unique URL

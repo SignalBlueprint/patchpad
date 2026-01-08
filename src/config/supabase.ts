@@ -39,6 +39,10 @@ export interface Database {
           updated_at: string;
           version: number;
           deleted_at: string | null;
+          // Sharing fields
+          shared: boolean;
+          share_token: string | null;
+          share_view_count: number;
         };
         Insert: Omit<Database['public']['Tables']['notes']['Row'], 'version'> & { version?: number };
         Update: Partial<Database['public']['Tables']['notes']['Insert']>;
@@ -158,6 +162,10 @@ export function noteToSupabase(note: Note, userId: string): Database['public']['
     created_at: note.createdAt.toISOString(),
     updated_at: note.updatedAt.toISOString(),
     deleted_at: null,
+    // Sharing defaults - only updated through sharing service
+    shared: false,
+    share_token: null,
+    share_view_count: 0,
   };
 }
 
@@ -207,6 +215,10 @@ CREATE TABLE IF NOT EXISTS notes (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   version INTEGER NOT NULL DEFAULT 1,
   deleted_at TIMESTAMPTZ,
+  -- Sharing fields
+  shared BOOLEAN NOT NULL DEFAULT false,
+  share_token UUID,
+  share_view_count INTEGER NOT NULL DEFAULT 0,
 
   CONSTRAINT notes_folder_fk FOREIGN KEY (folder_id) REFERENCES notes(id) ON DELETE SET NULL
 );
@@ -227,6 +239,7 @@ CREATE INDEX IF NOT EXISTS notes_user_id_idx ON notes(user_id);
 CREATE INDEX IF NOT EXISTS notes_updated_at_idx ON notes(updated_at);
 CREATE INDEX IF NOT EXISTS notes_parent_id_idx ON notes(parent_id);
 CREATE INDEX IF NOT EXISTS notes_folder_id_idx ON notes(folder_id);
+CREATE INDEX IF NOT EXISTS notes_share_token_idx ON notes(share_token);
 CREATE INDEX IF NOT EXISTS sync_queue_user_id_idx ON sync_queue(user_id);
 CREATE INDEX IF NOT EXISTS sync_queue_synced_at_idx ON sync_queue(synced_at);
 
@@ -246,6 +259,10 @@ CREATE POLICY "Users can update own notes" ON notes
 
 CREATE POLICY "Users can delete own notes" ON notes
   FOR DELETE USING (auth.uid() = user_id);
+
+-- Allow anyone to view shared notes (read-only)
+CREATE POLICY "Anyone can view shared notes" ON notes
+  FOR SELECT USING (shared = true AND share_token IS NOT NULL);
 
 CREATE POLICY "Users can view own sync_queue" ON sync_queue
   FOR SELECT USING (auth.uid() = user_id);

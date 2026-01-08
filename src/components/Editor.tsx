@@ -21,6 +21,8 @@ interface EditorProps {
   onSelectionChange?: (selection: { from: number; to: number; text: string } | null) => void;
   onWikiLinkClick?: (targetTitle: string) => void;
   allNotes?: Note[];
+  onShare?: () => void;
+  isSyncEnabled?: boolean;
 }
 
 // Line height for text alignment with dot grid
@@ -258,7 +260,7 @@ const highlightsField = StateField.define<DecorationSet>({
   provide: f => EditorView.decorations.from(f),
 });
 
-export function Editor({ note, onSave, showPreview, onTogglePreview, onSelectionChange, onWikiLinkClick, allNotes = [], editorContainerRef }: EditorProps & { editorContainerRef?: React.RefObject<HTMLDivElement> }) {
+export function Editor({ note, onSave, showPreview, onTogglePreview, onSelectionChange, onWikiLinkClick, allNotes = [], onShare, isSyncEnabled = false, editorContainerRef }: EditorProps & { editorContainerRef?: React.RefObject<HTMLDivElement> }) {
   const editorRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const [showLineNumbers, setShowLineNumbers] = useState(true);
@@ -686,6 +688,21 @@ export function Editor({ note, onSave, showPreview, onTogglePreview, onSelection
               </svg>
             )}
           </button>
+
+          {/* Share button - only visible when sync is enabled */}
+          {isSyncEnabled && onShare && (
+            <button
+              onClick={onShare}
+              className={`p-1.5 rounded text-xs transition-colors ${
+                darkMode ? 'text-gray-400 hover:bg-gray-700' : 'text-gray-500 hover:bg-gray-100'
+              }`}
+              title="Share note"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+              </svg>
+            </button>
+          )}
 
           {/* Preview toggle */}
           <button

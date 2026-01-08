@@ -2,6 +2,42 @@
 
 ---
 
+## Real-time Collaboration Phase 1: Shareable Links (Horizon 2.1)
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/config/supabase.ts` — Extended Database interface with sharing fields (shared, share_token, share_view_count), updated SETUP_SQL with columns and RLS policy for public read access, updated noteToSupabase with sharing defaults
+- `src/services/sharing.ts` — New service with generateShareLink, getSharedNote, revokeShareLink, isNoteShared, getShareUrl, getSharedNotes functions, plus local analytics storage
+- `src/components/ShareNoteDialog.tsx` — New dialog component for managing share links with enable/disable toggle, copy link button, view count analytics, and revoke button
+- `src/pages/SharedNote.tsx` — New page component for viewing shared notes with loading state, 404 handling, and markdown preview
+- `src/main.tsx` — Added BrowserRouter, Routes, SharedNoteRoute wrapper for /shared/:token routing
+- `src/components/Editor.tsx` — Added Share button to toolbar (visible when sync enabled)
+- `src/App.tsx` — Added ShareNoteDialog state, passed onShare/isSyncEnabled to Editor, added command palette entry for sharing
+- `package.json` — Added react-router-dom dependency
+
+**Implementation Notes:**
+- Supabase schema extended with three new columns: shared (boolean), share_token (UUID), share_view_count (integer)
+- RLS policy "Anyone can view shared notes" allows public read access to notes where shared=true and share_token IS NOT NULL
+- Share tokens generated via UUID v4 for uniqueness
+- View count automatically incremented when shared note is fetched
+- Local analytics stored in localStorage (patchpad_share_analytics) for validation metrics
+- ShareNoteDialog shows enabled/disabled state with green indicator, copy link functionality, view count display
+- SharedNote page renders read-only markdown with "Open in PatchPad" CTA button
+- React Router DOM added for client-side routing with BrowserRouter
+- Share button conditionally rendered in Editor toolbar when isSyncEnabled=true
+- Command palette entry "Share Note" disabled when no note selected or sync not enabled
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- All tests pass (`npx vitest run`)
+- All acceptance criteria for Phase 1 met:
+  - "Share" button generates unique URL
+  - Anyone with URL can view note (read-only)
+  - Note owner can revoke link
+  - Invalid tokens show 404
+  - Share events logged for validation metrics
+
+---
+
 ## Conversation Insights (Horizon 1.3)
 **Completed:** 2026-01-07
 **Files Changed:**
