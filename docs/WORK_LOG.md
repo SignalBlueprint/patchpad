@@ -2,6 +2,37 @@
 
 ---
 
+## Second Brain Dashboard (Horizon 1.1)
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/components/SecondBrainDashboard.tsx` — New component with glass-morphism modal, greeting section, stats cards, "Brewing Ideas" section, "Fading Memories" section, and startup preference toggle
+- `src/services/dashboardAnalytics.ts` — New service with getMostEditedNotes, getUnconnectedNotes, getFadingNotes, getEditingStreak, getTimeGreeting, and localStorage helpers
+- `src/services/dashboardAnalytics.test.ts` — Comprehensive test suite (22 tests) covering all analytics functions
+- `src/App.tsx` — Integrated SecondBrainDashboard with state, command palette entry (Ctrl+Shift+B), keyboard shortcut handler, auto-show on startup logic, and concept loading
+
+**Implementation Notes:**
+- Dashboard shows personalized greeting with time-based message
+- Stats row displays: Total Notes, Editing Streak (consecutive days), Concepts count
+- "Active This Week" shows clickable note titles from last 7 days
+- "Brewing Ideas" section finds unconnected notes (no [[wiki links]]) from last 14 days
+  - Uses findRelatedNotes() from ai.ts to suggest connections
+  - "Connect to..." button appends [[targetTitle]] to note content
+- "Fading Memories" section finds notes older than 90 days that mention recent concepts
+  - Shows days since update and relevant concept tags
+  - "Revisit" button navigates to note
+- "Show on startup" checkbox persists preference to localStorage
+- Ctrl+Shift+B shortcut now opens Second Brain Dashboard (replaced Knowledge Brain shortcut)
+- Knowledge Brain renamed to "Knowledge Graph" in command palette (no shortcut)
+- Concepts loaded from buildKnowledgeGraph() when dashboard opens
+
+**Verification:**
+- All 22 tests pass for dashboardAnalytics.ts
+- TypeScript compiles without errors in new files
+- Dashboard opens via Ctrl+Shift+B or command palette "Second Brain Dashboard"
+- All acceptance criteria met
+
+---
+
 ## AI Research Partner Phases 3-4: Proactive Assistance & Long-term Memory (Horizon 3.2)
 **Completed:** 2026-01-07
 **Files Changed:**

@@ -27,60 +27,60 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 #### Phase 1: Core Dashboard Component
 
-- [ ] Create `src/components/SecondBrainDashboard.tsx`
-  - [ ] Accept props: `notes: Note[]`, `conversations: Conversation[]`, `onNavigateToNote: (id: string) => void`, `onClose: () => void`
-  - [ ] Use glass-morphism styling consistent with existing modals (reference `DailyDigestModal.tsx` for patterns)
-  - [ ] Layout: 3-column grid with responsive breakpoints (md:grid-cols-3)
+- [x] Create `src/components/SecondBrainDashboard.tsx`
+  - [x] Accept props: `notes: Note[]`, `concepts: Concept[]`, `onNavigateToNote: (id: string) => void`, `onConnectNotes: (noteId, targetTitle) => void`, `onClose: () => void`
+  - [x] Use glass-morphism styling consistent with existing modals (reference `DailyDigestModal.tsx` for patterns)
+  - [x] Layout: 2-column responsive grid (md:grid-cols-2)
 
-- [ ] Create greeting section (top center)
-  - [ ] Time-based greeting: "Good morning/afternoon/evening"
-  - [ ] Show most-edited note titles from last 7 days (query by `updatedAt`)
-  - [ ] Calculate editing streak: consecutive days with note updates
+- [x] Create greeting section (top center)
+  - [x] Time-based greeting: "Good morning/afternoon/evening"
+  - [x] Show most-edited note titles from last 7 days (query by `updatedAt`)
+  - [x] Calculate editing streak: consecutive days with note updates
 
-- [ ] Create "Brewing Ideas" section (left column)
-  - [ ] Query notes with no outgoing wiki links: `notes.filter(n => !n.content.includes('[['))`
-  - [ ] Filter to notes updated in last 14 days
-  - [ ] For each, call `findRelatedNotes()` from `src/services/ai.ts` to suggest connections
-  - [ ] Display as cards with "Connect to..." suggestion button
-  - [ ] On click, insert `[[suggested title]]` at end of note content
+- [x] Create "Brewing Ideas" section (left column)
+  - [x] Query notes with no outgoing wiki links: `notes.filter(n => !n.content.includes('[['))`
+  - [x] Filter to notes updated in last 14 days
+  - [x] For each, call `findRelatedNotes()` from `src/services/ai.ts` to suggest connections
+  - [x] Display as cards with "Connect to..." suggestion button
+  - [x] On click, insert `[[suggested title]]` at end of note content
 
-- [ ] Create "Fading Memories" section (right column)
-  - [ ] Query notes not updated in 90+ days: `notes.filter(n => daysSince(n.updatedAt) > 90)`
-  - [ ] Cross-reference with recent concepts using `extractConcepts()` from `src/services/brain.ts`
-  - [ ] Show notes that mention concepts you've written about recently
-  - [ ] Display as cards with "Revisit" button that navigates to note
+- [x] Create "Fading Memories" section (right column)
+  - [x] Query notes not updated in 90+ days: `notes.filter(n => daysSince(n.updatedAt) > 90)`
+  - [x] Cross-reference with recent concepts using `extractConcepts()` from `src/services/brain.ts`
+  - [x] Show notes that mention concepts you've written about recently
+  - [x] Display as cards with "Revisit" button that navigates to note
 
 #### Phase 2: Data Analysis Services
 
-- [ ] Create `src/services/dashboardAnalytics.ts`
-  - [ ] Export function `getMostEditedNotes(notes: Note[], days: number): Note[]`
+- [x] Create `src/services/dashboardAnalytics.ts`
+  - [x] Export function `getMostEditedNotes(notes: Note[], days: number): Note[]`
     - Sort by edit frequency (count updates within date range)
     - Return top 5
-  - [ ] Export function `getUnconnectedNotes(notes: Note[]): Note[]`
+  - [x] Export function `getUnconnectedNotes(notes: Note[]): Note[]`
     - Parse content for `[[...]]` patterns
     - Return notes with zero outgoing links
-  - [ ] Export function `getFadingNotes(notes: Note[], concepts: Concept[]): FadingNote[]`
+  - [x] Export function `getFadingNotes(notes: Note[], concepts: Concept[]): FadingNote[]`
     - Filter notes older than 90 days
     - Match against recent concept mentions
     - Return with relevance score
-  - [ ] Export function `getEditingStreak(notes: Note[]): number`
+  - [x] Export function `getEditingStreak(notes: Note[]): number`
     - Count consecutive days with at least one note update
     - Start from today, work backwards
 
-- [ ] Add tests in `src/services/dashboardAnalytics.test.ts`
-  - [ ] Test: getMostEditedNotes returns correct order
-  - [ ] Test: getUnconnectedNotes ignores notes with links
-  - [ ] Test: getFadingNotes cross-references concepts correctly
-  - [ ] Test: getEditingStreak handles gaps
+- [x] Add tests in `src/services/dashboardAnalytics.test.ts`
+  - [x] Test: getMostEditedNotes returns correct order
+  - [x] Test: getUnconnectedNotes ignores notes with links
+  - [x] Test: getFadingNotes cross-references concepts correctly
+  - [x] Test: getEditingStreak handles gaps
 
 #### Phase 3: Integration
 
-- [ ] Add dashboard state to `src/App.tsx`
+- [x] Add dashboard state to `src/App.tsx`
   ```typescript
   const [secondBrainOpen, setSecondBrainOpen] = useState(false);
   ```
 
-- [ ] Add command palette entry in `App.tsx` commands array
+- [x] Add command palette entry in `App.tsx` commands array
   ```typescript
   {
     id: 'second-brain',
@@ -92,13 +92,13 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
   }
   ```
 
-- [ ] Register keyboard shortcut in `useEffect` keyboard handler
-  - [ ] `Ctrl+Shift+B` → `setSecondBrainOpen(true)`
-  - [ ] Note: This replaces existing brain dashboard shortcut - update `knowledge-brain` command
+- [x] Register keyboard shortcut in `useEffect` keyboard handler
+  - [x] `Ctrl+Shift+B` → `setSecondBrainOpen(true)`
+  - [x] Note: This replaces existing brain dashboard shortcut - update `knowledge-brain` command
 
-- [ ] Add localStorage preference for auto-show on login
-  - [ ] Key: `patchpad_show_dashboard_on_load`
-  - [ ] Toggle in dashboard footer: "Show on startup"
+- [x] Add localStorage preference for auto-show on login
+  - [x] Key: `patchpad_show_dashboard_on_load`
+  - [x] Toggle in dashboard footer: "Show on startup"
 
 **Acceptance Criteria:**
 - Dashboard opens via Ctrl+Shift+B or command palette

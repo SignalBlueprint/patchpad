@@ -11,6 +11,7 @@ import { AskNotesDialog } from './components/AskNotesDialog';
 import { AudioRecorder } from './components/AudioRecorder';
 import { QuickCaptureButton } from './components/QuickCaptureButton';
 import { BrainDashboard } from './components/BrainDashboard';
+import { SecondBrainDashboard } from './components/SecondBrainDashboard';
 import { BacklinksPanel } from './components/BacklinksPanel';
 import { DailyDigestModal } from './components/DailyDigestModal';
 import { ExportDialog } from './components/ExportDialog';
@@ -33,7 +34,8 @@ import { applyOps } from './utils/applyOps';
 import { generateStitch, generatePatch } from './api/patch';
 import { isAIAvailable, summarizeTranscription } from './services/ai';
 import { processVoiceNote } from './services/voiceNoteProcessor';
-import { isBrainAvailable } from './services/brain';
+import { isBrainAvailable, buildKnowledgeGraph, type Concept } from './services/brain';
+import { shouldShowDashboardOnStartup } from './services/dashboardAnalytics';
 import { generateDailyDigest, shouldShowDigest, markDigestShown, toggleDigestEnabled, isDigestEnabled, type DailyDigest } from './services/digest';
 import { shouldStoreAudio } from './services/transcription';
 import { parseVoiceCommand } from './services/voiceCommands';
@@ -106,6 +108,11 @@ export default function App() {
   const [researchPartnerOpen, setResearchPartnerOpen] = useState(false);
   const [aiKnowledgeOpen, setAIKnowledgeOpen] = useState(false);
 
+  // Second Brain Dashboard state
+  const [secondBrainOpen, setSecondBrainOpen] = useState(false);
+  const [dashboardConcepts, setDashboardConcepts] = useState<Concept[]>([]);
+  const [dashboardChecked, setDashboardChecked] = useState(false);
+
   const searchInputRef = useRef<HTMLInputElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
   const { toasts, dismissToast, success, error, info, warning } = useToast();
@@ -158,6 +165,33 @@ export default function App() {
     }
   }, [notes, digestChecked]);
 
+  // Check and show Second Brain Dashboard on startup (after digest)
+  useEffect(() => {
+    if (!dashboardChecked && notes.length > 0 && !dailyDigest) {
+      setDashboardChecked(true);
+      if (shouldShowDashboardOnStartup()) {
+        setSecondBrainOpen(true);
+        // Load concepts for dashboard
+        buildKnowledgeGraph(notes.slice(0, 50)).then(graph => {
+          setDashboardConcepts(graph.concepts);
+        }).catch(err => {
+          console.error('Failed to build concepts for dashboard:', err);
+        });
+      }
+    }
+  }, [notes, dashboardChecked, dailyDigest]);
+
+  // Load concepts when dashboard is opened manually
+  useEffect(() => {
+    if (secondBrainOpen && dashboardConcepts.length === 0 && notes.length > 0) {
+      buildKnowledgeGraph(notes.slice(0, 50)).then(graph => {
+        setDashboardConcepts(graph.concepts);
+      }).catch(err => {
+        console.error('Failed to build concepts for dashboard:', err);
+      });
+    }
+  }, [secondBrainOpen, dashboardConcepts.length, notes]);
+
   // Handle closing the daily digest
   const handleCloseDigest = useCallback(() => {
     markDigestShown();
@@ -173,6 +207,17 @@ export default function App() {
       info('Daily Digest disabled', 'You won\'t see daily summaries');
     }
   }, [success, info]);
+
+  // Handle connecting notes from Second Brain Dashboard
+  const handleConnectNotes = useCallback(async (noteId: string, targetTitle: string) => {
+    const note = await getNote(noteId);
+    if (!note) return;
+
+    // Append wiki link to the note content
+    const newContent = note.content + `\n\n[[${targetTitle}]]`;
+    await updateNote(noteId, newContent);
+    success('Note connected', `Added link to [[${targetTitle}]]`);
+  }, [getNote, updateNote, success]);
 
   // Load note content when selected
   useEffect(() => {
@@ -884,14 +929,24 @@ export default function App() {
       action: () => setDictationModeOpen(true),
     },
 
-    // Knowledge Brain
+    // Second Brain Dashboard
+    {
+      id: 'second-brain',
+      name: 'Second Brain Dashboard',
+      description: 'View knowledge insights, brewing ideas, and fading memories',
+      shortcut: 'Ctrl+Shift+B',
+      category: 'view',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>,
+      action: () => setSecondBrainOpen(true),
+    },
+
+    // Knowledge Brain (Graph Visualization)
     {
       id: 'knowledge-brain',
-      name: 'Knowledge Brain',
+      name: 'Knowledge Graph',
       description: 'Visualize concepts and connections across notes',
-      shortcut: 'Ctrl+Shift+B',
       category: 'ai',
-      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" /></svg>,
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>,
       action: () => setBrainDashboardOpen(true),
       disabled: notes.length === 0 || !isBrainAvailable(),
     },
@@ -997,10 +1052,10 @@ export default function App() {
         setAudioRecorderOpen(true);
       }
 
-      // Knowledge Brain shortcut (Ctrl+Shift+B)
-      if (isMod && e.shiftKey && e.key === 'B' && notes.length > 0) {
+      // Second Brain Dashboard shortcut (Ctrl+Shift+B)
+      if (isMod && e.shiftKey && e.key === 'B') {
         e.preventDefault();
-        setBrainDashboardOpen(true);
+        setSecondBrainOpen(true);
       }
 
       // Export shortcut (Ctrl+Shift+E)
@@ -1203,7 +1258,7 @@ export default function App() {
         />
       )}
 
-      {/* Brain Dashboard */}
+      {/* Brain Dashboard (Knowledge Graph) */}
       {brainDashboardOpen && (
         <BrainDashboard
           notes={notes}
@@ -1212,6 +1267,20 @@ export default function App() {
             setBrainDashboardOpen(false);
           }}
           onClose={() => setBrainDashboardOpen(false)}
+        />
+      )}
+
+      {/* Second Brain Dashboard */}
+      {secondBrainOpen && (
+        <SecondBrainDashboard
+          notes={notes}
+          concepts={dashboardConcepts}
+          onNavigateToNote={(id) => {
+            setSelectedId(id);
+            setMainView('notes');
+          }}
+          onConnectNotes={handleConnectNotes}
+          onClose={() => setSecondBrainOpen(false)}
         />
       )}
 
