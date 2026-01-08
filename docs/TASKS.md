@@ -188,14 +188,14 @@ PatchPad is a personal knowledge operating system with AI-powered capture, refin
   - `getAllPositions(): Map<string, CanvasPosition>`
   - `getRoomPeersWithCanvasPositions(): PeerWithCanvasPosition[]`
 
-#### Phase 4: Collaboration Chat
-- [ ] Create `src/components/CollaborationChat.tsx`
+#### Phase 4: Collaboration Chat - COMPLETE
+- [x] Create `src/components/CollaborationChat.tsx`
   - Sidebar panel with message list
   - Input for new messages
   - Show sender name and timestamp
   - Store in Yjs Y.Array for real-time sync
 
-- [ ] Add chat toggle button to canvas toolbar
+- [x] Add chat toggle button to canvas toolbar
 
 #### Phase 5: Session Recording for Collaborative Sessions
 - [ ] Extend `src/services/sessionRecorder.ts`

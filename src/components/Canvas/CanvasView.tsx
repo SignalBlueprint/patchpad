@@ -35,6 +35,10 @@ interface CanvasViewProps {
   collaborationPeers?: Peer[];
   /** Whether connected to the collaboration server */
   collaborationConnected?: boolean;
+  /** Whether collaboration chat is open */
+  collaborationChatOpen?: boolean;
+  /** Callback to toggle chat open/closed */
+  onToggleChat?: () => void;
 }
 
 interface Viewport {
@@ -148,6 +152,8 @@ export function CanvasView({
   collaborationMode = false,
   collaborationPeers = [],
   collaborationConnected = false,
+  collaborationChatOpen = false,
+  onToggleChat,
 }: CanvasViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasContentRef = useRef<HTMLDivElement>(null);
@@ -1011,7 +1017,7 @@ export function CanvasView({
           Drag: pan • Scroll: zoom • Alt+drag: group
         </span>
 
-        {/* Collaboration presence indicator */}
+        {/* Collaboration presence indicator and chat toggle */}
         {collaborationMode && (
           <>
             <div className="w-px h-6 bg-gray-200 mx-1" />
@@ -1020,6 +1026,23 @@ export function CanvasView({
               isConnected={collaborationConnected}
               maxVisible={3}
             />
+
+            {/* Chat toggle button */}
+            {onToggleChat && (
+              <button
+                onClick={onToggleChat}
+                className={`ml-2 p-2 rounded-md transition-colors relative ${
+                  collaborationChatOpen
+                    ? 'bg-indigo-100 text-indigo-700'
+                    : 'hover:bg-gray-100 text-gray-600'
+                }`}
+                title={collaborationChatOpen ? 'Close chat' : 'Open chat'}
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+                </svg>
+              </button>
+            )}
           </>
         )}
       </div>

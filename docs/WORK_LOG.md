@@ -1,5 +1,30 @@
 # PatchPad Work Log
 
+## Live Collaborative Canvases - Phase 4: Collaboration Chat
+**Completed:** 2026-01-08
+
+**Files Changed:**
+- `src/components/CollaborationChat.tsx` — New real-time chat component for collaboration rooms
+- `src/App.tsx` — Added `collaborationChatOpen` state, CollaborationChat import and render, command palette entry for "Toggle Chat", passed chat props to CanvasView
+- `src/components/Canvas/CanvasView.tsx` — Added `collaborationChatOpen` and `onToggleChat` props, added chat toggle button to toolbar in collaboration mode
+
+**Implementation Notes:**
+- Chat messages stored in Yjs Y.Array ('chatMessages') for instant real-time sync
+- ChatMessage type includes: id, senderId, senderName, senderColor, content, timestamp
+- Floating chat panel (fixed position, bottom-right) with indigo/purple gradient header
+- Own messages appear on right (indigo), others on left (white) with sender name colored
+- Messages scroll to bottom on new arrivals
+- Enter key sends message, empty messages disabled
+- Online count shows (peers + 1 for self)
+- Chat toggle button in canvas toolbar when collaborationMode is active
+
+**Verification:**
+- TypeScript compilation passes for new and modified files
+- Chat integrates with existing collaboration room infrastructure
+- Messages sync via Yjs observer pattern
+
+---
+
 ## Live Collaborative Canvases - Phase 3: Collaborative Canvas
 **Completed:** 2026-01-08
 
