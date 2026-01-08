@@ -276,7 +276,7 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
   - [x] Use `getAllConversations()` from researchPartner.ts
   - [x] Cache analysis results (recompute on new conversation)
 
-- [ ] Add command palette entry
+- [x] Add command palette entry
   ```typescript
   { id: 'conversation-insights', name: 'Conversation Insights', category: 'ai', action: () => { setResearchPartnerOpen(true); /* trigger insights panel */ } }
   ```

@@ -9,6 +9,7 @@
 - `src/services/conversationInsights.test.ts` — Comprehensive test suite (18 tests) covering question aggregation, topic extraction, knowledge gap detection, and activity tracking
 - `src/components/ResearchPartner/InsightsPanel.tsx` — New component with tabbed UI (Questions, Topics, Gaps, Activity), expandable question cards, topic bar chart, knowledge gap alerts, and 30-day activity sparkline
 - `src/components/ResearchPartner/ChatInterface.tsx` — Added showInsights state, insights toggle button in header, InsightsPanel integration
+- `src/App.tsx` — Added "Conversation Insights" command palette entry
 
 **Implementation Notes:**
 - Insights panel accessible via chart icon button in Research Partner header
@@ -20,11 +21,13 @@
 - Knowledge gaps detected via phrases like "couldn't find", "don't have information", "don't mention"
 - Activity chart has hover tooltips showing exact counts per day
 - Stats summary shows total conversations and questions asked
+- Command palette entry opens Research Partner with insights accessible
 
 **Verification:**
 - All 18 tests pass for conversationInsights.ts
 - TypeScript compiles without errors
 - InsightsPanel toggles correctly from header button
+- Command palette entry works
 - All acceptance criteria met (core functionality - Phases 1, 2, 4)
 
 ---
