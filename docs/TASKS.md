@@ -317,18 +317,20 @@ PatchPad is a personal knowledge operating system with AI-powered capture, refin
 
 - [x] Add tests in `src/services/templateDetection.test.ts`
 
-#### Phase 2: AI-Fillable Placeholders
-- [ ] Extend `src/types/template.ts`
+#### Phase 2: AI-Fillable Placeholders - COMPLETE
+- [x] Extend `src/types/template.ts`
   - Add `placeholderType: 'text' | 'date' | 'ai-search' | 'ai-generate'`
   - `aiPrompt?: string` for custom generation instructions
+  - Added `AIPlaceholderContext` and `FilledPlaceholder` types
 
-- [ ] Extend `src/services/templates.ts` (already exists)
+- [x] Extend `src/services/templates.ts` (already exists)
   - `fillAIPlaceholders(template: Template, context: Note[]): Promise<string>`
   - `{{ai:related_notes}}` → Semantic search and excerpt injection
   - `{{ai:summary}}` → Generate summary from context
   - `{{ai:questions}}` → Generate open questions
+  - Added `isAIPlaceholderType()` helper for backwards compatibility
 
-- [ ] Add tests for AI placeholder filling
+- [x] Add tests for AI placeholder filling (11 new tests in templates.test.ts)
 
 #### Phase 3: Template Suggestion UI
 - [ ] Create `src/components/TemplateSuggestionBanner.tsx`

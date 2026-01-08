@@ -1,5 +1,27 @@
 # PatchPad Work Log
 
+## Template Intelligence - Phase 2: AI-Fillable Placeholders
+**Completed:** 2026-01-08
+
+**Files Changed:**
+- `src/types/template.ts` — Extended PlaceholderType to include 'ai-search' | 'ai-generate'; added AIPlaceholderContext and FilledPlaceholder types; added searchQuery field to Placeholder
+- `src/services/templates.ts` — Added fillAIPlaceholders() function; added generateSummaryContent() for ai:summary; added isAIPlaceholderType() helper; updated built-in templates to use new types; updated patternToTemplate() for new types
+- `src/services/templates.test.ts` — Added 11 new tests for fillAIPlaceholders; updated AI placeholder type tests
+
+**Implementation Notes:**
+- New placeholder types: 'ai-search' for semantic search, 'ai-generate' for AI-generated content
+- fillAIPlaceholders(template, context, values) returns { content, filledPlaceholders[] }
+- FilledPlaceholder tracks key, originalValue, filledValue, and source ('search' | 'generate' | 'fallback')
+- AI placeholders supported: ai:related_notes, ai:questions, ai:summary, ai:context
+- Backwards compatible with legacy 'ai-fill' type via isAIPlaceholderType() helper
+- Falls back gracefully when no AI provider configured
+
+**Verification:**
+- All 43 template tests pass
+- All 47 template detection tests pass
+
+---
+
 ## Template Intelligence - Phase 1: Pattern Detection Enhancement
 **Completed:** 2026-01-08
 

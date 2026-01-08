@@ -6,7 +6,7 @@
  */
 
 import { v4 as uuidv4 } from 'uuid';
-import type { Template, TemplateValues, AppliedTemplate, BuiltInTemplate, Placeholder } from '../types/template';
+import type { Template, TemplateValues, AppliedTemplate, BuiltInTemplate, Placeholder, FilledPlaceholder } from '../types/template';
 import type { Note } from '../types/note';
 import { searchNotes } from './semanticSearch';
 import { hasAIProvider } from '../config/env';
@@ -75,7 +75,7 @@ const BUILT_IN_TEMPLATES: BuiltInTemplate[] = [
     placeholders: [
       { key: 'title', label: 'Research Title', type: 'text', required: true },
       { key: 'topic', label: 'Topic', type: 'text', required: true },
-      { key: 'ai:related_notes', label: 'Related Notes', type: 'ai-fill', aiPrompt: 'Find notes related to this research topic' },
+      { key: 'ai:related_notes', label: 'Related Notes', type: 'ai-search', aiPrompt: 'Find notes related to this research topic' },
     ],
     aiEnhanced: true,
     tags: ['research'],
@@ -212,8 +212,8 @@ Summarizing what I know about **{{topic}}**.
 `,
     placeholders: [
       { key: 'topic', label: 'Research Topic', type: 'text', required: true },
-      { key: 'ai:related_notes', label: 'Related Notes', type: 'ai-fill', aiPrompt: 'Find and summarize notes related to this topic' },
-      { key: 'ai:open_questions', label: 'Open Questions', type: 'ai-fill', aiPrompt: 'Find unanswered questions from conversations about this topic' },
+      { key: 'ai:related_notes', label: 'Related Notes', type: 'ai-search', aiPrompt: 'Find and summarize notes related to this topic' },
+      { key: 'ai:open_questions', label: 'Open Questions', type: 'ai-generate', aiPrompt: 'Find unanswered questions from conversations about this topic' },
     ],
     aiEnhanced: true,
     tags: ['research', 'summary', 'ai-generated'],
@@ -252,7 +252,7 @@ Summarizing what I know about **{{topic}}**.
       { key: 'date', label: 'Date', type: 'date', required: false },
       { key: 'company', label: 'Company', type: 'text', required: false },
       { key: 'participants', label: 'Participants', type: 'text', required: false },
-      { key: 'ai:context', label: 'Context', type: 'ai-fill', aiPrompt: 'Find notes mentioning this company or participants' },
+      { key: 'ai:context', label: 'Context', type: 'ai-search', aiPrompt: 'Find notes mentioning this company or participants' },
     ],
     aiEnhanced: true,
     tags: ['meeting', 'prep', 'ai-generated'],
@@ -365,12 +365,19 @@ export function deleteTemplate(id: string): boolean {
  * Apply a template with provided values
  * Returns the filled content with placeholders replaced
  */
+/**
+ * Check if a placeholder type is an AI placeholder
+ */
+function isAIPlaceholderType(type: string): boolean {
+  return type === 'ai-search' || type === 'ai-generate' || type === 'ai-fill';
+}
+
 export function applyTemplate(template: Template, values: TemplateValues): AppliedTemplate {
   let content = template.structure;
 
   // Replace all placeholders (except AI ones)
   for (const placeholder of template.placeholders) {
-    if (placeholder.type !== 'ai-fill') {
+    if (!isAIPlaceholderType(placeholder.type)) {
       const value = values[placeholder.key] ?? placeholder.defaultValue ?? '';
       const regex = new RegExp(`\\{\\{${placeholder.key}\\}\\}`, 'g');
       content = content.replace(regex, value);
@@ -405,8 +412,8 @@ export async function aiEnhanceTemplate(
   // First apply basic template
   let result = applyTemplate(template, values);
 
-  // Check if template has AI placeholders
-  const aiPlaceholders = template.placeholders.filter(p => p.type === 'ai-fill');
+  // Check if template has AI placeholders (support both old 'ai-fill' and new types)
+  const aiPlaceholders = template.placeholders.filter(p => isAIPlaceholderType(p.type));
 
   if (aiPlaceholders.length === 0 || !hasAIProvider()) {
     // Remove AI placeholder markers if no AI available
@@ -450,12 +457,25 @@ async function generateAIContent(
     return generateRelatedNotesContent(values, notes);
   }
 
-  if (key === 'ai:open_questions') {
+  if (key === 'ai:open_questions' || key === 'ai:questions') {
     return generateOpenQuestionsContent(values, notes);
   }
 
   if (key === 'ai:context') {
     return generateContextContent(values, notes);
+  }
+
+  if (key === 'ai:summary') {
+    return generateSummaryContent(values, notes);
+  }
+
+  // Default behavior based on placeholder type
+  if (placeholder.type === 'ai-search') {
+    return generateRelatedNotesContent(values, notes);
+  }
+
+  if (placeholder.type === 'ai-generate') {
+    return generateSummaryContent(values, notes);
   }
 
   // Default: search for topic and return related notes
@@ -603,6 +623,120 @@ async function generateContextContent(
 }
 
 /**
+ * Fill AI placeholders in a template
+ * Main entry point for AI placeholder filling as per Phase 2 specification
+ *
+ * @param template - The template with AI placeholders to fill
+ * @param context - Notes to use as context for AI generation
+ * @param values - Optional values for non-AI placeholders (used for topic/title context)
+ * @returns Object with filled content and details about each filled placeholder
+ */
+export async function fillAIPlaceholders(
+  template: Template,
+  context: Note[],
+  values: TemplateValues = {}
+): Promise<{ content: string; filledPlaceholders: FilledPlaceholder[] }> {
+  let content = template.structure;
+  const filledPlaceholders: FilledPlaceholder[] = [];
+
+  // Get all AI placeholders
+  const aiPlaceholders = template.placeholders.filter(p => isAIPlaceholderType(p.type));
+
+  if (aiPlaceholders.length === 0) {
+    return { content, filledPlaceholders };
+  }
+
+  // Check if AI provider is available
+  if (!hasAIProvider()) {
+    // Return content with empty placeholders and fallback messages
+    for (const placeholder of aiPlaceholders) {
+      const regex = new RegExp(`\\{\\{${placeholder.key}\\}\\}`, 'g');
+      const fallbackValue = '_AI features require API configuration_';
+      content = content.replace(regex, fallbackValue);
+      filledPlaceholders.push({
+        key: placeholder.key,
+        originalValue: `{{${placeholder.key}}}`,
+        filledValue: fallbackValue,
+        source: 'fallback',
+      });
+    }
+    return { content, filledPlaceholders };
+  }
+
+  // Process each AI placeholder
+  for (const placeholder of aiPlaceholders) {
+    const originalValue = `{{${placeholder.key}}}`;
+    let filledValue: string;
+    let source: 'search' | 'generate' | 'fallback';
+
+    try {
+      filledValue = await generateAIContent(placeholder, values, context);
+      source = placeholder.type === 'ai-search' ? 'search' : 'generate';
+    } catch (err) {
+      console.error(`Failed to fill AI placeholder ${placeholder.key}:`, err);
+      filledValue = `_Failed to generate content for ${placeholder.label}_`;
+      source = 'fallback';
+    }
+
+    const regex = new RegExp(`\\{\\{${placeholder.key}\\}\\}`, 'g');
+    content = content.replace(regex, filledValue);
+
+    filledPlaceholders.push({
+      key: placeholder.key,
+      originalValue,
+      filledValue,
+      source,
+    });
+  }
+
+  return { content, filledPlaceholders };
+}
+
+/**
+ * Generate content for ai:summary placeholder
+ * Creates a summary based on related notes
+ */
+async function generateSummaryContent(
+  values: TemplateValues,
+  notes: Note[]
+): Promise<string> {
+  const topic = values.topic ?? values.title ?? '';
+
+  if (!topic) {
+    return '_No topic specified for summary_';
+  }
+
+  // Search for related notes
+  const searchResults = await searchNotes(topic, 5, notes);
+
+  if (searchResults.length === 0) {
+    return '_No related notes found to summarize_';
+  }
+
+  // Build a summary from the related notes
+  const summaryParts: string[] = [];
+
+  // Add a header
+  summaryParts.push(`Based on ${searchResults.length} related notes:\n`);
+
+  // Extract key points from each note
+  for (const result of searchResults) {
+    const note = result.note;
+    const content = note.content;
+
+    // Extract first substantive paragraph or heading
+    const lines = content.split('\n').filter(l => l.trim() && !l.startsWith('#'));
+    const firstContent = lines.slice(0, 2).join(' ').slice(0, 200);
+
+    if (firstContent) {
+      summaryParts.push(`- **${note.title}**: ${firstContent.trim()}...`);
+    }
+  }
+
+  return summaryParts.join('\n');
+}
+
+/**
  * Get templates by category
  */
 export function getTemplatesByCategory(category: string): Template[] {
@@ -655,10 +789,14 @@ export function patternToTemplate(
 
   const placeholders: Placeholder[] = Array.from(placeholderKeys).map(key => {
     if (key.startsWith('ai:')) {
+      // Determine type based on key name
+      const aiType = key.includes('related') || key.includes('context') || key.includes('notes')
+        ? 'ai-search' as const
+        : 'ai-generate' as const;
       return {
         key,
         label: key.replace('ai:', '').replace(/_/g, ' '),
-        type: 'ai-fill' as const,
+        type: aiType,
         aiPrompt: `Generate ${key.replace('ai:', '').replace(/_/g, ' ')} based on the topic`,
       };
     }
@@ -685,7 +823,7 @@ export function patternToTemplate(
     description: options?.description ?? `Template for ${name}`,
     structure,
     placeholders,
-    aiEnhanced: placeholders.some(p => p.type === 'ai-fill'),
+    aiEnhanced: placeholders.some(p => isAIPlaceholderType(p.type)),
     tags: options?.tags,
     titlePrefix: options?.titlePrefix,
     category: options?.category,

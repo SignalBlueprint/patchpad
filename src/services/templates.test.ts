@@ -12,8 +12,10 @@ import {
   searchTemplates,
   patternToTemplate,
   getFormattedDate,
+  fillAIPlaceholders,
 } from './templates';
 import type { Template } from '../types/template';
+import type { Note } from '../types/note';
 
 // Mock localStorage
 const localStorageMock = (() => {
@@ -386,14 +388,25 @@ describe('Template Service', () => {
       expect(template.category).toBe('work');
     });
 
-    it('should detect AI placeholders', () => {
+    it('should detect AI placeholders and use ai-search for related_notes', () => {
       const template = patternToTemplate(
         'AI Template',
         '# {{title}}\n\n{{ai:related_notes}}'
       );
 
       expect(template.aiEnhanced).toBe(true);
-      expect(template.placeholders.find(p => p.key === 'ai:related_notes')?.type).toBe('ai-fill');
+      expect(template.placeholders.find(p => p.key === 'ai:related_notes')?.type).toBe('ai-search');
+    });
+
+    it('should use ai-generate for summary/questions placeholders', () => {
+      const template = patternToTemplate(
+        'AI Template',
+        '# {{title}}\n\n{{ai:summary}}\n\n{{ai:questions}}'
+      );
+
+      expect(template.aiEnhanced).toBe(true);
+      expect(template.placeholders.find(p => p.key === 'ai:summary')?.type).toBe('ai-generate');
+      expect(template.placeholders.find(p => p.key === 'ai:questions')?.type).toBe('ai-generate');
     });
   });
 
@@ -437,8 +450,8 @@ describe('Template Service', () => {
 
       expect(researchSummary?.placeholders.find(p => p.key === 'topic')?.type).toBe('text');
       expect(researchSummary?.placeholders.find(p => p.key === 'topic')?.required).toBe(true);
-      expect(researchSummary?.placeholders.find(p => p.key === 'ai:related_notes')?.type).toBe('ai-fill');
-      expect(researchSummary?.placeholders.find(p => p.key === 'ai:open_questions')?.type).toBe('ai-fill');
+      expect(researchSummary?.placeholders.find(p => p.key === 'ai:related_notes')?.type).toBe('ai-search');
+      expect(researchSummary?.placeholders.find(p => p.key === 'ai:open_questions')?.type).toBe('ai-generate');
     });
 
     it('should have correct placeholder types for Meeting Prep', () => {
@@ -448,7 +461,7 @@ describe('Template Service', () => {
       expect(meetingPrep?.placeholders.find(p => p.key === 'title')?.type).toBe('text');
       expect(meetingPrep?.placeholders.find(p => p.key === 'date')?.type).toBe('date');
       expect(meetingPrep?.placeholders.find(p => p.key === 'company')?.type).toBe('text');
-      expect(meetingPrep?.placeholders.find(p => p.key === 'ai:context')?.type).toBe('ai-fill');
+      expect(meetingPrep?.placeholders.find(p => p.key === 'ai:context')?.type).toBe('ai-search');
     });
 
     it('should tag AI templates correctly', () => {
@@ -458,6 +471,225 @@ describe('Template Service', () => {
 
       expect(researchSummary?.tags).toContain('ai-generated');
       expect(meetingPrep?.tags).toContain('ai-generated');
+    });
+  });
+
+  describe('fillAIPlaceholders', () => {
+    const mockNotes: Note[] = [
+      {
+        id: 'note1',
+        title: 'TypeScript Best Practices',
+        content: 'TypeScript provides static typing for JavaScript. Using interfaces and types helps catch errors early. Always prefer strict mode.',
+        createdAt: new Date('2024-01-01'),
+        updatedAt: new Date('2024-01-01'),
+        tags: ['typescript', 'programming'],
+      },
+      {
+        id: 'note2',
+        title: 'React Patterns',
+        content: 'React hooks simplify state management. How do we handle complex state? Use reducers for complex state logic. What about context?',
+        createdAt: new Date('2024-01-02'),
+        updatedAt: new Date('2024-01-02'),
+        tags: ['react', 'programming'],
+      },
+      {
+        id: 'note3',
+        title: 'Project Meeting Notes',
+        content: 'Discussed the new feature with Acme Corp. John from Acme was present. They want faster delivery.',
+        createdAt: new Date('2024-01-03'),
+        updatedAt: new Date('2024-01-03'),
+        tags: ['meeting'],
+      },
+    ];
+
+    it('should return unchanged content for templates without AI placeholders', async () => {
+      const template: Template = {
+        id: 'test',
+        name: 'Simple Template',
+        description: 'No AI',
+        structure: '# {{title}}\n\nContent here',
+        placeholders: [
+          { key: 'title', label: 'Title', type: 'text', required: true },
+        ],
+        aiEnhanced: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const result = await fillAIPlaceholders(template, mockNotes, { title: 'Test' });
+
+      expect(result.content).toBe('# {{title}}\n\nContent here');
+      expect(result.filledPlaceholders).toHaveLength(0);
+    });
+
+    it('should return FilledPlaceholder objects with correct structure', async () => {
+      const template: Template = {
+        id: 'test',
+        name: 'AI Template',
+        description: 'Has AI',
+        structure: '# {{title}}\n\n## Related\n{{ai:related_notes}}',
+        placeholders: [
+          { key: 'title', label: 'Title', type: 'text', required: true },
+          { key: 'ai:related_notes', label: 'Related Notes', type: 'ai-search', aiPrompt: 'Find related notes' },
+        ],
+        aiEnhanced: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const result = await fillAIPlaceholders(template, mockNotes, { topic: 'TypeScript' });
+
+      expect(result.filledPlaceholders.length).toBeGreaterThan(0);
+      expect(result.filledPlaceholders[0]).toHaveProperty('key');
+      expect(result.filledPlaceholders[0]).toHaveProperty('originalValue');
+      expect(result.filledPlaceholders[0]).toHaveProperty('filledValue');
+      expect(result.filledPlaceholders[0]).toHaveProperty('source');
+    });
+
+    it('should replace ai:related_notes placeholder with note references', async () => {
+      const template: Template = {
+        id: 'test',
+        name: 'Research Template',
+        description: 'With related notes',
+        structure: '# Research: {{topic}}\n\n## Related\n{{ai:related_notes}}',
+        placeholders: [
+          { key: 'topic', label: 'Topic', type: 'text', required: true },
+          { key: 'ai:related_notes', label: 'Related Notes', type: 'ai-search', aiPrompt: 'Find related notes' },
+        ],
+        aiEnhanced: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const result = await fillAIPlaceholders(template, mockNotes, { topic: 'TypeScript' });
+
+      // Should not contain the original placeholder
+      expect(result.content).not.toContain('{{ai:related_notes}}');
+      // Content should be filled (either with notes or "no notes found" message)
+      expect(result.content.length).toBeGreaterThan(template.structure.length - 20);
+    });
+
+    it('should support ai:questions placeholder', async () => {
+      const template: Template = {
+        id: 'test',
+        name: 'Question Template',
+        description: 'Extract questions',
+        structure: '# Questions about {{topic}}\n\n{{ai:questions}}',
+        placeholders: [
+          { key: 'topic', label: 'Topic', type: 'text', required: true },
+          { key: 'ai:questions', label: 'Questions', type: 'ai-generate', aiPrompt: 'Find questions' },
+        ],
+        aiEnhanced: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const result = await fillAIPlaceholders(template, mockNotes, { topic: 'React' });
+
+      // Should not contain the original placeholder
+      expect(result.content).not.toContain('{{ai:questions}}');
+      // Should have filled the placeholder
+      expect(result.filledPlaceholders.some(p => p.key === 'ai:questions')).toBe(true);
+    });
+
+    it('should support ai:summary placeholder', async () => {
+      const template: Template = {
+        id: 'test',
+        name: 'Summary Template',
+        description: 'Generate summary',
+        structure: '# Summary: {{topic}}\n\n{{ai:summary}}',
+        placeholders: [
+          { key: 'topic', label: 'Topic', type: 'text', required: true },
+          { key: 'ai:summary', label: 'Summary', type: 'ai-generate', aiPrompt: 'Generate summary' },
+        ],
+        aiEnhanced: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const result = await fillAIPlaceholders(template, mockNotes, { topic: 'TypeScript' });
+
+      // Should not contain the original placeholder
+      expect(result.content).not.toContain('{{ai:summary}}');
+      // Should have filled the placeholder
+      expect(result.filledPlaceholders.some(p => p.key === 'ai:summary')).toBe(true);
+    });
+
+    it('should handle empty notes array gracefully', async () => {
+      const template: Template = {
+        id: 'test',
+        name: 'AI Template',
+        description: 'Has AI',
+        structure: '# {{title}}\n\n{{ai:related_notes}}',
+        placeholders: [
+          { key: 'title', label: 'Title', type: 'text', required: true },
+          { key: 'ai:related_notes', label: 'Related Notes', type: 'ai-search', aiPrompt: 'Find related' },
+        ],
+        aiEnhanced: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const result = await fillAIPlaceholders(template, [], { topic: 'Test' });
+
+      // Should not throw, should have fallback content
+      expect(result.content).not.toContain('{{ai:related_notes}}');
+      // In test env without AI provider, falls back to "AI features require API configuration"
+      // With AI provider but no notes, would say "No related notes found"
+      expect(result.filledPlaceholders[0].source).toBe('fallback');
+    });
+
+    it('should fill multiple AI placeholders in one template', async () => {
+      const template: Template = {
+        id: 'test',
+        name: 'Multi-AI Template',
+        description: 'Multiple AI placeholders',
+        structure: '# {{topic}}\n\n## Related\n{{ai:related_notes}}\n\n## Questions\n{{ai:questions}}',
+        placeholders: [
+          { key: 'topic', label: 'Topic', type: 'text', required: true },
+          { key: 'ai:related_notes', label: 'Related', type: 'ai-search', aiPrompt: 'Find related' },
+          { key: 'ai:questions', label: 'Questions', type: 'ai-generate', aiPrompt: 'Find questions' },
+        ],
+        aiEnhanced: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const result = await fillAIPlaceholders(template, mockNotes, { topic: 'React' });
+
+      expect(result.content).not.toContain('{{ai:related_notes}}');
+      expect(result.content).not.toContain('{{ai:questions}}');
+      expect(result.filledPlaceholders.length).toBe(2);
+    });
+
+    it('should set fallback source when no AI provider configured', async () => {
+      // In test environment, no AI provider is configured
+      // so all AI placeholders should fall back
+      const template: Template = {
+        id: 'test',
+        name: 'Mixed Template',
+        description: 'Search and generate',
+        structure: '{{ai:related_notes}}\n\n{{ai:summary}}',
+        placeholders: [
+          { key: 'ai:related_notes', label: 'Related', type: 'ai-search', aiPrompt: 'Find related' },
+          { key: 'ai:summary', label: 'Summary', type: 'ai-generate', aiPrompt: 'Summarize' },
+        ],
+        aiEnhanced: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+
+      const result = await fillAIPlaceholders(template, mockNotes, { topic: 'TypeScript' });
+
+      const searchPlaceholder = result.filledPlaceholders.find(p => p.key === 'ai:related_notes');
+      const generatePlaceholder = result.filledPlaceholders.find(p => p.key === 'ai:summary');
+
+      // Without AI provider, both should be fallback
+      expect(searchPlaceholder?.source).toBe('fallback');
+      expect(generatePlaceholder?.source).toBe('fallback');
+
+      // Both should have been processed
+      expect(result.filledPlaceholders.length).toBe(2);
     });
   });
 });
