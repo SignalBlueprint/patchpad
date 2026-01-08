@@ -2,6 +2,44 @@
 
 ---
 
+## Template Trigger Detection (Horizon 2.3)
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/services/templateMatcher.ts` — New service with `matchTitleToTemplate()` and `getBestTemplateMatch()` functions for detecting when note titles match template patterns
+- `src/services/templateMatcher.test.ts` — Comprehensive test suite (20 tests) covering prefix matching, keyword matching, confidence scoring
+- `src/hooks/useTemplateSuggestion.ts` — New hook for reactive template detection based on note title and content, with debouncing and dismissal tracking
+- `src/components/TemplateSuggestionToast.tsx` — New toast component showing template suggestions with accept/dismiss buttons, confidence indicator, auto-dismiss after 8 seconds
+- `src/App.tsx` — Integrated useTemplateSuggestion hook, added handleAcceptTemplateSuggestion handler, rendered TemplateSuggestionToast component
+
+**Implementation Notes:**
+- Template matching supports two strategies:
+  1. **Prefix matching (high confidence: 0.95)**: Matches "Meeting:", "Research:", "Journal:", "Project:", "Book:" prefixes against template titlePrefix values
+  2. **Keyword matching (medium confidence: 0.35-0.8)**: Matches keywords from template names and prefixes in note title
+- `useTemplateSuggestion` hook:
+  - Debounces title changes (1 second default)
+  - Only suggests if note content < 100 characters (avoids scaffolding over existing work)
+  - Tracks dismissed templates per session
+  - Tracks notes that already had templates applied
+- `TemplateSuggestionToast`:
+  - Shows template name and description
+  - "High match" indicator for confidence >= 0.8
+  - "Use Template" and "Skip" buttons
+  - Auto-dismisses after 8 seconds if no action
+  - Smooth slide-up animation
+- Accepting suggestion:
+  - Applies template with current note title
+  - Updates note content with scaffolded template structure
+  - Shows success toast
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- All tests pass (`npx vitest run`)
+- Template suggestions appear when typing "Meeting:" or "Research:" as note title
+- Accepting suggestion scaffolds template structure into note
+- Dismissing suggestion prevents it from reappearing for that template
+
+---
+
 ## Template Intelligence Phase 3: Template UI (Horizon 2.3)
 **Completed:** 2026-01-07
 **Files Changed:**

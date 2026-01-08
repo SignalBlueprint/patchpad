@@ -14,6 +14,9 @@ import { BrainDashboard } from './components/BrainDashboard';
 import { SecondBrainDashboard } from './components/SecondBrainDashboard';
 import { TemplateDialog } from './components/TemplateDialog';
 import { TemplatePicker } from './components/TemplatePicker';
+import { TemplateSuggestionToast } from './components/TemplateSuggestionToast';
+import { useTemplateSuggestion } from './hooks/useTemplateSuggestion';
+import { applyTemplate } from './services/templates';
 import { BacklinksPanel } from './components/BacklinksPanel';
 import { DailyDigestModal } from './components/DailyDigestModal';
 import { ExportDialog } from './components/ExportDialog';
@@ -123,6 +126,7 @@ export default function App() {
   // Template state
   const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
+  const [templateAppliedToNote, setTemplateAppliedToNote] = useState<string | null>(null);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -164,6 +168,37 @@ export default function App() {
 
   // Subscribe to sync events
   useSyncReceiver(handleNoteReceived, handleNoteDeleted);
+
+  // Template suggestion hook - detects when note title matches a template pattern
+  const {
+    suggestion: templateSuggestion,
+    acceptSuggestion: acceptTemplateSuggestion,
+    dismissSuggestion: dismissTemplateSuggestion,
+  } = useTemplateSuggestion({
+    title: currentNote?.title || '',
+    content: currentNote?.content || '',
+    // Don't suggest if template was already applied to this note
+    enabled: !!currentNote && templateAppliedToNote !== currentNote.id,
+  });
+
+  // Handle accepting a template suggestion
+  const handleAcceptTemplateSuggestion = useCallback(async (template: typeof templateSuggestion extends { template: infer T } | null ? T : never) => {
+    if (!currentNote || !template) return;
+
+    // Apply the template with current title
+    const result = applyTemplate(template, { title: currentNote.title });
+
+    // Update note content with template structure
+    await updateNote(currentNote.id, result.content);
+
+    // Mark this note as having a template applied
+    setTemplateAppliedToNote(currentNote.id);
+
+    // Clear suggestion
+    acceptTemplateSuggestion();
+
+    success('Template applied', `Applied "${template.name}" template`);
+  }, [currentNote, updateNote, acceptTemplateSuggestion, success]);
 
   // Check and show daily digest on mount
   useEffect(() => {
@@ -1531,6 +1566,16 @@ export default function App() {
         isOpen={shareDialogOpen}
         onClose={() => setShareDialogOpen(false)}
       />
+
+      {/* Template Suggestion Toast */}
+      {templateSuggestion && (
+        <TemplateSuggestionToast
+          template={templateSuggestion.template}
+          confidence={templateSuggestion.confidence}
+          onAccept={handleAcceptTemplateSuggestion}
+          onDismiss={dismissTemplateSuggestion}
+        />
+      )}
     </div>
   );
 }

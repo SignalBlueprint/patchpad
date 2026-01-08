@@ -709,10 +709,14 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
   - [x] "Create Template" command
   - [x] Integration with App.tsx
 
-- [ ] Add template trigger detection (future enhancement)
-  - [ ] In Editor, detect when title matches pattern ("Meeting with")
-  - [ ] Show toast: "Use Meeting template?"
-  - [ ] On accept, scaffold template structure
+- [x] Add template trigger detection
+  - [x] Create `src/services/templateMatcher.ts` with `matchTitleToTemplate()` and `getBestTemplateMatch()`
+  - [x] Create `src/hooks/useTemplateSuggestion.ts` hook for reactive template detection
+  - [x] Create `src/components/TemplateSuggestionToast.tsx` for UI suggestion
+  - [x] Integrate into App.tsx - detects when title matches pattern ("Meeting:", "Research:")
+  - [x] Show toast: "Use template?" with accept/dismiss options
+  - [x] On accept, scaffold template structure into note content
+  - [x] Add tests in `src/services/templateMatcher.test.ts`
 
 #### Phase 4: AI-Powered Templates
 
