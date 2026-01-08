@@ -329,6 +329,81 @@ PatchPad is a personal knowledge operating system with AI-powered capture, refin
   - `{{ai:questions}}` → Generate open questions
 
 - [ ] Add tests for AI placeholder filling
+#### Phase 1: Static Export
+
+- [x] Create `src/services/graphExport.ts`
+  - [x] Export interface `GraphExportOptions { theme, includeContent, nodeLimit, selectedTags }`
+  - [x] Export function `generateGraphHTML(notes: Note[], options: GraphExportOptions): string`
+    - Build D3.js force-directed graph
+    - Embed minified visualization code
+    - Include note excerpts in data
+    - Self-contained HTML (no external dependencies)
+  - [x] Export function `generateGraphData(notes: Note[]): GraphData`
+    - Parse wiki links for edges
+    - Build nodes with { id, title, tags, excerpt }
+    - Build edges with { source, target }
+
+- [x] Create D3 visualization template
+  - [x] Reference existing `KnowledgeGraph.tsx` for layout logic
+  - [x] Implement in vanilla JS for portability
+  - [x] Features: zoom, pan, node click → show excerpt
+  - [x] Minify and inline in export
+
+- [x] Add export options
+  - [x] Theme: 'light' | 'dark'
+  - [x] Content: 'full' | 'excerpts' | 'titles-only'
+  - [x] Node limit: number (for large graphs)
+  - [x] Tag filter: string[] (only include notes with tags)
+
+- [x] Create `src/components/PublishGraphDialog.tsx`
+  - [x] Accept props: `notes: Note[]`, `isOpen: boolean`, `onClose: () => void`
+  - [x] Preview pane showing graph render
+  - [x] Options form: theme, content level, tag filter
+  - [x] "Download HTML" button
+  - [x] "Copy embed code" button (iframe snippet)
+
+- [x] Add to BrainDashboard
+  - [x] "Publish Graph" button in header
+  - [x] Opens PublishGraphDialog
+
+**Acceptance Criteria:**
+- One-click export to standalone HTML file
+- Graph renders in modern browsers without internet
+- Click node shows note title and excerpt
+- File size < 2MB for 100-node graph
+- Light and dark themes work
+
+**Estimated Effort:** 16 hours
+
+---
+
+#### Phase 2: Hosted Publishing (Future)
+
+- [!] Design hosting infrastructure — BLOCKED: Requires external hosting infrastructure (S3/CloudFront/Vercel), backend API, and domain management not available in this frontend-only codebase
+  - [ ] Subdomain: `{username}.patchpad.pub`
+  - [ ] Static hosting: S3 + CloudFront or Vercel
+  - [ ] API: `POST /api/publish`, `GET /api/graphs/:id`
+
+- [!] Create publish API endpoints — BLOCKED: Requires backend server
+  - [ ] `POST /api/publish` - upload graph HTML + metadata
+  - [ ] `GET /api/graphs/:username/:slug` - serve published graph
+  - [ ] `DELETE /api/graphs/:id` - unpublish
+
+- [!] Add authentication for publishing — BLOCKED: Requires backend server
+  - [ ] Require logged-in user
+  - [ ] Rate limit: 10 publishes per day
+  - [ ] Storage limit: 10MB per user (free tier)
+
+- [!] Add custom domain support — BLOCKED: Requires DNS/SSL infrastructure
+  - [ ] CNAME record verification
+  - [ ] SSL provisioning via Let's Encrypt
+  - [ ] Premium feature gate
+
+- [!] Add analytics — BLOCKED: Requires backend analytics database
+  - [ ] Track views per graph
+  - [ ] Most-clicked nodes
+  - [ ] Referrer tracking
+  - [ ] Display in dashboard
 
 #### Phase 3: Template Suggestion UI
 - [ ] Create `src/components/TemplateSuggestionBanner.tsx`
@@ -450,6 +525,69 @@ PatchPad is a personal knowledge operating system with AI-powered capture, refin
 - All captures sync to main PatchPad app
 
 **Estimated Effort:** 60+ hours
+#### Research Phase — BLOCKED: Ambient Knowledge Capture requires creating a separate Electron/Tauri desktop application, which is outside the scope of this web application codebase
+
+- [!] Evaluate cross-platform frameworks — BLOCKED: Requires separate project setup
+  - [ ] Electron: Full desktop app, largest bundle, most mature
+  - [ ] Tauri: Rust-based, smaller bundle, newer
+  - [ ] Native: Separate apps per platform
+
+- [!] Research system integration APIs — BLOCKED: Requires native app context
+  - [ ] Clipboard monitoring: macOS Pasteboard, Windows Clipboard API
+  - [ ] Browser integration: WebExtension API
+  - [ ] Calendar access: Google Calendar API, Outlook API
+
+- [!] Determine privacy boundaries — BLOCKED: Requires native app design decisions
+  - [ ] What data is captured automatically?
+  - [ ] What requires explicit user action?
+  - [ ] Local-only vs cloud storage
+
+#### Phase 1: Menu Bar App (Electron) — BLOCKED: Requires separate Electron project
+
+- [!] Initialize Electron project — BLOCKED: Separate project required
+  ```bash
+  npm create electron-app@latest patchpad-companion
+  ```
+
+- [!] Implement system tray icon — BLOCKED: Requires Electron
+  - [ ] Tray icon with status indicator
+  - [ ] Right-click menu: "New Note", "Search Notes", "Settings", "Quit"
+  - [ ] Left-click: open quick capture
+
+- [!] Create quick capture window — BLOCKED: Requires Electron
+  - [ ] Floating window, always-on-top option
+  - [ ] Text input that creates note
+  - [ ] Global keyboard shortcut (configurable)
+
+- [!] Implement clipboard monitoring — BLOCKED: Requires Electron
+  - [ ] Watch clipboard for changes
+  - [ ] On URL copy, suggest "Save to notes?"
+  - [ ] On text copy (> 50 chars), suggest "Create note?"
+  - [ ] User can enable/disable monitoring
+
+#### Phase 2: Calendar Integration — BLOCKED: Requires Electron + OAuth setup
+
+- [!] Add Google Calendar OAuth — BLOCKED: Requires native app + OAuth
+  - [ ] Connect Google account
+  - [ ] Fetch upcoming events
+  - [ ] Trigger 15-min-before notification
+
+- [!] Create meeting prep notification — BLOCKED: Requires native app
+  - [ ] Before meeting, search notes for attendee names
+  - [ ] Generate brief via `generateMeetingBrief()`
+  - [ ] Notification: "Meeting with X in 15 min - prep brief ready"
+
+#### Phase 3: Browser Extension — BLOCKED: Requires separate WebExtension project
+
+- [!] Create WebExtension (Chrome + Firefox) — BLOCKED: Separate project required
+  - [ ] Popup with quick note entry
+  - [ ] Right-click context menu: "Save to PatchPad"
+  - [ ] Sync with main app via API or localStorage
+
+- [!] Implement page capture — BLOCKED: Requires WebExtension
+  - [ ] Save URL + title + selected text
+  - [ ] Optional: full page content as markdown
+  - [ ] Tag with "web-clip"
 
 **Open Questions:**
 - Which framework (Electron vs Tauri)?
@@ -689,6 +827,51 @@ PatchPad is a personal knowledge operating system with AI-powered capture, refin
 **Estimated Effort:** 40 hours
 
 **Total Moonshot Effort:** 80 hours
+- [!] Enable live session broadcasting — BLOCKED: Requires WebSocket backend and multi-user infrastructure
+  - [ ] "Broadcast" mode: others watch your thinking live
+  - [ ] Viewer list with presence indicators
+  - [ ] Chat sidebar for questions/comments
+
+- [!] Add collaborative annotation — BLOCKED: Requires multi-user infrastructure
+  - [ ] Multiple people can annotate same session
+  - [ ] Color-coded by contributor
+  - [ ] "Annotation conversation" threads
+
+- [x] Create thinking session templates
+  - [x] "Brainstorming" - optimized for rapid idea capture
+  - [x] "Problem-solving" - structured with problem statement
+  - [x] "Review" - for going through existing notes
+  - [x] Templates set canvas layout and suggested flow
+
+- [x] Implement session comparison
+  - [x] Compare two sessions on same topic
+  - [x] Visualize how thinking evolved
+  - [x] "What did you learn between sessions?"
+
+**Open Questions:**
+- How much session data can be stored before performance issues?
+- Should sessions be synced to cloud?
+- Privacy: How to handle sessions containing sensitive notes?
+- How to make playback performant for long (30+ min) sessions?
+
+**Proof of Concept Scope:**
+- Record canvas movements during a session
+- Basic playback with play/pause
+- Simple timeline scrubber
+- Export as JSON for analysis
+
+**Acceptance Criteria:**
+- Can start/stop recording on canvas
+- Recorded sessions replay accurately
+- Playback speed is adjustable
+- Sessions persist across app restarts
+
+**Total Estimated Effort:** 80 hours (basic recording + playback), 160+ hours (full vision)
+
+**Dependencies:**
+- IndexedDB space for session storage
+- WebSocket for live broadcasting
+- Additional UI work for player controls
 
 ---
 
