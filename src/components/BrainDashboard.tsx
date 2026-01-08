@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { KnowledgeGraph } from './KnowledgeGraph';
+import { PublishGraphDialog } from './PublishGraphDialog';
 import {
   buildKnowledgeGraph,
   generateInsights,
@@ -56,6 +57,7 @@ export function BrainDashboard({ notes, onSelectNote, onClose }: BrainDashboardP
   const [selectedConcept, setSelectedConcept] = useState<Concept | null>(null);
   const [conceptFilter, setConceptFilter] = useState('');
   const [typeFilter, setTypeFilter] = useState<string>('all');
+  const [publishDialogOpen, setPublishDialogOpen] = useState(false);
 
   // Build knowledge graph on mount
   useEffect(() => {
@@ -140,14 +142,28 @@ export function BrainDashboard({ notes, onSelectNote, onClose }: BrainDashboardP
               </p>
             </div>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
+          <div className="flex items-center gap-2">
+            {/* Publish Graph button */}
+            <button
+              onClick={() => setPublishDialogOpen(true)}
+              disabled={!graph || graph.concepts.length === 0}
+              className="px-3 py-1.5 text-sm font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+              title="Export graph as HTML file"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+              Publish
+            </button>
+            <button
+              onClick={onClose}
+              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Tabs */}
@@ -415,6 +431,13 @@ export function BrainDashboard({ notes, onSelectNote, onClose }: BrainDashboardP
           ) : null}
         </div>
       </div>
+
+      {/* Publish Graph Dialog */}
+      <PublishGraphDialog
+        notes={notes}
+        isOpen={publishDialogOpen}
+        onClose={() => setPublishDialogOpen(false)}
+      />
     </div>
   );
 }

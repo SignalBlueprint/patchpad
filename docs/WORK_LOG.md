@@ -2,6 +2,41 @@
 
 ---
 
+## Knowledge Graph Publishing Phase 1: Static Export (Horizon 2.2)
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/services/graphExport.ts` — New service with GraphExportOptions interface, generateGraphData() for parsing notes/edges, generateGraphHTML() for self-contained HTML with D3.js visualization, downloadGraphHTML() helper, and generateEmbedCode() for iframe snippets
+- `src/components/PublishGraphDialog.tsx` — New dialog with preview stats, theme toggle, content level selector, node limit slider, tag filter, download button, and copy embed code
+- `src/components/BrainDashboard.tsx` — Added "Publish" button in header, integrated PublishGraphDialog with state management
+
+**Implementation Notes:**
+- Graph export generates self-contained HTML with embedded D3.js force-directed visualization
+- No external dependencies - works offline in any modern browser
+- Wiki links parsed to create edges between notes
+- Support for light and dark themes
+- Content levels: titles-only, excerpts (200 chars), full (500 chars)
+- Node limit configurable via slider (10-200 nodes)
+- Tag filter allows exporting only notes with specific tags
+- Force-directed simulation with repulsion, attraction, center force, and damping
+- Interactive features: zoom (wheel), pan (drag), node click shows info panel
+- Drag nodes to reposition, controls for zoom in/out/reset
+- Legend shows tag colors, stats show node/edge counts
+- Estimated file size calculation based on node count
+- Embed code generates iframe snippet for embedding in other pages
+- Download filename: `patchpad-graph-{date}.html`
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- All tests pass (`npx vitest run`)
+- All acceptance criteria for Phase 1 met:
+  - One-click export to standalone HTML file
+  - Graph renders in modern browsers without internet
+  - Click node shows note title and excerpt
+  - Light and dark themes work
+  - "Publish" button accessible from BrainDashboard header
+
+---
+
 ## Conversation Insights Phase 3: Quick Brief Generation (Horizon 1.3)
 **Completed:** 2026-01-07
 **Files Changed:**

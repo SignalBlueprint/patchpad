@@ -535,40 +535,40 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 #### Phase 1: Static Export
 
-- [ ] Create `src/services/graphExport.ts`
-  - [ ] Export interface `GraphExportOptions { theme, includeContent, nodeLimit, selectedTags }`
-  - [ ] Export function `generateGraphHTML(notes: Note[], options: GraphExportOptions): string`
+- [x] Create `src/services/graphExport.ts`
+  - [x] Export interface `GraphExportOptions { theme, includeContent, nodeLimit, selectedTags }`
+  - [x] Export function `generateGraphHTML(notes: Note[], options: GraphExportOptions): string`
     - Build D3.js force-directed graph
     - Embed minified visualization code
     - Include note excerpts in data
     - Self-contained HTML (no external dependencies)
-  - [ ] Export function `generateGraphData(notes: Note[]): GraphData`
+  - [x] Export function `generateGraphData(notes: Note[]): GraphData`
     - Parse wiki links for edges
     - Build nodes with { id, title, tags, excerpt }
     - Build edges with { source, target }
 
-- [ ] Create D3 visualization template
-  - [ ] Reference existing `KnowledgeGraph.tsx` for layout logic
-  - [ ] Implement in vanilla JS for portability
-  - [ ] Features: zoom, pan, node click → show excerpt
-  - [ ] Minify and inline in export
+- [x] Create D3 visualization template
+  - [x] Reference existing `KnowledgeGraph.tsx` for layout logic
+  - [x] Implement in vanilla JS for portability
+  - [x] Features: zoom, pan, node click → show excerpt
+  - [x] Minify and inline in export
 
-- [ ] Add export options
-  - [ ] Theme: 'light' | 'dark'
-  - [ ] Content: 'full' | 'excerpts' | 'titles-only'
-  - [ ] Node limit: number (for large graphs)
-  - [ ] Tag filter: string[] (only include notes with tags)
+- [x] Add export options
+  - [x] Theme: 'light' | 'dark'
+  - [x] Content: 'full' | 'excerpts' | 'titles-only'
+  - [x] Node limit: number (for large graphs)
+  - [x] Tag filter: string[] (only include notes with tags)
 
-- [ ] Create `src/components/PublishGraphDialog.tsx`
-  - [ ] Accept props: `notes: Note[]`, `isOpen: boolean`, `onClose: () => void`
-  - [ ] Preview pane showing graph render
-  - [ ] Options form: theme, content level, tag filter
-  - [ ] "Download HTML" button
-  - [ ] "Copy embed code" button (iframe snippet)
+- [x] Create `src/components/PublishGraphDialog.tsx`
+  - [x] Accept props: `notes: Note[]`, `isOpen: boolean`, `onClose: () => void`
+  - [x] Preview pane showing graph render
+  - [x] Options form: theme, content level, tag filter
+  - [x] "Download HTML" button
+  - [x] "Copy embed code" button (iframe snippet)
 
-- [ ] Add to BrainDashboard
-  - [ ] "Publish Graph" button in header
-  - [ ] Opens PublishGraphDialog
+- [x] Add to BrainDashboard
+  - [x] "Publish Graph" button in header
+  - [x] Opens PublishGraphDialog
 
 **Acceptance Criteria:**
 - One-click export to standalone HTML file
