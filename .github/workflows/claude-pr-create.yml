@@ -1,0 +1,54 @@
+name: Create PR for Claude Code Sessions
+
+on:
+  push:
+    branches:
+      - 'claude/**'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  create-pr:
+    runs-on: ubuntu-latest
+    if: contains(github.event.head_commit.message, '[session-complete]')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Extract branch info
+        id: branch
+        run: |
+          BRANCH_NAME="${GITHUB_REF#refs/heads/}"
+          PR_TITLE="${BRANCH_NAME#claude/}"
+          echo "branch_name=$BRANCH_NAME" >> $GITHUB_OUTPUT
+          echo "pr_title=$PR_TITLE" >> $GITHUB_OUTPUT
+
+      - name: Get commit log
+        id: commits
+        run: |
+          COMMIT_LOG=$(git log origin/main..HEAD --pretty=format:"- %s (%h)" --reverse)
+          echo "commit_log<<EOF" >> $GITHUB_OUTPUT
+          echo "$COMMIT_LOG" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_BODY="## Claude Code Session Commits
+
+          ${{ steps.commits.outputs.commit_log }}
+
+          ---
+          *Auto-generated PR from Claude Code session*"
+
+          gh pr create \
+            --title "${{ steps.branch.outputs.pr_title }}" \
+            --body "$PR_BODY" \
+            --base main \
+            --head "${{ steps.branch.outputs.branch_name }}"
