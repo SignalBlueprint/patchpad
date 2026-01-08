@@ -2,6 +2,78 @@
 
 ---
 
+## Moonshot Phase 4: Infrastructure for Blocked Features
+**Completed:** 2026-01-08
+**Files Changed:**
+- `src/services/graphPublishing.ts` — Graph publishing service with Supabase integration
+- `src/components/PublishedGraphsManager.tsx` — UI for managing published graphs
+- `src/pages/PublishedGraph.tsx` — Public graph viewer page
+- `src/services/liveBroadcast.ts` — Live session broadcasting service
+- `src/components/LiveSessionViewer.tsx` — Viewer UI for live broadcasts
+- `src/services/collaborativeAnnotations.ts` — Collaborative annotation service
+- `src/components/CollaborativeAnnotations.tsx` — Annotation UI component
+- `src/main.tsx` — Added route for /graphs/:userIdPrefix/:slug
+- `src/App.tsx` — Added PublishedGraphsManager integration and command
+
+**Implementation Notes:**
+
+- **Graph Publishing Service** (`graphPublishing.ts`):
+  - `PublishedGraph` interface with full metadata (slug, title, description, analytics)
+  - `publishGraph()` with rate limiting (10/day) and storage limits (10MB)
+  - `getUserGraphs()` fetches user's published graphs
+  - `getGraphBySlug()` for public access with view count increment
+  - `getGraphAnalytics()` aggregates views, referrers, clicked nodes
+  - Supabase persistence with localStorage fallback
+  - SQL schema included for `published_graphs` and `graph_analytics` tables
+
+- **Published Graphs Manager** (`PublishedGraphsManager.tsx`):
+  - Two-panel layout: graph list and details
+  - Stats display (nodes, edges, views)
+  - Copy URL and open graph buttons
+  - Analytics panel with visitor stats
+  - Unpublish functionality with confirmation
+
+- **Live Broadcast Service** (`liveBroadcast.ts`):
+  - `BroadcastState` tracks session, viewers, messages, snapshot
+  - `startBroadcast()` / `stopBroadcast()` for hosts
+  - `broadcastEvent()` sends session events in real-time
+  - `joinBroadcast()` / `leaveBroadcast()` for viewers
+  - `sendChatMessage()` for real-time chat
+  - WebSocket communication via Supabase Realtime or fallback
+  - SQL schema for `live_broadcasts` and `broadcast_messages` tables
+
+- **Live Session Viewer** (`LiveSessionViewer.tsx`):
+  - Join screen with name input
+  - Live canvas visualization with notes and connections
+  - Viewer presence list with colors
+  - Chat sidebar with real-time messages
+  - Event log display showing recent events
+  - Broadcast end handling with overlay message
+
+- **Collaborative Annotations Service** (`collaborativeAnnotations.ts`):
+  - `CollaborativeAnnotation` extends `SessionAnnotation` with author info
+  - `AnnotationReply` for threaded conversations
+  - `addAnnotation()` with timestamp, type, content
+  - `addReply()` for annotation threads
+  - `toggleResolved()` to mark annotations done
+  - `getAnnotationStats()` for statistics by author/type
+  - Author color palette for visual distinction
+  - SQL schema for `session_annotations` and `annotation_replies` tables
+
+- **Collaborative Annotations Component** (`CollaborativeAnnotations.tsx`):
+  - Collapsible panel with annotation count badge
+  - Filter by unresolved annotations
+  - Author color-coded annotations
+  - Reply threads with inline input
+  - Seek to timestamp on click
+  - Note and highlight annotation types
+  - Real-time author indicator
+
+**Verification:**
+Routes and components integrated. TypeScript compilation shows only pre-existing type issues.
+
+---
+
 ## Moonshot Phase 4: Session Comparison
 **Completed:** 2026-01-08
 **Files Changed:**
@@ -85,11 +157,14 @@ Component integrated with command palette entry "Compare Sessions".
   - Recording indicator with duration timer and stop button
   - Workflow guide shown when recording with template
 
-**Blocked Tasks:**
-- Knowledge Graph Publishing Phase 2 — Requires backend infrastructure
-- Ambient Knowledge Capture — Requires separate Electron/Tauri project
-- Live Session Broadcasting — Requires WebSocket backend
-- Collaborative Annotation — Requires multi-user infrastructure
+**Previously Blocked Tasks (Now Implemented):**
+- Knowledge Graph Publishing Phase 2 — Implemented with Supabase/localStorage backend
+- Live Session Broadcasting — Implemented with WebSocket/Supabase Realtime
+- Collaborative Annotation — Implemented with multi-user support
+
+**Still Blocked:**
+- Ambient Knowledge Capture — Requires separate Electron/Tauri project (out of scope)
+- Custom Domain Support — Requires DNS/SSL infrastructure
 
 **Verification:**
 TypeScript compilation passes for new files (pre-existing issues in codebase unrelated to this work).

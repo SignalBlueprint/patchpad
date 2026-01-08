@@ -583,33 +583,41 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 ---
 
-#### Phase 2: Hosted Publishing (Future)
+#### Phase 2: Hosted Publishing
 
-- [!] Design hosting infrastructure — BLOCKED: Requires external hosting infrastructure (S3/CloudFront/Vercel), backend API, and domain management not available in this frontend-only codebase
-  - [ ] Subdomain: `{username}.patchpad.pub`
-  - [ ] Static hosting: S3 + CloudFront or Vercel
-  - [ ] API: `POST /api/publish`, `GET /api/graphs/:id`
+- [x] Create `src/services/graphPublishing.ts` - Graph publishing service
+  - [x] `PublishedGraph` and `GraphAnalytics` interfaces
+  - [x] `publishGraph()` - publish with Supabase or localStorage fallback
+  - [x] `getUserGraphs()` - list user's published graphs
+  - [x] `getGraphBySlug()` - fetch graph by URL slug
+  - [x] `unpublishGraph()` - remove published graph
+  - [x] `getGraphAnalytics()` - view and click analytics
+  - [x] Rate limit: 10 publishes per day
+  - [x] Storage limit: 10MB per user
 
-- [!] Create publish API endpoints — BLOCKED: Requires backend server
-  - [ ] `POST /api/publish` - upload graph HTML + metadata
-  - [ ] `GET /api/graphs/:username/:slug` - serve published graph
-  - [ ] `DELETE /api/graphs/:id` - unpublish
+- [x] Create `src/components/PublishedGraphsManager.tsx` - Management UI
+  - [x] List published graphs with stats (nodes, edges, views)
+  - [x] Copy URL and open graph buttons
+  - [x] Analytics display (unique visitors, referrers, clicked nodes)
+  - [x] Unpublish functionality
+  - [x] Tag display and metadata
 
-- [!] Add authentication for publishing — BLOCKED: Requires backend server
-  - [ ] Require logged-in user
-  - [ ] Rate limit: 10 publishes per day
-  - [ ] Storage limit: 10MB per user (free tier)
+- [x] Create `src/pages/PublishedGraph.tsx` - Public graph viewer
+  - [x] Load graph by userIdPrefix and slug
+  - [x] Render HTML content in iframe
+  - [x] Display title, description, stats
+  - [x] Link back to PatchPad
 
-- [!] Add custom domain support — BLOCKED: Requires DNS/SSL infrastructure
+- [x] Add routing for `/graphs/:userIdPrefix/:slug`
+  - [x] Update `src/main.tsx` with route
+
+- [x] Add command palette entry
+  - [x] "Published Graphs" command to open manager
+
+- [!] Custom domain support — BLOCKED: Requires DNS/SSL infrastructure
   - [ ] CNAME record verification
   - [ ] SSL provisioning via Let's Encrypt
   - [ ] Premium feature gate
-
-- [!] Add analytics — BLOCKED: Requires backend analytics database
-  - [ ] Track views per graph
-  - [ ] Most-clicked nodes
-  - [ ] Referrer tracking
-  - [ ] Display in dashboard
 
 **Open Questions:**
 - Should graphs be editable after publishing or read-only snapshots?
@@ -1138,15 +1146,34 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 **Tasks:**
 
-- [!] Enable live session broadcasting — BLOCKED: Requires WebSocket backend and multi-user infrastructure
-  - [ ] "Broadcast" mode: others watch your thinking live
-  - [ ] Viewer list with presence indicators
-  - [ ] Chat sidebar for questions/comments
+- [x] Enable live session broadcasting
+  - [x] Create `src/services/liveBroadcast.ts` - Broadcasting service
+    - [x] `startBroadcast()` / `stopBroadcast()` - Host controls
+    - [x] `broadcastEvent()` - Send session events to viewers
+    - [x] `joinBroadcast()` / `leaveBroadcast()` - Viewer controls
+    - [x] `sendChatMessage()` - Real-time chat
+    - [x] WebSocket communication (Supabase Realtime or fallback)
+  - [x] Create `src/components/LiveSessionViewer.tsx` - Viewer UI
+    - [x] Join screen with name input
+    - [x] Live canvas visualization
+    - [x] Viewer list with presence indicators
+    - [x] Chat sidebar for questions/comments
+    - [x] Event log display
 
-- [!] Add collaborative annotation — BLOCKED: Requires multi-user infrastructure
-  - [ ] Multiple people can annotate same session
-  - [ ] Color-coded by contributor
-  - [ ] "Annotation conversation" threads
+- [x] Add collaborative annotation
+  - [x] Create `src/services/collaborativeAnnotations.ts` - Annotation service
+    - [x] `addAnnotation()` - Add timestamped annotations
+    - [x] `addReply()` - Thread replies to annotations
+    - [x] `toggleResolved()` - Mark annotations resolved/unresolved
+    - [x] `getAnnotationStats()` - Statistics by author/type
+    - [x] Color-coded by contributor (author color palette)
+    - [x] Supabase persistence with localStorage fallback
+  - [x] Create `src/components/CollaborativeAnnotations.tsx` - Annotation UI
+    - [x] List annotations with author colors
+    - [x] Reply threads on annotations
+    - [x] Filter by resolved/unresolved
+    - [x] Seek to timestamp on click
+    - [x] Add note/highlight annotation types
 
 - [x] Create thinking session templates
   - [x] "Brainstorming" - optimized for rapid idea capture
