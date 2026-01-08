@@ -1564,6 +1564,9 @@ export default function App() {
               collaborationConnected={collaborationConnected}
               collaborationChatOpen={collaborationChatOpen}
               onToggleChat={() => setCollaborationChatOpen(!collaborationChatOpen)}
+              onStartRecording={() => setSessionTemplatePickerOpen(true)}
+              onStopRecording={handleStopSession}
+              showRecordingIndicator={isRecording()}
             />
           ) : mainView === 'timeline' ? (
             <TimelineView

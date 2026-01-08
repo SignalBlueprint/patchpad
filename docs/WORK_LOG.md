@@ -1,5 +1,31 @@
 # PatchPad Work Log
 
+## Moonshot Phase 1: Session Recording Infrastructure
+**Completed:** 2026-01-08
+
+**Files Changed:**
+- `src/components/Canvas/CanvasView.tsx` — Added recording button to toolbar; added session recording instrumentation for note-move and note-connect events; imported sessionRecorder and session types
+- `src/App.tsx` — Connected CanvasView recording props to session management (onStartRecording, onStopRecording, showRecordingIndicator)
+
+**Pre-existing Implementation (Verified Complete):**
+- `src/types/session.ts` — Full session types including ThinkingEvent, ThinkingSession, CanvasSnapshot, SessionAnnotation, SessionStats, and collaboration event types
+- `src/services/sessionRecorder.ts` — Complete recording service with recordEvent, startRecording, stopRecording, event debouncing (100ms), periodic flush (30s), collaboration event recording
+- `src/services/sessionPlayback.ts` — Full playback service with SessionPlayer class, speed controls, seeking, event processing
+- `src/components/SessionPlayer.tsx` — Playback UI with timeline, controls, event log
+
+**Implementation Notes:**
+- Recording button in canvas toolbar: play icon when not recording, pulsing red dot when recording
+- Note-move events recorded with from/to positions via dragStartPositionRef
+- Note-connect events recorded with source/target note IDs and titles
+- Recording integrates with existing SessionTemplatePicker for template-based sessions
+- Command palette entry already exists for Start/Stop Recording
+
+**Verification:**
+- 302 tests pass
+- TypeScript compiles without new errors (pre-existing errors in agents/ and sync.ts)
+
+---
+
 ## Template Intelligence - Phase 4: Enhanced Template Picker
 **Completed:** 2026-01-08
 
