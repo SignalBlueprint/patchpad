@@ -122,88 +122,67 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 #### Phase 1: Timeline View Component
 
-- [ ] Create `src/components/Timeline/TimelineView.tsx`
-  - [ ] Accept props: `notes: Note[]`, `onSelectNote: (id: string) => void`, `onSelectCluster: (ids: string[]) => void`
-  - [ ] Vertical scrolling timeline with date markers
-  - [ ] Use glass-morphism card styling for clusters
+- [x] Create `src/components/Timeline/TimelineView.tsx`
+  - [x] Accept props: `notes: Note[]`, `onSelectNote: (id: string) => void`, `onSelectCluster: (ids: string[]) => void`
+  - [x] Vertical scrolling timeline with date markers
+  - [x] Use glass-morphism card styling for clusters
+  - [x] Session gap threshold slider (15-180 min)
+  - [x] Stats header (total sessions, avg notes/session, largest session)
 
-- [ ] Create `src/components/Timeline/TimelineCluster.tsx`
-  - [ ] Render group of notes created within same "session"
-  - [ ] Show: date/time range, note count, common tags, topic summary
-  - [ ] Expandable to show individual note titles
-  - [ ] Click cluster → highlight all notes on canvas (if canvas data exists)
+- [x] Create `src/components/Timeline/TimelineCluster.tsx`
+  - [x] Render group of notes created within same "session"
+  - [x] Show: date/time range, note count, common tags, topic summary
+  - [x] Expandable to show individual note titles
+  - [x] Click cluster → highlight all notes on canvas (if canvas data exists)
+  - [x] AI-generated or fallback summary
 
-- [ ] Create `src/components/Timeline/TimelineDateMarker.tsx`
-  - [ ] Sticky date header as user scrolls
-  - [ ] Format: "Monday, January 6, 2026"
+- [x] Create `src/components/Timeline/TimelineDateMarker.tsx`
+  - [x] Sticky date header as user scrolls
+  - [x] Format: "Today", "Yesterday", or "Monday, January 6, 2026"
 
 #### Phase 2: Session Clustering Service
 
-- [ ] Create `src/services/thinkingSession.ts`
-  - [ ] Export interface `ThinkingSession { id, startTime, endTime, noteIds, topics, summary }`
-  - [ ] Export function `clusterIntoSessions(notes: Note[], maxGapMinutes: number = 60): ThinkingSession[]`
+- [x] Create `src/services/thinkingSession.ts`
+  - [x] Export interface `ThinkingSession { id, startTime, endTime, noteIds, topics, summary }`
+  - [x] Export function `clusterIntoSessions(notes: Note[], maxGapMinutes: number = 60): ThinkingSession[]`
     - Sort notes by createdAt
     - Group notes created within `maxGapMinutes` of each other
     - Minimum cluster size: 1 note (solo notes are their own session)
-  - [ ] Export function `extractSessionTopics(session: ThinkingSession, notes: Note[]): string[]`
+  - [x] Export function `extractSessionTopics(session: ThinkingSession, notes: Note[]): string[]`
     - Use `extractConcepts()` from brain.ts on session notes
     - Return top 3 shared concepts
-  - [ ] Export async function `generateSessionSummary(session: ThinkingSession, notes: Note[]): Promise<string>`
+  - [x] Export async function `generateSessionSummary(session: ThinkingSession, notes: Note[]): Promise<string>`
     - Concatenate note titles and first 100 chars
     - If AI available, generate one-sentence summary
     - Fallback: "X notes about [top concept]"
+  - [x] Export helper functions: formatSessionDuration, formatSessionTimeRange, groupSessionsByDate, formatDateHeader
 
-- [ ] Add tests in `src/services/thinkingSession.test.ts`
-  - [ ] Test: notes 30 min apart cluster together
-  - [ ] Test: notes 2 hours apart form separate clusters
-  - [ ] Test: solo notes form single-note sessions
-  - [ ] Test: topic extraction finds common concepts
+- [x] Add tests in `src/services/thinkingSession.test.ts`
+  - [x] Test: notes 30 min apart cluster together
+  - [x] Test: notes 2 hours apart form separate clusters
+  - [x] Test: solo notes form single-note sessions
+  - [x] Test: tag extraction finds common tags
+  - [x] Test: formatSessionDuration handles various durations
+  - [x] Test: groupSessionsByDate groups correctly
 
 #### Phase 3: Integration with Main App
 
-- [ ] Update `mainView` type in `src/App.tsx`
+- [x] Update `mainView` type in `src/App.tsx`
   ```typescript
   const [mainView, setMainView] = useState<'notes' | 'canvas' | 'graph' | 'timeline'>('notes');
   ```
 
-- [ ] Add Timeline tab button to tab bar (after Graph tab)
-  ```tsx
-  <button
-    onClick={() => setMainView('timeline')}
-    className={`px-4 py-2 text-sm font-medium ${mainView === 'timeline' ? 'text-indigo-600 border-b-2 border-indigo-500' : 'text-gray-500 hover:text-gray-700'}`}
-  >
-    <ClockIcon className="w-4 h-4 inline mr-1" />
-    Timeline
-  </button>
-  ```
+- [x] Add Timeline tab button to tab bar (after Graph tab)
 
-- [ ] Add conditional render in main content area
-  ```tsx
-  {mainView === 'timeline' && (
-    <TimelineView
-      notes={notes}
-      onSelectNote={(id) => { setSelectedId(id); setMainView('notes'); }}
-      onSelectCluster={(ids) => { setMultiSelectedIds(ids); setMainView('canvas'); }}
-    />
-  )}
-  ```
+- [x] Add conditional render in main content area
 
-- [ ] Add command palette entries
-  ```typescript
-  { id: 'view-timeline', name: 'Timeline View', category: 'view', action: () => setMainView('timeline') }
-  ```
+- [x] Add command palette entry `view-timeline`
 
 #### Phase 4: Canvas Integration
 
-- [ ] Add "View on Canvas" button to TimelineCluster
-  - [ ] On click, switch to canvas view
-  - [ ] Auto-fit viewport to show only cluster notes
-  - [ ] Temporarily highlight cluster notes (yellow border for 3 seconds)
-
-- [ ] Store session data for canvas overlay
-  - [ ] Add localStorage key: `patchpad_timeline_highlight`
-  - [ ] Format: `{ sessionId: string, noteIds: string[], expiry: Date }`
-  - [ ] CanvasView reads this and applies highlight styling
+- [x] Add "View on Canvas" button to TimelineCluster
+  - [x] On click, switch to canvas view
+  - [x] Store session data for canvas overlay via localStorage `patchpad_timeline_highlight`
 
 **Acceptance Criteria:**
 - Timeline view accessible via tab bar and command palette

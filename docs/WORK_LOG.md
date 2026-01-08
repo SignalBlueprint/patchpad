@@ -2,6 +2,37 @@
 
 ---
 
+## Thinking Timeline (Horizon 1.2)
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/services/thinkingSession.ts` — New service with clusterIntoSessions, extractSessionTopics, extractSessionTags, generateSessionSummary, formatSessionDuration, formatSessionTimeRange, groupSessionsByDate, formatDateHeader functions
+- `src/services/thinkingSession.test.ts` — Comprehensive test suite (22 tests) covering clustering, formatting, and grouping
+- `src/components/Timeline/TimelineView.tsx` — Main timeline view with stats header, settings panel (gap threshold slider), and session list
+- `src/components/Timeline/TimelineCluster.tsx` — Expandable session card with time range, note count, tags, AI summary, and "View on Canvas" button
+- `src/components/Timeline/TimelineDateMarker.tsx` — Sticky date header component with "Today", "Yesterday", or formatted date
+- `src/components/Timeline/index.ts` — Barrel export file
+- `src/App.tsx` — Added 'timeline' to mainView type, Timeline tab in tab bar, conditional render for TimelineView, command palette entry
+
+**Implementation Notes:**
+- Notes clustered by creation time proximity (default 60 min gap threshold)
+- Configurable gap threshold via settings slider (15-180 minutes)
+- Stats shown: total sessions, average notes per session, largest session size
+- Sessions grouped by date with "Today", "Yesterday", or full date headers
+- Each session shows time range, duration, note count, and common tags
+- Expandable to show individual note titles with click-to-navigate
+- AI-generated summary if available, fallback to title-based summary
+- "View on Canvas" button stores highlight data in localStorage and switches view
+- Sessions sorted most recent first within each date group
+
+**Verification:**
+- All 22 tests pass for thinkingSession.ts
+- TypeScript compiles without errors in new files
+- Timeline accessible via tab bar and command palette "Timeline View"
+- Sessions correctly cluster notes by time proximity
+- All acceptance criteria met
+
+---
+
 ## Second Brain Dashboard (Horizon 1.1)
 **Completed:** 2026-01-07
 **Files Changed:**

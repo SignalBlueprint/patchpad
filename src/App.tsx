@@ -16,6 +16,7 @@ import { BacklinksPanel } from './components/BacklinksPanel';
 import { DailyDigestModal } from './components/DailyDigestModal';
 import { ExportDialog } from './components/ExportDialog';
 import { CanvasView } from './components/Canvas';
+import { TimelineView } from './components/Timeline';
 import { TranscriptionSettingsDialog } from './components/TranscriptionSettingsDialog';
 import { DictationMode } from './components/DictationMode';
 import { LoginModal, SyncSettingsDialog } from './components/Auth';
@@ -87,8 +88,8 @@ export default function App() {
   // Export dialog state
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
 
-  // Main view state: 'notes' | 'canvas' | 'graph'
-  const [mainView, setMainView] = useState<'notes' | 'canvas' | 'graph'>('notes');
+  // Main view state: 'notes' | 'canvas' | 'graph' | 'timeline'
+  const [mainView, setMainView] = useState<'notes' | 'canvas' | 'graph' | 'timeline'>('notes');
 
   // Transcription settings dialog state
   const [transcriptionSettingsOpen, setTranscriptionSettingsOpen] = useState(false);
@@ -725,6 +726,14 @@ export default function App() {
       icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" /></svg>,
       action: () => setBrainDashboardOpen(true),
     },
+    {
+      id: 'view-timeline',
+      name: 'Timeline View',
+      description: 'Show notes grouped by thinking sessions',
+      category: 'view',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
+      action: () => setMainView('timeline'),
+    },
 
     // AI commands - basic
     {
@@ -1161,6 +1170,21 @@ export default function App() {
                 Graph
               </span>
             </button>
+            <button
+              onClick={() => setMainView('timeline')}
+              className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
+                mainView === 'timeline'
+                  ? 'bg-gray-100 text-gray-900 border-b-2 border-indigo-500'
+                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+              }`}
+            >
+              <span className="flex items-center gap-2">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Timeline
+              </span>
+            </button>
           </div>
         </div>
 
@@ -1175,6 +1199,19 @@ export default function App() {
               onAddNote={handleCanvasAddNote}
               onAutoLayout={handleCanvasAutoLayout}
               selectedNoteIds={currentNote ? [currentNote.id] : Array.from(selectedIds)}
+            />
+          ) : mainView === 'timeline' ? (
+            <TimelineView
+              notes={notes}
+              onSelectNote={(id) => {
+                setSelectedId(id);
+                setMainView('notes');
+              }}
+              onSelectCluster={(noteIds) => {
+                setSelectedIds(new Set(noteIds));
+                setMultiSelectMode(true);
+                setMainView('canvas');
+              }}
             />
           ) : stitchPreview ? (
             <StitchPreview
