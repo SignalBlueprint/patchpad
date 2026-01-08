@@ -1,5 +1,26 @@
 # PatchPad Work Log
 
+## Template Intelligence - Phase 1: Pattern Detection Enhancement
+**Completed:** 2026-01-08
+
+**Files Changed:**
+- `src/services/templateDetection.ts` — Added TitlePattern, StructurePattern, TemplateSuggestion types; added detectTitlePatterns(), detectStructurePatterns(), suggestTemplateFromPatterns() functions
+- `src/services/templateDetection.test.ts` — Added 20 new tests for Phase 1 functions
+
+**Implementation Notes:**
+- TitlePattern detects "Prefix:" (colon), "Prefix -" (dash), and "[Prefix]" (bracket) formats
+- StructurePattern groups notes by structure signature (sections + features + content length)
+- suggestTemplateFromPatterns combines both and returns best template suggestion
+- Confidence calculation: 3-5 notes (0.5-0.6), 6-10 notes (0.7-0.8), 11+ notes (0.9)
+- All patterns require minimum 3 notes
+- Patterns sorted by count descending
+
+**Verification:**
+- 47 tests pass (27 existing + 20 new)
+- TypeScript compilation passes
+
+---
+
 ## Knowledge Graph Publishing - Phase 5: Public Graph Viewer
 **Completed:** 2026-01-08
 

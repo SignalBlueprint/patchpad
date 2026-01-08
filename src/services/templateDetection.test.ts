@@ -9,7 +9,10 @@ import {
   createRepresentativeStructure,
   detectPatterns,
   generateTemplateFromPattern,
-  matchTitleToPattern
+  matchTitleToPattern,
+  detectTitlePatterns,
+  detectStructurePatterns,
+  suggestTemplateFromPatterns
 } from './templateDetection';
 import { Note } from '../types/note';
 
@@ -366,5 +369,218 @@ describe('matchTitleToPattern', () => {
     const match = matchTitleToPattern('Random thoughts', patterns);
 
     expect(match).toBeNull();
+  });
+});
+
+// =============================================================================
+// Phase 1: Pattern Detection Enhancement Tests
+// =============================================================================
+
+describe('detectTitlePatterns', () => {
+  it('should detect colon-format title patterns', () => {
+    const notes = [
+      createNote('1', 'Meeting: Monday standup', 'content'),
+      createNote('2', 'Meeting: Friday review', 'content'),
+      createNote('3', 'Meeting: Sprint planning', 'content'),
+      createNote('4', 'Random note', 'content'),
+    ];
+
+    const patterns = detectTitlePatterns(notes);
+
+    expect(patterns).toHaveLength(1);
+    expect(patterns[0].prefix).toBe('Meeting');
+    expect(patterns[0].count).toBe(3);
+    expect(patterns[0].format).toBe('colon');
+  });
+
+  it('should detect dash-format title patterns', () => {
+    const notes = [
+      createNote('1', 'Project - Website Redesign', 'content'),
+      createNote('2', 'Project - Mobile App', 'content'),
+      createNote('3', 'Project - API Development', 'content'),
+    ];
+
+    const patterns = detectTitlePatterns(notes);
+
+    expect(patterns).toHaveLength(1);
+    expect(patterns[0].prefix).toBe('Project');
+    expect(patterns[0].format).toBe('dash');
+  });
+
+  it('should detect bracket-format title patterns', () => {
+    const notes = [
+      createNote('1', '[WIP] Feature A', 'content'),
+      createNote('2', '[WIP] Feature B', 'content'),
+      createNote('3', '[WIP] Feature C', 'content'),
+    ];
+
+    const patterns = detectTitlePatterns(notes);
+
+    expect(patterns).toHaveLength(1);
+    expect(patterns[0].prefix).toBe('WIP');
+    expect(patterns[0].format).toBe('bracket');
+  });
+
+  it('should require minimum 3 notes for pattern', () => {
+    const notes = [
+      createNote('1', 'Meeting: A', 'content'),
+      createNote('2', 'Meeting: B', 'content'),
+    ];
+
+    const patterns = detectTitlePatterns(notes);
+
+    expect(patterns).toHaveLength(0);
+  });
+
+  it('should sort patterns by count', () => {
+    const notes = [
+      createNote('1', 'Meeting: A', 'content'),
+      createNote('2', 'Meeting: B', 'content'),
+      createNote('3', 'Meeting: C', 'content'),
+      createNote('4', 'Meeting: D', 'content'),
+      createNote('5', 'Research: X', 'content'),
+      createNote('6', 'Research: Y', 'content'),
+      createNote('7', 'Research: Z', 'content'),
+    ];
+
+    const patterns = detectTitlePatterns(notes);
+
+    expect(patterns.length).toBeGreaterThanOrEqual(2);
+    expect(patterns[0].count).toBeGreaterThanOrEqual(patterns[1].count);
+  });
+});
+
+describe('detectStructurePatterns', () => {
+  it('should detect checkbox structure patterns', () => {
+    const notes = [
+      createNote('1', 'Tasks 1', '- [ ] Task A\n- [ ] Task B'),
+      createNote('2', 'Tasks 2', '- [ ] Task C\n- [ ] Task D'),
+      createNote('3', 'Tasks 3', '- [ ] Task E\n- [ ] Task F'),
+    ];
+
+    const patterns = detectStructurePatterns(notes);
+
+    expect(patterns).toHaveLength(1);
+    expect(patterns[0].features.hasCheckboxes).toBe(true);
+    expect(patterns[0].name).toBe('Task Lists');
+  });
+
+  it('should detect section-based structure patterns', () => {
+    const notes = [
+      createNote('1', 'Note 1', '## Introduction\n\n## Methods\n\n## Results'),
+      createNote('2', 'Note 2', '## Introduction\n\n## Methods\n\n## Results'),
+      createNote('3', 'Note 3', '## Introduction\n\n## Methods\n\n## Results'),
+    ];
+
+    const patterns = detectStructurePatterns(notes);
+
+    expect(patterns).toHaveLength(1);
+    expect(patterns[0].sections).toContain('Introduction');
+    expect(patterns[0].sections).toContain('Methods');
+  });
+
+  it('should require minimum 3 notes for pattern', () => {
+    const notes = [
+      createNote('1', 'Note 1', '```code\nblock\n```'),
+      createNote('2', 'Note 2', '```code\nblock\n```'),
+    ];
+
+    const patterns = detectStructurePatterns(notes);
+
+    expect(patterns).toHaveLength(0);
+  });
+
+  it('should group different structures separately', () => {
+    const notes = [
+      createNote('1', 'Tasks 1', '- [ ] Task A'),
+      createNote('2', 'Tasks 2', '- [ ] Task B'),
+      createNote('3', 'Tasks 3', '- [ ] Task C'),
+      createNote('4', 'Code 1', '```js\ncode\n```'),
+      createNote('5', 'Code 2', '```js\ncode\n```'),
+      createNote('6', 'Code 3', '```js\ncode\n```'),
+    ];
+
+    const patterns = detectStructurePatterns(notes);
+
+    expect(patterns.length).toBe(2);
+  });
+});
+
+describe('suggestTemplateFromPatterns', () => {
+  it('should suggest template from title patterns', () => {
+    const titlePatterns = detectTitlePatterns([
+      createNote('1', 'Meeting: A', 'content'),
+      createNote('2', 'Meeting: B', 'content'),
+      createNote('3', 'Meeting: C', 'content'),
+    ]);
+
+    const suggestion = suggestTemplateFromPatterns(titlePatterns, []);
+
+    expect(suggestion).toBeDefined();
+    expect(suggestion?.title).toBe('Meeting Template');
+    expect(suggestion?.templateContent).toContain('Meeting:');
+    expect(suggestion?.sourcePattern).toBe('title');
+    expect(suggestion?.basedOnNotes).toBe(3);
+  });
+
+  it('should suggest template from structure patterns', () => {
+    const structurePatterns = detectStructurePatterns([
+      createNote('1', 'Tasks 1', '- [ ] Task A'),
+      createNote('2', 'Tasks 2', '- [ ] Task B'),
+      createNote('3', 'Tasks 3', '- [ ] Task C'),
+    ]);
+
+    const suggestion = suggestTemplateFromPatterns([], structurePatterns);
+
+    expect(suggestion).toBeDefined();
+    expect(suggestion?.templateContent).toContain('- [ ]');
+    expect(suggestion?.sourcePattern).toBe('structure');
+  });
+
+  it('should return null when no patterns exist', () => {
+    const suggestion = suggestTemplateFromPatterns([], []);
+
+    expect(suggestion).toBeNull();
+  });
+
+  it('should prefer pattern with higher count', () => {
+    const notes = [
+      createNote('1', 'Meeting: A', 'content'),
+      createNote('2', 'Meeting: B', 'content'),
+      createNote('3', 'Meeting: C', 'content'),
+      createNote('4', 'Meeting: D', 'content'),
+      createNote('5', 'Meeting: E', 'content'),
+    ];
+    const titlePatterns = detectTitlePatterns(notes);
+
+    const smallStructure = [
+      createNote('6', 'Task 1', '- [ ] A'),
+      createNote('7', 'Task 2', '- [ ] B'),
+      createNote('8', 'Task 3', '- [ ] C'),
+    ];
+    const structurePatterns = detectStructurePatterns(smallStructure);
+
+    const suggestion = suggestTemplateFromPatterns(titlePatterns, structurePatterns);
+
+    // Meeting has 5 notes vs Task has 3, so Meeting should win
+    expect(suggestion?.title).toBe('Meeting Template');
+  });
+
+  it('should calculate confidence based on note count', () => {
+    const notes3 = [
+      createNote('1', 'A: 1', 'content'),
+      createNote('2', 'A: 2', 'content'),
+      createNote('3', 'A: 3', 'content'),
+    ];
+    const patterns3 = detectTitlePatterns(notes3);
+    const suggestion3 = suggestTemplateFromPatterns(patterns3, []);
+    expect(suggestion3?.confidence).toBeLessThan(0.7);
+
+    const notes10 = Array.from({ length: 10 }, (_, i) =>
+      createNote(String(i), `B: ${i}`, 'content')
+    );
+    const patterns10 = detectTitlePatterns(notes10);
+    const suggestion10 = suggestTemplateFromPatterns(patterns10, []);
+    expect(suggestion10?.confidence).toBeGreaterThan(0.7);
   });
 });

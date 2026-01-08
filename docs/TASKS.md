@@ -309,13 +309,13 @@ PatchPad is a personal knowledge operating system with AI-powered capture, refin
 
 **Tasks:**
 
-#### Phase 1: Pattern Detection Enhancement
-- [ ] Extend `src/services/templateDetection.ts` (already exists)
+#### Phase 1: Pattern Detection Enhancement - COMPLETE
+- [x] Extend `src/services/templateDetection.ts` (already exists)
   - `detectTitlePatterns(notes: Note[]): TitlePattern[]` — "Meeting:", "Research:", etc.
   - `detectStructurePatterns(notes: Note[]): StructurePattern[]` — Common header sequences
   - `suggestTemplateFromPatterns(patterns: Pattern[]): TemplateSuggestion`
 
-- [ ] Add tests in `src/services/templateDetection.test.ts`
+- [x] Add tests in `src/services/templateDetection.test.ts`
 
 #### Phase 2: AI-Fillable Placeholders
 - [ ] Extend `src/types/template.ts`
