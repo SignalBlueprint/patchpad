@@ -2,6 +2,48 @@
 
 ---
 
+## Knowledge Agents: Document Export Formats
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/services/documentExport.ts` — New service for compiling notes into documents and exporting to various formats
+- `src/components/DocumentExportDialog.tsx` — UI dialog for selecting notes and configuring export options
+- `src/App.tsx` — Integrated DocumentExportDialog with state, command palette entry
+
+**Implementation Notes:**
+- **Document Export Service** (`documentExport.ts`):
+  - `CompiledDocument` interface: title, sections (heading, content, sourceNoteId), metadata (author, generatedAt, noteCount, wordCount, tags)
+  - `compileNotesIntoDocument()` compiles selected notes into structured document with organization options (chronological, alphabetical, manual)
+  - `exportToMarkdown()` generates markdown with optional YAML frontmatter, table of contents, and footer
+  - `exportToHTML()` generates self-contained HTML with embedded styles, light/dark theme support, responsive typography
+  - `exportToPDF()` opens browser print dialog with print-optimized styles
+  - `downloadMarkdown()` and `downloadHTML()` trigger file downloads with sanitized filenames
+  - Helper functions: `generateFrontmatter()`, `generateTableOfContents()`, `markdownToHtml()`, `sanitizeFilename()`, `generateHTMLStyles()`
+
+- **Document Export Dialog** (`DocumentExportDialog.tsx`):
+  - Left panel: Note selection with checkboxes, select all toggle
+  - Right panel: Document configuration options
+  - Options: title, author, export format (Markdown/HTML/PDF), section order (chronological/alphabetical), theme (light/dark)
+  - Toggles: table of contents, frontmatter/metadata, footer
+  - Summary tab: shows sections list, word count, tags
+  - Preview tab: live markdown preview (first 3000 chars)
+  - Export button triggers download or print dialog
+
+- **App Integration**:
+  - New state: `documentExportDialogOpen`
+  - Command palette entry: "Export as Document" with document icon
+  - Passes selected notes or current note to dialog
+  - Dialog renders conditionally when open
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- Export formats implemented:
+  - [x] Markdown with YAML frontmatter
+  - [x] HTML with light/dark themes
+  - [x] PDF via browser print dialog
+  - [ ] Google Docs (requires OAuth setup - deferred)
+
+---
+
 ## Moonshot: Session Recording & Playback
 **Completed:** 2026-01-07
 **Files Changed:**

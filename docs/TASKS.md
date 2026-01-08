@@ -950,10 +950,11 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
   - [x] Agent drafts sections from note content
   - [x] User reviews and edits
 
-- [ ] Add export formats
-  - [ ] Markdown document
-  - [ ] Google Docs (via API)
-  - [ ] PDF (via puppeteer/playwright)
+- [x] Add export formats
+  - [x] Markdown document (with YAML frontmatter, ToC generation)
+  - [x] HTML document (with light/dark themes, styled output)
+  - [x] PDF export (via browser print dialog)
+  - [ ] Google Docs (via API) - requires OAuth setup
 
 **Open Questions:**
 - How much autonomous action should agents have?

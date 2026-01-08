@@ -29,6 +29,7 @@ import { SyncStatusIndicator } from './components/SyncStatusIndicator';
 import { ConflictResolutionModal } from './components/ConflictResolutionModal';
 import { ChatInterface, AIKnowledgeDashboard } from './components/ResearchPartner';
 import { ShareNoteDialog } from './components/ShareNoteDialog';
+import { DocumentExportDialog } from './components/DocumentExportDialog';
 import { useNotes, type SortOption, type NotesFilter } from './hooks/useNotes';
 import { isResearchPartnerAvailable } from './services/researchPartner';
 import { useSync, useSyncReceiver } from './hooks/useSync';
@@ -117,6 +118,9 @@ export default function App() {
 
   // Share dialog state
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
+
+  // Document export dialog state
+  const [documentExportDialogOpen, setDocumentExportDialogOpen] = useState(false);
 
   // Second Brain Dashboard state
   const [secondBrainOpen, setSecondBrainOpen] = useState(false);
@@ -1063,6 +1067,17 @@ export default function App() {
       disabled: notes.length === 0,
     },
 
+    // Export as document (Markdown, HTML, PDF)
+    {
+      id: 'export-document',
+      name: 'Export as Document',
+      description: 'Compile notes into Markdown, HTML, or PDF document',
+      category: 'note',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+      action: () => setDocumentExportDialogOpen(true),
+      disabled: notes.length === 0,
+    },
+
     // Sync settings
     {
       id: 'sync-settings',
@@ -1574,6 +1589,15 @@ export default function App() {
           confidence={templateSuggestion.confidence}
           onAccept={handleAcceptTemplateSuggestion}
           onDismiss={dismissTemplateSuggestion}
+        />
+      )}
+
+      {/* Document Export Dialog */}
+      {documentExportDialogOpen && (
+        <DocumentExportDialog
+          notes={notes}
+          selectedNoteIds={currentNote ? [currentNote.id] : Array.from(selectedIds)}
+          onClose={() => setDocumentExportDialogOpen(false)}
         />
       )}
     </div>
