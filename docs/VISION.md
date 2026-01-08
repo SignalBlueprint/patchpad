@@ -1,6 +1,6 @@
 ---
 repo: patchpad
-scan_date: 2026-01-07
+scan_date: 2026-01-08
 status: draft
 ---
 
@@ -8,155 +8,161 @@ status: draft
 
 ## Foundation Read
 
-PatchPad is a personal knowledge operating system that turns scattered thoughts into interconnected intelligence. The core loop: capture ideas through voice or keyboard, let AI refine and connect them, then explore relationships through spatial canvases and knowledge graphs. What started as a markdown editor has evolved into a genuine "second brain" - complete with conversational AI that knows your notes, multi-device sync, and semantic search that finds meaning, not just keywords.
+PatchPad is a personal knowledge operating system that transforms scattered thoughts into interconnected intelligence. The core loop: **capture** thoughts via voice or text, **refine** them with AI (summarize, expand, extract tasks), **connect** them through wiki links and spatial canvas arrangement, and **retrieve** them through semantic search or conversational AI. Value delivery happens when a user asks "what do I know about X?" and gets a cited, contextual answer drawn from their own notes—or when they visually arrange ideas on a canvas and replay their thinking session later.
 
 ## Architecture Snapshot
 
-**Stack**
-- Frontend: React 18 + TypeScript + Vite 6
-- Editor: CodeMirror 6 with wiki-link autocomplete, syntax highlighting
-- Styling: TailwindCSS with glass-morphism aesthetic
-- Storage: Dexie (IndexedDB) - offline-first, browser-local
-- Cloud: Supabase (optional) - auth, sync, real-time
+**Stack:**
+- React 18 + TypeScript + Vite
+- TailwindCSS for styling
+- CodeMirror 6 for markdown editing
+- Dexie (IndexedDB wrapper) for local-first storage
+- Yjs CRDTs for real-time collaboration (infrastructure ready)
+- Supabase for optional cloud sync + auth
+- OpenAI/Anthropic for AI features (embeddings, completions, transcription)
 
-**Data Models**
-- `Note`: id, title, content, tags[], highlights[], favorite, parentId, canvasPosition, audioId
-- `Patch`: AI-generated text operations (insert/delete/replace) with status tracking
-- `Embedding`: Vector embeddings (1536 dimensions) cached by content hash
-- `Conversation`: AI Research Partner chat history with messages and timestamps
-- `Folder`: Color-coded organization containers
+**Data:**
+- Notes with wiki links, highlights, tags, canvas positions
+- Vector embeddings (1536-dim) cached per note
+- Patches (AI-suggested edits with accept/reject)
+- Templates with AI-fillable placeholders
+- Thinking sessions (event traces of canvas activity)
+- Conversations (Research Partner chat history with citations)
 
-**Patterns**
-- Multi-provider AI abstraction (OpenAI, Anthropic, mock fallback)
-- Semantic search via embeddings + hybrid keyword/vector scoring
-- Offline-first with sync queue replay on reconnect
-- Service layer separation (ai.ts, brain.ts, embeddings.ts, sync.ts, audio.ts)
-- Live queries via Dexie hooks for reactive UI
+**Patterns:**
+- Local-first with optional cloud sync
+- Reactive queries via Dexie's `useLiveQuery`
+- Service layer abstraction (39 services)
+- Command palette as primary navigation (50+ commands)
+- No global state manager—hooks + IndexedDB as source of truth
 
-**Gaps**
-- Real-time collaboration (Yjs CRDTs) - designed but not implemented
-- Published knowledge graphs (static export ready, hosting not)
-- Limited test coverage (utilities well-tested, components less so)
-- No CI/CD pipeline
-- Mobile experience could be improved
+**Gaps:**
+- 7.7% test coverage (12/156 files)
+- No service worker for true offline-first
+- No error tracking/monitoring
+- Yjs collaboration wired but not exposed in UI
+- Knowledge agents built but no management dashboard
+- No pagination (performance risk at scale)
+
+---
 
 ## Latent Potential
 
-**80% Built, Not Exposed**
-- **Embeddings are cached but underutilized.** Every note has a vector embedding, but semantic search only powers the Research Partner. These could enable: "notes drifting apart" alerts, automatic clustering, similarity-based recommendations everywhere.
-- **Canvas positions exist but aren't spatial intelligence.** Notes have x/y coordinates - this data could reveal thinking patterns: which ideas cluster together, which are isolated, how your knowledge landscape evolves over time.
-- **Conversation history is stored but not mined.** The AI Research Partner saves every exchange. This is a goldmine for: "what questions do you ask most?", personal FAQ generation, identifying knowledge gaps.
-- **Audio recordings can be replayed but aren't searchable.** Original voice notes are stored - transcriptions are indexed, but audio fingerprinting could enable "find when I said X."
+**Real-Time Collaboration (90% built):** Yjs, y-indexeddb, and y-websocket are integrated. CollaborativeEditor, RemoteCursor, RemoteSelection, and PresenceIndicator components exist. The only missing piece is a feature flag toggle and invite system—10-15 hours to ship.
 
-**Abstractions Ready for Expansion**
-- The `PatchOp` system (insert/delete/replace with positions) is CRDT-ready - Yjs integration would enable Google Docs-style collaboration
-- AI provider abstraction makes adding Gemini, Claude 3.5, or local LLMs trivial
-- The sync engine's conflict resolution UI could handle any merge scenario
+**Knowledge Agents (80% built):** Three agents (Archivist, Researcher, Writer) are fully defined with task pipelines. Archivist can suggest connections, detect duplicates, surface contradictions. Researcher can create briefings and find knowledge gaps. Writer can outline and draft from notes. All that's missing is a dashboard to trigger and view agent outputs.
 
-**Data Collected, Not Used**
-- Highlight positions and colors track reading patterns but aren't visualized as heatmaps
-- Note update frequencies could power "this idea is evolving" or "this is stale" indicators
-- Tag co-occurrence is computed but not surfaced as "these topics connect"
+**Session Intelligence (70% built):** Every canvas movement, note creation, and AI query is recorded with timestamps. Comparison analysis exists. But the data sits unused—no heatmaps, no "you spent 10 minutes stuck here before breakthrough" insights, no spaced repetition integration.
+
+**Embeddings Beyond Search:** 1536-dimensional vectors are generated for every note but only used for semantic search. They could power: similar note recommendations, automatic clustering, concept drift detection, or "notes you might have forgotten."
+
+**Conversation History as Training Data:** Every Research Partner conversation is stored with citations. This could train personalized retrieval, surface recurring knowledge gaps, or generate "here's what you've been researching this month" reports.
 
 ---
 
 ## Horizon 1: Quick Wins
+
 *Buildable in days, using existing infrastructure*
 
-### 1. "Second Brain Dashboard"
+### 1. Second Brain Dashboard
 
-Open PatchPad and instead of a blank slate, you see your knowledge at a glance. Top center: a personalized greeting with your most-touched notes from the last week. Left column: "Brewing Ideas" - notes you've edited but haven't linked anywhere yet, suggestions to connect them. Right column: "Fading Memories" - notes not touched in 90 days that mention concepts you've written about recently. The demo: log in after a week away and immediately see "You were thinking about Project Atlas last month - here's what you wrote, and 3 new notes that might relate." Your second brain becomes self-organizing.
+Replace the blank-slate experience with a personalized knowledge overview. When you open PatchPad, you see: a greeting ("Good morning, you're on a 12-day editing streak"), your most-edited notes from the past week, and two intelligent sections—"Brewing Ideas" shows unconnected notes with AI-suggested links ("Your note on 'React patterns' might connect to 'Component design'—click to link"), while "Fading Memories" surfaces 90+ day old notes that mention concepts you've written about recently. One click connects notes or navigates to forgotten knowledge. The dashboard feels like a knowledgeable assistant who's been organizing your notes overnight.
 
-### 2. "Thinking Timeline"
+### 2. Thinking Timeline
 
-A new view: Notes → Canvas → Graph → **Timeline**. Your notes arranged chronologically, but not just by creation date - by "thinking sessions." The AI clusters notes created within the same hour, on the same topic, and presents them as connected thought chains. Scroll through your intellectual history like a journal. Click any cluster and see the canvas layout from that moment. The insight: you can revisit not just what you wrote, but how you were thinking when you wrote it.
+Add a chronological view that groups notes into "thinking sessions"—clusters of work within 60-minute windows. Scroll through time and see: "Tuesday 2pm: 45 minutes, 8 notes about project architecture" with expandable previews. Click a session and notes highlight on the canvas showing where ideas spatially clustered. A slider adjusts the session gap threshold (15 min to 3 hours). For the first time, you can answer: "What was I working on last Thursday afternoon?" and get a visual, contextual answer.
 
-### 3. "Conversation Insights"
+### 3. Conversation Insights
 
-Your AI Research Partner has been answering questions for weeks. Now see the patterns. A new panel in the Research Partner shows: "Your top questions this month," "Topics you ask about most," "Questions the AI couldn't fully answer" (knowledge gaps). Each insight links to the original conversation. The demo: realize you've asked about "Q2 planning" 15 times but have no dedicated note about it - one click creates a "Q2 Planning Brief" synthesized from all your questions.
+The Research Partner has answered hundreds of your questions. Surface that intelligence. A new panel shows: your top 10 most-asked questions (grouped by similarity), a topic frequency chart showing what you research most, and crucially—"Knowledge Gaps" listing topics where the AI said "I couldn't find information about this in your notes." Each gap has a "Create Note" button that scaffolds a blank note for that topic. Turn your chat history into a research agenda.
 
 ---
 
 ## Horizon 2: System Expansions
+
 *Requires new infrastructure, buildable in weeks*
 
-### 1. Real-time Collaboration
+### 1. Live Collaborative Canvases
 
-You share a note link with a colleague. They click it and see your note - plus your cursor, live. They start typing and you see their words appear character by character, their selection highlighted in their assigned color. A presence indicator shows who's viewing. The `PatchOp` system transforms into a full CRDT layer via Yjs. Comments appear as floating annotations. Version history shows who wrote what. The mental model shift: from "my notes" to "our shared thinking." Start with 1:1 sharing, graduate to team knowledge bases.
+Enable Google Docs-style real-time collaboration on canvases. Share a session link—collaborators join and see your cursor moving as you drag notes. Their cursors appear in distinct colors with name labels. A chat sidebar allows commentary without disrupting the spatial workspace. Host a brainstorming session where four people simultaneously add sticky notes, cluster ideas, and draw connections. The canvas becomes a shared thinking space, not just a personal one. Record these sessions to replay how the group's thinking evolved—a new form of meeting notes.
 
 ### 2. Knowledge Graph Publishing
 
-Your knowledge graph isn't just for navigation anymore - it's a publishable artifact. Click "Publish" in the Brain Dashboard and generate an interactive web page: your concepts as nodes, relationships as edges, click any node to see the note excerpt. Host it on `username.patchpad.pub` or download as a self-contained HTML file. Use case: a researcher publishes their literature review as an explorable graph. A consultant shares their framework. A student publishes study notes. Revenue angle: free tier for 50 nodes, premium for unlimited + custom domains + analytics.
+Export your knowledge graph as a shareable, interactive web page. Choose which tags to include, select a theme (light/dark), and publish to `username.patchpad.pub`. Visitors see a force-directed graph they can zoom and click—each node reveals the note's excerpt. Track analytics: 47 views, most-clicked nodes, referrer sources. It's a personal wiki meets data visualization, shareable on social media or embedded in portfolios. Premium tier: custom domains, password protection, larger graphs.
 
 ### 3. Template Intelligence
 
-You create meeting notes with the same structure every time. PatchPad notices. It suggests: "Create a Meeting Notes template?" Accept, and next time you type "Meeting with," it offers to scaffold the template. But templates aren't just static text - they're AI-powered. A "Research Summary" template prompts: "What topic?" then auto-fills with relevant excerpts from your notes, open questions extracted from conversations, and related concepts from your graph. Templates become personalized AI workflows.
+The app detects patterns in your notes—you have 23 notes titled "Meeting: [Person]" with similar structure. It suggests: "Create a Meeting template?" with auto-detected placeholders. But the magic is AI-filling: create a "Research Summary" template with `{{topic}}` and `{{ai:related_notes}}`—when applied, it searches your notes semantically and pre-populates context. Start a new research note and it already contains excerpts from your 5 most relevant existing notes. Templates become an intelligence layer, not just structure.
 
 ---
 
 ## Horizon 3: Blue Sky
+
 *Reframes what PatchPad could become*
 
 ### 1. Ambient Knowledge Capture
 
-PatchPad becomes a background presence. A menu bar app (macOS/Windows) listens - not to conversations (privacy!) but to your clipboard, your browser tabs, your calendar. When you copy a URL, it suggests: "Save to notes?" When you have a meeting with "Acme Corp" in 15 minutes, a notification offers your Research Partner's prep brief. When you paste code, it offers to explain it. The line between "taking notes" and "living with your second brain" dissolves. Your knowledge graph grows organically without explicit capture sessions.
+A system tray companion app that captures knowledge passively. Copy a URL—a toast asks "Save to notes?" with auto-extracted title and summary. Copy a long text passage—"Create note from clipboard?" Before a calendar meeting, a notification appears: "Meeting with Alex in 15 min. I found 7 notes mentioning Alex—here's a prep brief." The browser extension adds "Save to PatchPad" to right-click menus, capturing selected text with source URL. Knowledge capture becomes ambient, frictionless, always-on. Your digital life flows into your second brain without friction.
 
 ### 2. Knowledge Agents
 
-The AI Research Partner evolves into multiple specialized agents. "Archivist" organizes and connects your notes overnight, suggesting merges and surfacing contradictions. "Researcher" proactively monitors topics you care about and creates briefings. "Writer" helps transform note clusters into blog posts, reports, or presentations. Each agent has its own personality, history, and permissions. You don't ask questions - you delegate knowledge work. PatchPad becomes less of a tool and more of a thinking team.
+Three AI agents work in the background. **The Archivist** runs overnight: "I found 3 notes that should link to each other, 2 near-duplicates to merge, and 1 contradiction between your notes on API design." One-click to accept each suggestion. **The Researcher** monitors topics you configure: "You asked about 'knowledge graphs' 12 times this month—here's a briefing synthesizing everything you know plus 3 questions you haven't answered." **The Writer** transforms notes into documents: select 8 notes, ask for a "blog post outline"—it proposes structure, you approve, it drafts sections you can edit. Your notes become a living knowledge base with automated maintenance and amplification.
 
 ---
 
 ## Moonshot
 
-**"Externalized Cognition"**
+**Externalized Cognition: Thinking Sessions as First-Class Artifacts**
 
-What if PatchPad wasn't just where you store thoughts, but where you think? Imagine a split-screen interface: on the left, a "thinking canvas" where ideas exist as moveable, connectable objects in 2D space. On the right, an AI partner that watches you think - when you drag two concepts together, it asks "Are you exploring how these relate? Here's what your notes suggest..." When you've been staring at the same area for 30 seconds, it offers: "Stuck? Here are 3 angles you haven't considered."
+Imagine your thinking process is as reviewable as your written output. You sit down to solve a problem—click "Record Session." Every note you create, move, connect, or query the AI about is captured with timestamps. An hour later, you have a "thinking session" artifact.
 
-The canvas becomes a cognitive workspace. Create a "project zone" and every note, every conversation, every web clip related to that project flows into it. Run "simulations" - ask the AI "If we proceed with Option A, what does my knowledge suggest about risks?" and it synthesizes an answer from your accumulated context.
+Now replay it: watch your canvas evolve like a time-lapse, see where you lingered (a heatmap overlay shows you spent 12 minutes in one corner before a breakthrough), see the exact moment you asked the AI a question that unlocked an insight. Add annotations: "This is where I realized X."
 
-But the real moonshot: **thinking sessions are recorded**. Not as video, but as spatial-temporal traces. Replay how you moved through ideas. Share your "thinking recording" with a colleague so they can see your reasoning process. Annotate your own past thinking: "This is where I got stuck." Your knowledge graph becomes not just a map of what you know, but a time-lapse of how you came to know it.
+But the real magic: share a thinking session. A colleague watches your problem-solving approach, not just your conclusion. Students learn how experts think by observing their process. You review your own sessions to improve your thinking patterns—"I notice I always start scattered then cluster after 20 minutes."
 
-The philosophical shift: from "notes as storage" to "notes as extended mind." PatchPad becomes cognitive infrastructure.
+A thinking session becomes a new knowledge artifact—not documentation of what you concluded, but a replayable record of how you got there. PatchPad becomes a tool for **metacognition**: understanding your own mind by watching it work.
 
 ---
 
 ## Next Move
 
-**Most Promising Idea: Real-time Collaboration (Sync Phase 4)**
+### Most Promising Idea: **Knowledge Agents Dashboard**
 
-With sync phases 1-3 complete (Supabase backend, auth, conflict resolution), you're one step away from the feature that transforms PatchPad from a personal tool into a team platform. The infrastructure is laid: authentication works, real-time subscriptions exist, conflict detection is live. What's missing is Yjs CRDT integration for character-level collaboration and presence awareness.
+**Why:** The agent framework is 80% built. Three agents with distinct capabilities exist. The infrastructure for suggestions, task queues, and results storage is ready. What's missing is a simple UI to trigger agents and review their output. This is the highest-leverage investment because:
 
-This unlocks network effects. Solo note apps compete on features; collaborative knowledge bases grow with their user graphs. Every shared note is a potential onboarding moment for a new user. The "Knowledge Graph Publishing" feature becomes more compelling when it can show "co-created by X people." And the price point shifts - personal tools struggle to justify $10/month; team tools command $15/user/month.
+1. **Immediate user value:** "Find notes that should be connected" is universally useful
+2. **Differentiator:** No note app has autonomous knowledge maintenance
+3. **Compounds over time:** Agents improve the knowledge base, making all other features better
+4. **Low risk:** Agents can start manual-only, graduate to scheduled
 
-**First Experiment (< 1 day)**
+### First Experiment (< 1 day)
 
-Before building full CRDT collaboration, validate demand with a simpler test: **shareable read-only note links**. Add a "Share" button that generates a unique URL (stored in Supabase). Anyone with the link can view the note (rendered markdown, no editing). Track: how many users try to share? How many links are actually clicked? If sharing activity is high, invest in full collaboration. If low, users may prefer PatchPad as a private thinking space.
+Add a "Run Archivist" button to the Second Brain Dashboard. When clicked:
+- Archivist scans all notes for potential wiki link connections (content similarity but no existing link)
+- Displays top 5 suggestions as cards: "Link 'React patterns' → 'Component design'? (87% confidence)"
+- One-click to insert the wiki link
+- Track accept/dismiss rate
 
-Implementation:
-- Add `shared` boolean and `share_token` UUID to notes table
-- Create `/shared/:token` route that fetches and renders note
-- Add "Share" button in Editor toolbar
-- Analytics: log share events and view events
+Ship this experiment, measure engagement, and learn whether users want automated knowledge maintenance.
 
-**One Question That Would Sharpen the Vision**
+### One Question to Sharpen the Vision
 
-*Is PatchPad's future as a solo thinking tool that happens to sync, or as a collaborative knowledge platform that started personal?*
+**Are we building for solo knowledge workers or collaborative teams?**
 
-The answer determines everything. If solo: optimize for depth (richer AI, better visualizations, ambient capture). If collaborative: optimize for breadth (permissions, team spaces, commenting, activity feeds). The current architecture supports both paths, but resources are finite.
-
-The users who've built substantial knowledge graphs in PatchPad - are they asking for sharing features, or for deeper personal intelligence? Five conversations with power users would answer this.
+The architecture supports both, but the product direction is ambiguous. Solo focus means doubling down on: agents, personal analytics, spaced repetition, ambient capture. Team focus means: presence, permissions, shared canvases, commenting, notification systems. The answer reshapes every feature priority. Right now, PatchPad feels 80% solo-optimized with team infrastructure waiting. The next major investment should commit to one path—or explicitly design for "solo-first, team-ready."
 
 ---
 
-## What's Different Since Last Scan (2026-01-06)
+## Quick Reference
 
-The previous vision document proposed features that are now **implemented**:
-- Canvas Mode (Horizon 2.1) - Complete with sticky notes, grouping, PNG export
-- Sync & Collaboration Layers 1-3 (Horizon 2.2) - Supabase auth, sync engine, conflict resolution
-- Voice-First Capture (Horizon 2.3) - All 5 phases including dictation mode
-- AI Research Partner (Horizon 3.2) - Conversational AI with semantic search, citations, knowledge dashboard
-
-This scan focuses on **what's next** now that the foundation is built. The low-hanging fruit has been picked; the remaining horizons require either new infrastructure (real-time collaboration, publishing platform) or represent genuine product evolution (knowledge agents, ambient capture, externalized cognition).
-
-PatchPad has grown from "AI-enhanced notes" to "personal knowledge OS." The question is no longer "can it work?" but "what should it become?"
+| Horizon | Idea | Effort | Impact |
+|---------|------|--------|--------|
+| 1 | Second Brain Dashboard | 8 hrs | High |
+| 1 | Thinking Timeline | 10 hrs | Medium |
+| 1 | Conversation Insights | 10 hrs | Medium |
+| 2 | Live Collaborative Canvases | 40 hrs | Very High |
+| 2 | Knowledge Graph Publishing | 24 hrs | High |
+| 2 | Template Intelligence | 24 hrs | Medium |
+| 3 | Ambient Knowledge Capture | 60+ hrs | Very High |
+| 3 | Knowledge Agents | 40 hrs | Very High |
+| Moon | Externalized Cognition | 100+ hrs | Transformative |
