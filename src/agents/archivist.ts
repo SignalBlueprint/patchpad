@@ -13,8 +13,7 @@ import type { Note } from '../types/note';
 import type { AgentTask, AgentTaskResult, AgentSuggestion } from '../types/agent';
 import { registerTaskHandler, createSuggestion } from '../services/agentFramework';
 import { findRelatedNotes } from '../services/ai';
-import { semanticSearch, calculateCosineSimilarity } from '../services/semanticSearch';
-import { getEmbedding } from '../services/embeddings';
+import { getEmbeddingForNote, cosineSimilarity } from '../services/embeddings';
 
 /**
  * Initialize the Archivist agent by registering its task handlers
@@ -47,33 +46,37 @@ async function suggestConnections(task: AgentTask): Promise<AgentTaskResult> {
   for (const note of unlinkedNotes.slice(0, 10)) {
     // Limit to 10 to conserve API budget
     try {
-      const related = await findRelatedNotes(note.content, notes, 3);
+      // Get other notes excluding current one
+      const otherNotes = notes.filter(n => n.id !== note.id);
+      const related = await findRelatedNotes(note, otherNotes);
 
-      for (const relatedNote of related) {
-        if (relatedNote.id === note.id) continue;
+      // Take top 3 results
+      for (const relatedResult of related.slice(0, 3)) {
+        const targetNote = notes.find(n => n.id === relatedResult.noteId);
+        if (!targetNote) continue;
 
         // Check if link already exists in either direction
         const linkExists =
-          note.content.includes(`[[${relatedNote.title}]]`) ||
-          relatedNote.content.includes(`[[${note.title}]]`);
+          note.content.includes(`[[${targetNote.title}]]`) ||
+          targetNote.content.includes(`[[${note.title}]]`);
 
         if (!linkExists) {
           const suggestion = createSuggestion(
             'archivist',
             'connect_notes',
-            `Link "${note.title}" to "${relatedNote.title}"`,
-            `These notes appear to be about related topics and could benefit from being linked together.`,
+            `Link "${note.title}" to "${targetNote.title}"`,
+            `${relatedResult.reason} (similarity: ${Math.round(relatedResult.score * 100)}%)`,
             {
               sourceNoteId: note.id,
               sourceNoteTitle: note.title,
-              targetNoteId: relatedNote.id,
-              targetNoteTitle: relatedNote.title,
+              targetNoteId: targetNote.id,
+              targetNoteTitle: targetNote.title,
             },
             3
           );
           suggestions.push(suggestion);
           log.push(
-            `Suggested linking "${note.title}" to "${relatedNote.title}"`
+            `Suggested linking "${note.title}" to "${targetNote.title}"`
           );
         }
       }
@@ -107,8 +110,8 @@ async function detectDuplicates(task: AgentTask): Promise<AgentTaskResult> {
     if (note.content.length < 50) continue; // Skip very short notes
 
     try {
-      const embedding = await getEmbedding(note.id, note.content);
-      if (embedding) {
+      const embedding = await getEmbeddingForNote(note);
+      if (embedding && embedding.length > 0) {
         embeddings.set(note.id, embedding);
       }
     } catch (error) {
@@ -133,7 +136,7 @@ async function detectDuplicates(task: AgentTask): Promise<AgentTaskResult> {
 
       const emb1 = embeddings.get(id1)!;
       const emb2 = embeddings.get(id2)!;
-      const similarity = calculateCosineSimilarity(emb1, emb2);
+      const similarity = cosineSimilarity(emb1, emb2);
 
       if (similarity >= SIMILARITY_THRESHOLD) {
         const note1 = notes.find((n) => n.id === id1)!;
@@ -180,9 +183,6 @@ async function surfaceContradictions(task: AgentTask): Promise<AgentTaskResult> 
 
   // Extract facts/claims from notes (simplified approach)
   // In production, this would use NLP to extract structured claims
-
-  // Look for date-related contradictions
-  const datePatterns = /(?:on|in|at|since|before|after)\s+(\d{4}|\d{1,2}\/\d{1,2}\/\d{2,4}|[A-Z][a-z]+ \d{1,2}(?:st|nd|rd|th)?(?:,? \d{4})?)/gi;
 
   // Look for numeric claims
   const numericPatterns = /(\d+(?:,\d{3})*(?:\.\d+)?)\s+(percent|%|dollars?|\$|euros?|pounds?|users?|customers?|employees?|people|items?|hours?|days?|weeks?|months?|years?)/gi;

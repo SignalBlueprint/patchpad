@@ -7,7 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import type { Note } from '../types/note';
-import type { Agent, AgentSuggestion, AgentTaskStatus } from '../types/agent';
+import type { Agent, AgentId, AgentSuggestion, AgentTaskStatus } from '../types/agent';
 import {
   getAgents,
   updateAgent,
@@ -44,7 +44,7 @@ export function AgentDashboard({
     setSuggestions(getSuggestions());
   }, []);
 
-  const handleToggleAgent = (agentId: string) => {
+  const handleToggleAgent = (agentId: AgentId) => {
     const agent = agents.find((a) => a.id === agentId);
     if (agent) {
       updateAgent(agentId, { enabled: !agent.enabled });
@@ -52,7 +52,7 @@ export function AgentDashboard({
     }
   };
 
-  const handleToggleCapability = (agentId: string, capabilityId: string) => {
+  const handleToggleCapability = (agentId: AgentId, capabilityId: string) => {
     const agent = agents.find((a) => a.id === agentId);
     if (agent) {
       const capabilities = agent.capabilities.map((c) =>
@@ -64,7 +64,7 @@ export function AgentDashboard({
   };
 
   const handleRunAgent = useCallback(
-    async (agentId: string) => {
+    async (agentId: AgentId) => {
       const agent = agents.find((a) => a.id === agentId);
       if (!agent || !agent.enabled) return;
 
@@ -98,26 +98,27 @@ export function AgentDashboard({
       const result = await applySuggestion(suggestion.id);
       if (result) {
         // Handle based on suggestion type
+        const payload = suggestion.payload as Record<string, unknown>;
         switch (suggestion.type) {
           case 'create_note':
             onCreateNote(
-              suggestion.data.title || 'New Note',
-              suggestion.data.content || '',
-              suggestion.data.tags
+              (payload.title as string) || 'New Note',
+              (payload.content as string) || '',
+              payload.tags as string[] | undefined
             );
             break;
           case 'add_tags':
-            if (suggestion.data.noteId) {
-              onUpdateNote(suggestion.data.noteId, {
-                tags: suggestion.data.tags,
+            if (payload.noteId) {
+              onUpdateNote(payload.noteId as string, {
+                tags: payload.tags as string[],
               });
             }
             break;
           case 'connect_notes':
-            if (suggestion.data.sourceNoteId && suggestion.data.targetNoteId) {
-              const sourceNote = notes.find((n) => n.id === suggestion.data.sourceNoteId);
+            if (payload.sourceNoteId && payload.targetNoteId) {
+              const sourceNote = notes.find((n) => n.id === payload.sourceNoteId);
               if (sourceNote) {
-                const targetNote = notes.find((n) => n.id === suggestion.data.targetNoteId);
+                const targetNote = notes.find((n) => n.id === payload.targetNoteId);
                 if (targetNote) {
                   onUpdateNote(sourceNote.id, {
                     content: sourceNote.content + `\n\n[[${targetNote.title}]]`,
@@ -177,7 +178,7 @@ export function AgentDashboard({
     }
   };
 
-  const pendingSuggestions = suggestions.filter((s) => s.status === 'pending');
+  const pendingSuggestions = suggestions.filter((s) => !s.reviewed && !s.dismissed);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
@@ -190,7 +191,7 @@ export function AgentDashboard({
             </h2>
             <p className="text-sm text-gray-500">
               {pendingSuggestions.length} pending suggestions •{' '}
-              {config.dailyBudget - config.usedToday} API calls remaining today
+              {config.dailyBudget - config.dailyUsed} API calls remaining today
             </p>
           </div>
           <button
@@ -443,13 +444,13 @@ export function AgentDashboard({
           {activeTab === 'history' && (
             <div className="space-y-4">
               {suggestions
-                .filter((s) => s.status !== 'pending')
+                .filter((s) => s.reviewed || s.dismissed)
                 .slice(0, 20)
                 .map((suggestion) => (
                   <div
                     key={suggestion.id}
                     className={`p-3 rounded-lg border ${
-                      suggestion.status === 'applied'
+                      suggestion.applied
                         ? 'border-green-200 bg-green-50'
                         : 'border-gray-200 bg-gray-50'
                     }`}
@@ -463,12 +464,12 @@ export function AgentDashboard({
                       </div>
                       <span
                         className={`text-xs px-2 py-0.5 rounded ${
-                          suggestion.status === 'applied'
+                          suggestion.applied
                             ? 'bg-green-100 text-green-700'
                             : 'bg-gray-200 text-gray-600'
                         }`}
                       >
-                        {suggestion.status}
+                        {suggestion.applied ? 'applied' : 'dismissed'}
                       </span>
                     </div>
                     <p className="text-xs text-gray-500 mt-1">
@@ -476,7 +477,7 @@ export function AgentDashboard({
                     </p>
                   </div>
                 ))}
-              {suggestions.filter((s) => s.status !== 'pending').length ===
+              {suggestions.filter((s) => s.reviewed || s.dismissed).length ===
                 0 && (
                 <div className="text-center py-12 text-gray-400">
                   <p>No suggestion history yet</p>

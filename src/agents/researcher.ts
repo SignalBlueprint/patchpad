@@ -11,9 +11,45 @@
 import type { Note } from '../types/note';
 import type { AgentTask, AgentTaskResult } from '../types/agent';
 import { registerTaskHandler, createSuggestion } from '../services/agentFramework';
-import { askQuestionAboutNotes } from '../services/ai';
-import { extractConcepts } from '../services/brain';
-import { semanticSearch } from '../services/semanticSearch';
+import { askNotes } from '../services/ai';
+import { searchNotes } from '../services/semanticSearch';
+
+/**
+ * Extract key concepts from text using simple keyword extraction
+ */
+function extractConcepts(text: string): string[] {
+  // Common stop words to filter out
+  const stopWords = new Set([
+    'the', 'a', 'an', 'and', 'or', 'but', 'is', 'are', 'was', 'were', 'be', 'been',
+    'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'could',
+    'should', 'may', 'might', 'must', 'shall', 'can', 'to', 'of', 'in', 'for', 'on',
+    'with', 'at', 'by', 'from', 'as', 'into', 'through', 'during', 'before', 'after',
+    'above', 'below', 'between', 'under', 'again', 'further', 'then', 'once', 'here',
+    'there', 'when', 'where', 'why', 'how', 'all', 'each', 'few', 'more', 'most',
+    'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than',
+    'too', 'very', 'just', 'also', 'now', 'this', 'that', 'these', 'those', 'it', 'its',
+    'i', 'me', 'my', 'we', 'our', 'you', 'your', 'he', 'him', 'his', 'she', 'her',
+    'they', 'them', 'their', 'what', 'which', 'who', 'whom', 'about', 'if', 'because',
+  ]);
+
+  // Extract words, filter stop words, and count occurrences
+  const words = text.toLowerCase()
+    .replace(/[^a-z0-9\s]/g, ' ')
+    .split(/\s+/)
+    .filter(w => w.length > 3 && !stopWords.has(w));
+
+  const wordCounts = new Map<string, number>();
+  for (const word of words) {
+    wordCounts.set(word, (wordCounts.get(word) || 0) + 1);
+  }
+
+  // Return top concepts by frequency
+  return Array.from(wordCounts.entries())
+    .filter(([, count]) => count >= 2)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 20)
+    .map(([word]) => word);
+}
 
 /**
  * Initialize the Researcher agent by registering its task handlers
@@ -50,7 +86,7 @@ async function createBriefing(task: AgentTask): Promise<AgentTaskResult> {
   // If topic specified, filter by semantic search
   if (topic && relevantNotes.length > 0) {
     try {
-      const searchResults = await semanticSearch(topic, notes, 10);
+      const searchResults = await searchNotes(topic, 10, notes);
       const searchIds = new Set(searchResults.map((r) => r.note.id));
       relevantNotes = relevantNotes.filter((n) => searchIds.has(n.id));
     } catch (error) {
@@ -83,14 +119,6 @@ async function createBriefing(task: AgentTask): Promise<AgentTaskResult> {
 
   log.push(`Top concepts: ${topConcepts.join(', ')}`);
 
-  // Generate briefing content
-  const noteSummaries = relevantNotes.slice(0, 10).map((n) => ({
-    title: n.title,
-    excerpt: n.content.slice(0, 200),
-    tags: n.tags || [],
-    updated: n.updatedAt,
-  }));
-
   // Use AI to synthesize briefing
   let briefingContent: string;
   try {
@@ -98,7 +126,7 @@ async function createBriefing(task: AgentTask): Promise<AgentTaskResult> {
       ? `Summarize my recent notes about "${topic}". What are the key insights and what should I focus on next?`
       : `Summarize my recent notes from the past ${period === 'daily' ? 'day' : 'week'}. What are the key themes and what should I focus on next?`;
 
-    const response = await askQuestionAboutNotes(question, relevantNotes);
+    const response = await askNotes(question, relevantNotes);
     briefingContent = response.answer;
     log.push('Generated AI briefing');
   } catch (error) {
