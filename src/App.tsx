@@ -12,6 +12,8 @@ import { AudioRecorder } from './components/AudioRecorder';
 import { QuickCaptureButton } from './components/QuickCaptureButton';
 import { BrainDashboard } from './components/BrainDashboard';
 import { SecondBrainDashboard } from './components/SecondBrainDashboard';
+import { TemplateDialog } from './components/TemplateDialog';
+import { TemplatePicker } from './components/TemplatePicker';
 import { BacklinksPanel } from './components/BacklinksPanel';
 import { DailyDigestModal } from './components/DailyDigestModal';
 import { ExportDialog } from './components/ExportDialog';
@@ -117,6 +119,10 @@ export default function App() {
   const [secondBrainOpen, setSecondBrainOpen] = useState(false);
   const [dashboardConcepts, setDashboardConcepts] = useState<Concept[]>([]);
   const [dashboardChecked, setDashboardChecked] = useState(false);
+
+  // Template state
+  const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
+  const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -646,6 +652,23 @@ export default function App() {
       action: handleNewNote,
     },
     {
+      id: 'new-from-template',
+      name: 'New Note from Template',
+      description: 'Create a note using a template',
+      shortcut: 'Ctrl+Shift+N',
+      category: 'note',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" /></svg>,
+      action: () => setTemplatePickerOpen(true),
+    },
+    {
+      id: 'create-template',
+      name: 'Create Template',
+      description: 'Create a new template from detected patterns',
+      category: 'note',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>,
+      action: () => setTemplateDialogOpen(true),
+    },
+    {
       id: 'delete-note',
       name: 'Delete Note',
       description: 'Delete the current note',
@@ -1107,6 +1130,12 @@ export default function App() {
         e.preventDefault();
         setResearchPartnerOpen(true);
       }
+
+      // Template picker shortcut (Ctrl+Shift+N)
+      if (isMod && e.shiftKey && e.key === 'N') {
+        e.preventDefault();
+        setTemplatePickerOpen(true);
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
@@ -1377,6 +1406,29 @@ export default function App() {
         isOpen={dictationModeOpen}
         onClose={() => setDictationModeOpen(false)}
         onComplete={handleDictationComplete}
+      />
+
+      {/* Template Dialog */}
+      <TemplateDialog
+        notes={notes}
+        isOpen={templateDialogOpen}
+        onClose={() => setTemplateDialogOpen(false)}
+        onSaveTemplate={(template) => {
+          success('Template created', `"${template.name}" is ready to use`);
+        }}
+      />
+
+      {/* Template Picker */}
+      <TemplatePicker
+        isOpen={templatePickerOpen}
+        notes={notes}
+        onClose={() => setTemplatePickerOpen(false)}
+        onCreateNote={async (title, content, tags) => {
+          const id = await createNote(content, title, undefined, tags);
+          setSelectedId(id);
+          success('Note created', `Created "${title}" from template`);
+        }}
+        onOpenTemplateDialog={() => setTemplateDialogOpen(true)}
       />
 
       {/* Login Modal */}

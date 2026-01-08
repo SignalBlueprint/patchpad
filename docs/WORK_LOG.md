@@ -2,6 +2,41 @@
 
 ---
 
+## Template Intelligence Phase 3: Template UI (Horizon 2.3)
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/components/TemplateDialog.tsx` — New dialog for creating templates, shows detected patterns with preview, custom template form with structure editor, category and tags input
+- `src/components/TemplatePicker.tsx` — New picker dialog for creating notes from templates, search and category filtering, placeholder form with live preview, delete option for user templates
+- `src/App.tsx` — Added templateDialogOpen/templatePickerOpen state, "New Note from Template" (Ctrl+Shift+N) and "Create Template" commands, rendered template components
+
+**Implementation Notes:**
+- TemplateDialog:
+  - Two tabs: "Detected Patterns" and "Custom Template"
+  - Shows patterns detected from note analysis with frequency and common tags
+  - Preview pane shows generated template markdown
+  - Custom tab: name, description, structure textarea, title prefix, tags, category
+  - Extracts placeholders from {{key}} syntax in structure
+  - Glass-morphism styling with emerald gradient header
+- TemplatePicker:
+  - Left panel: template list with search and category filters
+  - Right panel: placeholder form for selected template
+  - Shows AI-enhanced badge for templates with ai-fill placeholders
+  - Live preview of applied template content
+  - Delete button for user templates (not built-in)
+  - Link to open TemplateDialog for creating new templates
+  - Glass-morphism styling with violet gradient header
+- Integration:
+  - Ctrl+Shift+N keyboard shortcut opens template picker
+  - Command palette entries: "New Note from Template", "Create Template"
+  - Creates note with content, title, and tags from applied template
+
+**Verification:**
+- No type errors in template UI components
+- Components integrated with App.tsx and keyboard shortcuts working
+- Templates complete (Phases 1-3): pattern detection, template system, UI
+
+---
+
 ## Template Intelligence Phase 2: Template System (Horizon 2.3)
 **Completed:** 2026-01-07
 **Files Changed:**

@@ -693,18 +693,23 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 #### Phase 3: Template UI
 
-- [ ] Create `src/components/TemplateDialog.tsx`
-  - [ ] Show detected patterns as suggested templates
-  - [ ] Form to customize template structure
-  - [ ] Preview pane showing rendered template
-  - [ ] "Save Template" button
+- [x] Create `src/components/TemplateDialog.tsx`
+  - [x] Show detected patterns as suggested templates
+  - [x] Form to customize template structure
+  - [x] Preview pane showing rendered template
+  - [x] "Save Template" button
 
-- [ ] Create `src/components/TemplatePicker.tsx`
-  - [ ] Grid of saved templates
-  - [ ] Quick-fill form for placeholders
-  - [ ] "Create from template" button
+- [x] Create `src/components/TemplatePicker.tsx`
+  - [x] Grid of saved templates
+  - [x] Quick-fill form for placeholders
+  - [x] "Create from template" button
 
-- [ ] Add template trigger detection
+- [x] Add command palette and keyboard shortcuts
+  - [x] "New Note from Template" (Ctrl+Shift+N)
+  - [x] "Create Template" command
+  - [x] Integration with App.tsx
+
+- [ ] Add template trigger detection (future enhancement)
   - [ ] In Editor, detect when title matches pattern ("Meeting with")
   - [ ] Show toast: "Use Meeting template?"
   - [ ] On accept, scaffold template structure
