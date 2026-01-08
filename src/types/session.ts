@@ -13,7 +13,11 @@ export type ThinkingEventType =
   | 'viewport-change'
   | 'ai-query'
   | 'ai-response'
-  | 'selection-change';
+  | 'selection-change'
+  // Collaboration events
+  | 'peer-join'
+  | 'peer-leave'
+  | 'chat-message';
 
 export interface ThinkingEvent {
   type: ThinkingEventType;
@@ -32,7 +36,11 @@ export type ThinkingEventPayload =
   | ViewportChangePayload
   | AIQueryPayload
   | AIResponsePayload
-  | SelectionChangePayload;
+  | SelectionChangePayload
+  // Collaboration payloads
+  | PeerJoinPayload
+  | PeerLeavePayload
+  | ChatMessagePayload;
 
 export interface NoteMovePayload {
   noteId: string;
@@ -89,6 +97,37 @@ export interface SelectionChangePayload {
   noteIds: string[];
 }
 
+// Collaboration event payloads
+
+export interface PeerJoinPayload {
+  peerId: string;
+  peerName: string;
+  peerColor: string;
+}
+
+export interface PeerLeavePayload {
+  peerId: string;
+  peerName: string;
+}
+
+export interface ChatMessagePayload {
+  messageId: string;
+  senderId: string;
+  senderName: string;
+  content: string;
+}
+
+/**
+ * Metadata about a peer who participated in a collaborative session
+ */
+export interface CollaborationPeer {
+  id: string;
+  name: string;
+  color: string;
+  joinedAt: number; // ms since session start
+  leftAt?: number; // ms since session start (undefined if still connected)
+}
+
 export interface CanvasSnapshot {
   /** Note positions at start of session */
   positions: Record<string, { x: number; y: number; width: number; height: number }>;
@@ -136,6 +175,15 @@ export interface ThinkingSession {
   templateName?: string;
   /** Current workflow step index (for ongoing sessions) */
   currentWorkflowStep?: number;
+  // Collaboration metadata
+  /** Whether this session was collaborative */
+  isCollaborative?: boolean;
+  /** Room ID if this was a collaborative session */
+  collaborationRoomId?: string;
+  /** Peers who participated in the session */
+  collaborationPeers?: CollaborationPeer[];
+  /** Total chat messages sent during session */
+  chatMessageCount?: number;
 }
 
 export interface SessionStats {
@@ -146,4 +194,9 @@ export interface SessionStats {
   connectionsCreated: number;
   aiQueries: number;
   durationMs: number;
+  // Collaboration stats
+  peerJoins?: number;
+  peerLeaves?: number;
+  chatMessages?: number;
+  uniquePeers?: number;
 }

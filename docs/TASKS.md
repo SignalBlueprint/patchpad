@@ -197,8 +197,8 @@ PatchPad is a personal knowledge operating system with AI-powered capture, refin
 
 - [x] Add chat toggle button to canvas toolbar
 
-#### Phase 5: Session Recording for Collaborative Sessions
-- [ ] Extend `src/services/sessionRecorder.ts`
+#### Phase 5: Session Recording for Collaborative Sessions - COMPLETE
+- [x] Extend `src/services/sessionRecorder.ts`
   - Record collaboration events: peer-join, peer-leave, chat-message
   - Attribute note changes to specific peer IDs
   - Store peer metadata in session

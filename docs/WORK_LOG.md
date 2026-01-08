@@ -1,5 +1,28 @@
 # PatchPad Work Log
 
+## Live Collaborative Canvases - Phase 5: Session Recording for Collaborative Sessions
+**Completed:** 2026-01-08
+
+**Files Changed:**
+- `src/types/session.ts` — Extended ThinkingEventType with 'peer-join', 'peer-leave', 'chat-message'; added PeerJoinPayload, PeerLeavePayload, ChatMessagePayload interfaces; added CollaborationPeer interface; extended ThinkingSession with isCollaborative, collaborationRoomId, collaborationPeers, chatMessageCount; extended SessionStats with collaboration stats
+- `src/services/sessionRecorder.ts` — Extended StartRecordingOptions with collaboration options; added recordPeerJoin(), recordPeerLeave(), recordChatMessage() functions; added enableCollaborationMode(), isCollaborativeSession(), getCollaborationPeers() utilities; updated getSessionStats() to include collaboration stats
+
+**Implementation Notes:**
+- New event types: 'peer-join', 'peer-leave', 'chat-message' for collaboration tracking
+- CollaborationPeer tracks: id, name, color, joinedAt, leftAt timestamps
+- Sessions can be marked collaborative at start or mid-session via enableCollaborationMode()
+- recordPeerJoin adds peer to collaborationPeers array with join timestamp
+- recordPeerLeave sets leftAt timestamp on peer
+- recordChatMessage increments chatMessageCount and records payload
+- getSessionStats returns collaboration-specific stats for collaborative sessions
+
+**Verification:**
+- TypeScript compilation passes for modified files
+- All new functions properly check for collaborative session before recording
+- Peer metadata persists to storage via existing flush mechanism
+
+---
+
 ## Live Collaborative Canvases - Phase 4: Collaboration Chat
 **Completed:** 2026-01-08
 
