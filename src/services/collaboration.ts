@@ -646,3 +646,113 @@ export function getRoomCanvasPositions(): Y.Map<unknown> | null {
   if (!activeRoom) return null;
   return activeRoom.doc.getMap('canvasPositions');
 }
+
+// =============================================================================
+// Canvas-Level Collaboration Bindings
+// =============================================================================
+
+/**
+ * Canvas position type
+ */
+export interface CanvasPosition {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * Sync a note's canvas position to the collaboration room
+ */
+export function syncNotePosition(noteId: string, position: CanvasPosition): void {
+  if (!activeRoom) return;
+
+  const positions = activeRoom.doc.getMap('canvasPositions');
+  positions.set(noteId, position);
+}
+
+/**
+ * Get a note's position from the collaboration room
+ */
+export function getNotePosition(noteId: string): CanvasPosition | null {
+  if (!activeRoom) return null;
+
+  const positions = activeRoom.doc.getMap('canvasPositions');
+  return positions.get(noteId) as CanvasPosition | null;
+}
+
+/**
+ * Subscribe to remote position changes
+ * Returns unsubscribe function
+ */
+export function onRemotePositionChange(
+  callback: (noteId: string, position: CanvasPosition) => void
+): () => void {
+  if (!activeRoom) return () => {};
+
+  const positions = activeRoom.doc.getMap('canvasPositions');
+
+  const observer = (event: Y.YMapEvent<unknown>) => {
+    event.changes.keys.forEach((change, key) => {
+      if (change.action === 'add' || change.action === 'update') {
+        const position = positions.get(key) as CanvasPosition;
+        if (position) {
+          callback(key, position);
+        }
+      }
+    });
+  };
+
+  positions.observe(observer);
+
+  return () => {
+    positions.unobserve(observer);
+  };
+}
+
+/**
+ * Get all note positions from the collaboration room
+ */
+export function getAllPositions(): Map<string, CanvasPosition> {
+  const result = new Map<string, CanvasPosition>();
+  if (!activeRoom) return result;
+
+  const positions = activeRoom.doc.getMap('canvasPositions');
+  positions.forEach((value, key) => {
+    result.set(key, value as CanvasPosition);
+  });
+
+  return result;
+}
+
+/**
+ * Extended Peer type with canvas position
+ */
+export interface PeerWithCanvasPosition extends Peer {
+  canvasPosition?: { x: number; y: number };
+}
+
+/**
+ * Get all peers in the current room with their canvas positions
+ */
+export function getRoomPeersWithCanvasPositions(): PeerWithCanvasPosition[] {
+  if (!activeRoom) return [];
+
+  const awareness = activeRoom.provider.awareness;
+  const peers: PeerWithCanvasPosition[] = [];
+
+  awareness.getStates().forEach((state, clientId) => {
+    if (clientId !== awareness.clientID && state.user) {
+      peers.push({
+        id: state.user.id || clientId.toString(),
+        name: state.user.name || `User ${clientId}`,
+        color: state.user.color || getPeerColor(clientId.toString()),
+        cursor: state.cursor,
+        selection: state.selection,
+        canvasPosition: state.canvasPosition,
+      });
+    }
+  });
+
+  return peers;
+}

@@ -1,5 +1,28 @@
 # PatchPad Work Log
 
+## Live Collaborative Canvases - Phase 3: Collaborative Canvas
+**Completed:** 2026-01-08
+
+**Files Changed:**
+- `src/components/Canvas/RemoteCanvasCursor.tsx` — New component for rendering peer cursors on canvas with arrow icon and name labels
+- `src/services/collaboration.ts` — Added canvas-level Yjs bindings: `syncNotePosition()`, `onRemotePositionChange()`, `getNotePosition()`, `getAllPositions()`, `getRoomPeersWithCanvasPositions()`, `CanvasPosition` and `PeerWithCanvasPosition` types
+- `src/components/Canvas/CanvasView.tsx` — Added remote cursor tracking (mouse move/leave handlers), position sync on drag end and resize, subscription to remote position changes, `RemoteCanvasCursors` component rendering
+
+**Implementation Notes:**
+- Remote cursors use arrow/pointer icon instead of text cursor
+- Position synced through Yjs Y.Map ('canvasPositions') for real-time updates
+- Cursor positions broadcast via awareness state (canvasPosition field)
+- Canvas coordinates transformed to screen position using viewport
+- Poll-based peer cursor updates (100ms interval) for smooth animation
+- Note positions sync both locally and to collaboration room on drag/resize
+
+**Verification:**
+- TypeScript compilation passes for all files
+- RemoteCanvasCursor transforms canvas coords to screen coords correctly
+- Position changes propagate through Yjs observer
+
+---
+
 ## Live Collaborative Canvases - Phase 2: Presence Awareness
 **Completed:** 2026-01-08
 

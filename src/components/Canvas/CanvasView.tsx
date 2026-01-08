@@ -4,7 +4,15 @@ import { StickyNote, type StickyNoteData } from './StickyNote';
 import { ConnectionLine } from './ConnectionLine';
 import { CanvasGroup, type CanvasGroupData } from './CanvasGroup';
 import { PresenceIndicator } from '../PresenceIndicator';
-import type { Peer } from '../../services/collaboration';
+import { RemoteCanvasCursors } from './RemoteCanvasCursor';
+import {
+  type Peer,
+  type PeerWithCanvasPosition,
+  updateRoomCursor,
+  syncNotePosition,
+  onRemotePositionChange,
+  getRoomPeersWithCanvasPositions,
+} from '../../services/collaboration';
 
 // Re-export CanvasPosition for convenience
 export type { CanvasPosition } from '../../types/note';
@@ -165,6 +173,80 @@ export function CanvasView({
     currentPos: { x: number; y: number };
   } | null>(null);
 
+  // Collaboration: peers with canvas positions
+  const [canvasPeers, setCanvasPeers] = useState<PeerWithCanvasPosition[]>([]);
+
+  // Track mouse position for collaboration cursor
+  const handleMouseMoveForCursor = useCallback((e: React.MouseEvent) => {
+    if (!collaborationMode || !containerRef.current) return;
+
+    const rect = containerRef.current.getBoundingClientRect();
+    // Convert screen position to canvas position
+    const canvasX = (e.clientX - rect.left - viewport.x) / viewport.zoom;
+    const canvasY = (e.clientY - rect.top - viewport.y) / viewport.zoom;
+
+    updateRoomCursor({ x: canvasX, y: canvasY });
+  }, [collaborationMode, viewport]);
+
+  // Clear cursor when leaving canvas
+  const handleMouseLeaveForCursor = useCallback(() => {
+    if (collaborationMode) {
+      updateRoomCursor(null);
+    }
+  }, [collaborationMode]);
+
+  // Subscribe to remote peer canvas positions
+  useEffect(() => {
+    if (!collaborationMode) {
+      setCanvasPeers([]);
+      return;
+    }
+
+    // Get initial state
+    setCanvasPeers(getRoomPeersWithCanvasPositions());
+
+    // Poll for updates (awareness doesn't have a direct subscription for all state changes)
+    const interval = setInterval(() => {
+      setCanvasPeers(getRoomPeersWithCanvasPositions());
+    }, 100);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [collaborationMode]);
+
+  // Subscribe to remote position changes and apply them
+  useEffect(() => {
+    if (!collaborationMode) return;
+
+    const unsubscribe = onRemotePositionChange((noteId, position) => {
+      setPositions(prev => {
+        const next = new Map(prev);
+        next.set(noteId, {
+          x: position.x,
+          y: position.y,
+          width: position.width,
+          height: position.height,
+        });
+        return next;
+      });
+    });
+
+    return unsubscribe;
+  }, [collaborationMode]);
+
+  // Sync local position changes to collaboration room
+  const syncPositionToRoom = useCallback((noteId: string, position: CanvasPosition) => {
+    if (collaborationMode) {
+      syncNotePosition(noteId, {
+        x: position.x,
+        y: position.y,
+        width: position.width,
+        height: position.height,
+      });
+    }
+  }, [collaborationMode]);
+
   // Build sticky note data with positions
   const stickyNotes: StickyNoteData[] = useMemo(() => {
     return notes.map((note, index) => {
@@ -272,10 +354,12 @@ export function CanvasView({
     setDraggingNote(null);
     // Notify parent to save to database
     const position = positions.get(noteId);
-    if (position && onPositionChange) {
-      onPositionChange(noteId, position);
+    if (position) {
+      onPositionChange?.(noteId, position);
+      // Sync to collaboration room
+      syncPositionToRoom(noteId, position);
     }
-  }, [positions, onPositionChange]);
+  }, [positions, onPositionChange, syncPositionToRoom]);
 
   // Handle note resize
   const handleNoteResize = useCallback((noteId: string, width: number, height: number) => {
@@ -286,13 +370,13 @@ export function CanvasView({
       next.set(noteId, newPosition);
 
       // Notify parent to save to database
-      if (onPositionChange) {
-        onPositionChange(noteId, newPosition);
-      }
+      onPositionChange?.(noteId, newPosition);
+      // Sync to collaboration room
+      syncPositionToRoom(noteId, newPosition);
 
       return next;
     });
-  }, [onPositionChange]);
+  }, [onPositionChange, syncPositionToRoom]);
 
   // Handle canvas pan or selection rectangle
   const handleMouseDown = useCallback((e: React.MouseEvent) => {
@@ -628,11 +712,15 @@ export function CanvasView({
       ref={containerRef}
       className="relative h-full bg-gray-100 overflow-hidden select-none"
       onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
+      onMouseMove={(e) => {
+        handleMouseMove(e);
+        handleMouseMoveForCursor(e);
+      }}
       onMouseUp={handleMouseUp}
       onMouseLeave={() => {
         setIsPanning(false);
         setConnectionDrag(null);
+        handleMouseLeaveForCursor();
       }}
       onWheel={handleWheel}
       style={{ cursor: isPanning ? 'grabbing' : 'grab' }}
@@ -648,6 +736,14 @@ export function CanvasView({
           backgroundPosition: `${viewport.x}px ${viewport.y}px`,
         }}
       />
+
+      {/* Remote canvas cursors from collaborators */}
+      {collaborationMode && (
+        <RemoteCanvasCursors
+          peers={canvasPeers}
+          viewport={viewport}
+        />
+      )}
 
       {/* Transform container for zoom/pan */}
       <div

@@ -169,19 +169,24 @@ PatchPad is a personal knowledge operating system with AI-powered capture, refin
   - Room-level collaboration uses direct functions from collaboration.ts
   - Peer connect/disconnect handled via onRoomPeersChange subscription
 
-#### Phase 3: Collaborative Canvas
-- [ ] Extend `src/components/Canvas/CanvasView.tsx`
-  - Accept `collaborationMode: boolean` prop
-  - Sync note positions via Yjs Y.Map
-  - Show remote cursors on canvas (not just in editor)
+#### Phase 3: Collaborative Canvas - COMPLETE
+- [x] Extend `src/components/Canvas/CanvasView.tsx`
+  - Accept `collaborationMode: boolean` prop (already done in Phase 2)
+  - Sync note positions via Yjs Y.Map on drag end and resize
+  - Show remote cursors on canvas with `RemoteCanvasCursors` component
+  - Track and broadcast mouse position via awareness
 
-- [ ] Create `src/components/Canvas/RemoteCanvasCursor.tsx`
+- [x] Create `src/components/Canvas/RemoteCanvasCursor.tsx`
   - Render peer cursor on canvas with name label
-  - Different style from editor cursor (pointer icon)
+  - Arrow/pointer icon styled differently from editor cursor
+  - Transforms canvas coordinates to screen position using viewport
 
-- [ ] Add canvas-level Yjs bindings in `src/services/collaboration.ts`
+- [x] Add canvas-level Yjs bindings in `src/services/collaboration.ts`
   - `syncNotePosition(noteId: string, position: CanvasPosition): void`
   - `onRemotePositionChange(callback: (noteId, position) => void): unsubscribe`
+  - `getNotePosition(noteId: string): CanvasPosition | null`
+  - `getAllPositions(): Map<string, CanvasPosition>`
+  - `getRoomPeersWithCanvasPositions(): PeerWithCanvasPosition[]`
 
 #### Phase 4: Collaboration Chat
 - [ ] Create `src/components/CollaborationChat.tsx`
