@@ -127,21 +127,28 @@ PatchPad is a personal knowledge operating system with AI-powered capture, refin
 
 **Tasks:**
 
-#### Phase 1: Collaboration Mode Toggle
-- [ ] Add collaboration state to `src/App.tsx`
+#### Phase 1: Collaboration Mode Toggle - COMPLETE
+- [x] Add collaboration state to `src/App.tsx`
   - `const [collaborationMode, setCollaborationMode] = useState(false)`
   - `const [collaborationRoomId, setCollaborationRoomId] = useState<string | null>(null)`
+  - `const [collaborationControlsOpen, setCollaborationControlsOpen] = useState(false)`
+  - Added command palette entry and Ctrl+Shift+C shortcut
 
-- [ ] Create `src/components/CollaborationControls.tsx`
+- [x] Create `src/components/CollaborationControls.tsx`
   - "Start Collaboration" button generates room ID
   - "Join Collaboration" input for room ID
-  - Display shareable link: `patchpad.app/collab/{roomId}`
+  - Display shareable link and room ID
   - "End Collaboration" button
+  - Peer list with avatars and colors
 
-- [ ] Extend `src/services/collaboration.ts`
+- [x] Extend `src/services/collaboration.ts`
   - `createRoom(userId: string): string` — Generate room ID, connect Yjs
-  - `joinRoom(roomId: string, userId: string): void`
+  - `joinRoom(roomId: string, userId: string): boolean`
   - `leaveRoom(): void`
+  - Added: `getCurrentRoomId()`, `isInRoom()`, `isRoomConnected()`
+  - Added: `getRoomPeers()`, `updateRoomCursor()`
+  - Added: `onRoomPeersChange()`, `onRoomConnectionChange()`
+  - Added: `getRoomDoc()`, `getRoomCanvasPositions()`
 
 #### Phase 2: Presence Awareness
 - [ ] Wire `src/components/PresenceIndicator.tsx` to show collaborators

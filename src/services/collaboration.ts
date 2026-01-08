@@ -380,9 +380,269 @@ export function onSyncChange(
     callback(synced);
   };
 
-  provider.on('synced', handler);
+  provider.on('sync', handler);
 
   return () => {
-    provider.off('synced', handler);
+    provider.off('sync', handler);
   };
+}
+
+// =============================================================================
+// Room Management (Canvas-level collaboration)
+// =============================================================================
+
+/**
+ * Current active collaboration room state
+ */
+let activeRoom: {
+  roomId: string;
+  doc: Y.Doc;
+  provider: WebsocketProvider;
+  userId: string;
+} | null = null;
+
+/**
+ * Callbacks for room events
+ */
+const roomCallbacks: {
+  onPeersChange: ((peers: Peer[]) => void)[];
+  onConnectionChange: ((connected: boolean) => void)[];
+} = {
+  onPeersChange: [],
+  onConnectionChange: [],
+};
+
+/**
+ * Generate a unique room ID
+ */
+function generateRoomId(): string {
+  const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < 8; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return result;
+}
+
+/**
+ * Create a new collaboration room
+ * Returns the room ID that can be shared with others
+ */
+export function createRoom(userId: string, userName?: string): string {
+  // Leave any existing room
+  if (activeRoom) {
+    leaveRoom();
+  }
+
+  // Generate room ID
+  const roomId = generateRoomId();
+
+  // Create shared Y.Doc for the room
+  const doc = new Y.Doc();
+
+  // Connect to WebSocket with the room ID
+  const provider = new WebsocketProvider(
+    WEBSOCKET_URL,
+    `patchpad-room-${roomId}`,
+    doc,
+    { connect: true }
+  );
+
+  // Set up awareness
+  const awareness = provider.awareness;
+  const clientId = awareness.clientID.toString();
+
+  awareness.setLocalState({
+    user: {
+      id: userId,
+      name: userName || `User ${clientId.slice(-4)}`,
+      color: getPeerColor(userId),
+    },
+    cursor: null,
+    selection: null,
+    canvasPosition: null,
+  });
+
+  // Set up event handlers
+  awareness.on('change', () => {
+    const peers = getRoomPeers();
+    roomCallbacks.onPeersChange.forEach(cb => cb(peers));
+  });
+
+  provider.on('status', ({ status }: { status: string }) => {
+    const connected = status === 'connected';
+    roomCallbacks.onConnectionChange.forEach(cb => cb(connected));
+  });
+
+  // Store room state
+  activeRoom = { roomId, doc, provider, userId };
+
+  return roomId;
+}
+
+/**
+ * Join an existing collaboration room
+ */
+export function joinRoom(roomId: string, userId: string, userName?: string): boolean {
+  // Leave any existing room
+  if (activeRoom) {
+    leaveRoom();
+  }
+
+  // Create shared Y.Doc for the room
+  const doc = new Y.Doc();
+
+  // Connect to WebSocket with the room ID
+  const provider = new WebsocketProvider(
+    WEBSOCKET_URL,
+    `patchpad-room-${roomId}`,
+    doc,
+    { connect: true }
+  );
+
+  // Set up awareness
+  const awareness = provider.awareness;
+  const clientId = awareness.clientID.toString();
+
+  awareness.setLocalState({
+    user: {
+      id: userId,
+      name: userName || `User ${clientId.slice(-4)}`,
+      color: getPeerColor(userId),
+    },
+    cursor: null,
+    selection: null,
+    canvasPosition: null,
+  });
+
+  // Set up event handlers
+  awareness.on('change', () => {
+    const peers = getRoomPeers();
+    roomCallbacks.onPeersChange.forEach(cb => cb(peers));
+  });
+
+  provider.on('status', ({ status }: { status: string }) => {
+    const connected = status === 'connected';
+    roomCallbacks.onConnectionChange.forEach(cb => cb(connected));
+  });
+
+  // Store room state
+  activeRoom = { roomId, doc, provider, userId };
+
+  return true;
+}
+
+/**
+ * Leave the current collaboration room
+ */
+export function leaveRoom(): void {
+  if (!activeRoom) return;
+
+  // Disconnect and clean up
+  activeRoom.provider.disconnect();
+  activeRoom.provider.destroy();
+  activeRoom.doc.destroy();
+
+  activeRoom = null;
+
+  // Notify listeners
+  roomCallbacks.onPeersChange.forEach(cb => cb([]));
+  roomCallbacks.onConnectionChange.forEach(cb => cb(false));
+}
+
+/**
+ * Get the current room ID (if in a room)
+ */
+export function getCurrentRoomId(): string | null {
+  return activeRoom?.roomId ?? null;
+}
+
+/**
+ * Check if currently in a collaboration room
+ */
+export function isInRoom(): boolean {
+  return activeRoom !== null;
+}
+
+/**
+ * Check if connected to the room's WebSocket server
+ */
+export function isRoomConnected(): boolean {
+  return activeRoom?.provider.wsconnected ?? false;
+}
+
+/**
+ * Get all peers in the current room
+ */
+export function getRoomPeers(): Peer[] {
+  if (!activeRoom) return [];
+
+  const awareness = activeRoom.provider.awareness;
+  const peers: Peer[] = [];
+
+  awareness.getStates().forEach((state, clientId) => {
+    if (clientId !== awareness.clientID && state.user) {
+      peers.push({
+        id: state.user.id || clientId.toString(),
+        name: state.user.name || `User ${clientId}`,
+        color: state.user.color || getPeerColor(clientId.toString()),
+        cursor: state.cursor,
+        selection: state.selection,
+      });
+    }
+  });
+
+  return peers;
+}
+
+/**
+ * Update canvas cursor position in room awareness
+ */
+export function updateRoomCursor(position: { x: number; y: number } | null): void {
+  if (!activeRoom) return;
+
+  const awareness = activeRoom.provider.awareness;
+  const currentState = awareness.getLocalState() || {};
+
+  awareness.setLocalState({
+    ...currentState,
+    canvasPosition: position,
+  });
+}
+
+/**
+ * Subscribe to room peers changes
+ */
+export function onRoomPeersChange(callback: (peers: Peer[]) => void): () => void {
+  roomCallbacks.onPeersChange.push(callback);
+  return () => {
+    const idx = roomCallbacks.onPeersChange.indexOf(callback);
+    if (idx !== -1) roomCallbacks.onPeersChange.splice(idx, 1);
+  };
+}
+
+/**
+ * Subscribe to room connection changes
+ */
+export function onRoomConnectionChange(callback: (connected: boolean) => void): () => void {
+  roomCallbacks.onConnectionChange.push(callback);
+  return () => {
+    const idx = roomCallbacks.onConnectionChange.indexOf(callback);
+    if (idx !== -1) roomCallbacks.onConnectionChange.splice(idx, 1);
+  };
+}
+
+/**
+ * Get the Y.Doc for the current room (for syncing canvas state)
+ */
+export function getRoomDoc(): Y.Doc | null {
+  return activeRoom?.doc ?? null;
+}
+
+/**
+ * Get the room's Y.Map for shared canvas positions
+ */
+export function getRoomCanvasPositions(): Y.Map<unknown> | null {
+  if (!activeRoom) return null;
+  return activeRoom.doc.getMap('canvasPositions');
 }

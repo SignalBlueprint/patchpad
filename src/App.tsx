@@ -36,6 +36,7 @@ import { SessionLibrary } from './components/SessionLibrary';
 import { SessionPlayer } from './components/SessionPlayer';
 import { SessionComparison } from './components/SessionComparison';
 import { PublishedGraphsManager } from './components/PublishedGraphsManager';
+import { CollaborationControls } from './components/CollaborationControls';
 import {
   startRecording,
   stopRecording,
@@ -155,6 +156,12 @@ export default function App() {
   const [playbackSession, setPlaybackSession] = useState<ThinkingSession | null>(null);
   const [sessionComparisonOpen, setSessionComparisonOpen] = useState(false);
   const [publishedGraphsOpen, setPublishedGraphsOpen] = useState(false);
+
+  // Collaboration state
+  const [collaborationMode, setCollaborationMode] = useState(false);
+  const [collaborationRoomId, setCollaborationRoomId] = useState<string | null>(null);
+  const [collaborationControlsOpen, setCollaborationControlsOpen] = useState(false);
+
   const sessionTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -937,6 +944,15 @@ export default function App() {
       icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
       action: () => setPublishedGraphsOpen(true),
     },
+    {
+      id: 'collaboration',
+      name: 'Start Collaboration',
+      shortcut: 'Ctrl+Shift+C',
+      description: 'Collaborate with others in real-time',
+      category: 'view',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>,
+      action: () => setCollaborationControlsOpen(true),
+    },
 
     // AI commands - basic
     {
@@ -1313,6 +1329,12 @@ export default function App() {
       if (isMod && e.shiftKey && e.key === 'N') {
         e.preventDefault();
         setTemplatePickerOpen(true);
+      }
+
+      // Collaboration shortcut (Ctrl+Shift+C)
+      if (isMod && e.shiftKey && e.key === 'C') {
+        e.preventDefault();
+        setCollaborationControlsOpen(true);
       }
     };
 
@@ -1768,6 +1790,22 @@ export default function App() {
           onClose={() => setPublishedGraphsOpen(false)}
         />
       )}
+
+      {/* Collaboration Controls */}
+      <CollaborationControls
+        isOpen={collaborationControlsOpen}
+        onClose={() => setCollaborationControlsOpen(false)}
+        userId={user?.id || 'anonymous'}
+        userName={user?.email?.split('@')[0] || undefined}
+        onCollaborationStart={(roomId) => {
+          setCollaborationMode(true);
+          setCollaborationRoomId(roomId);
+        }}
+        onCollaborationEnd={() => {
+          setCollaborationMode(false);
+          setCollaborationRoomId(null);
+        }}
+      />
 
       {/* Session Workflow Guide - shown during recording with template */}
       {isRecording() && activeSessionTemplate && (
