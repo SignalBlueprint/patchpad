@@ -287,6 +287,112 @@ export function generateGraphHTML(notes: Note[], options: GraphExportOptions = D
     }
     .control-btn:hover { background: ${isDark ? '#4B5563' : '#E5E7EB'}; }
 
+    /* Search box */
+    #search-container {
+      position: fixed;
+      top: 20px;
+      left: 60px;
+      display: flex;
+      gap: 8px;
+      z-index: 10;
+    }
+    #search-input {
+      width: 200px;
+      padding: 8px 12px;
+      border: 1px solid ${borderColor};
+      background: ${panelBg};
+      color: ${textColor};
+      border-radius: 8px;
+      font-size: 13px;
+      outline: none;
+    }
+    #search-input:focus { border-color: #3B82F6; }
+    #search-input::placeholder { color: ${subtextColor}; }
+    #search-results {
+      padding: 8px 12px;
+      background: ${panelBg};
+      border: 1px solid ${borderColor};
+      border-radius: 8px;
+      font-size: 12px;
+      color: ${subtextColor};
+      display: none;
+      align-items: center;
+    }
+    #search-results.visible { display: flex; }
+    .node.highlighted circle { stroke: #F59E0B; stroke-width: 3px; }
+    .node.dimmed { opacity: 0.2; }
+    .link.dimmed { opacity: 0.1; }
+
+    /* Share button */
+    #share-btn {
+      position: fixed;
+      top: 20px;
+      right: 360px;
+      padding: 8px 16px;
+      background: #3B82F6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    #share-btn:hover { background: #2563EB; }
+    #share-menu {
+      position: fixed;
+      top: 56px;
+      right: 360px;
+      background: ${panelBg};
+      border: 1px solid ${borderColor};
+      border-radius: 8px;
+      box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+      display: none;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    #share-menu.visible { display: flex; }
+    .share-option {
+      padding: 10px 16px;
+      border: none;
+      background: transparent;
+      color: ${textColor};
+      cursor: pointer;
+      text-align: left;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .share-option:hover { background: ${isDark ? '#4B5563' : '#E5E7EB'}; }
+
+    /* Mobile responsive */
+    @media (max-width: 768px) {
+      #info-panel {
+        width: calc(100vw - 32px);
+        right: 16px;
+        top: auto;
+        bottom: 16px;
+        max-height: 50vh;
+      }
+      #search-container {
+        left: 16px;
+        top: 70px;
+      }
+      #search-input { width: 150px; }
+      #controls { top: 16px; left: 16px; }
+      #legend { display: none; }
+      #share-btn {
+        right: 16px;
+        top: 16px;
+        padding: 6px 12px;
+        font-size: 12px;
+      }
+      #share-menu { right: 16px; top: 50px; }
+      #stats { bottom: auto; top: 70px; left: auto; right: 16px; }
+    }
+
     /* Legend */
     #legend {
       position: fixed;
@@ -340,6 +446,33 @@ export function generateGraphHTML(notes: Note[], options: GraphExportOptions = D
     <button class="control-btn" onclick="zoomIn()" title="Zoom in">+</button>
     <button class="control-btn" onclick="zoomOut()" title="Zoom out">−</button>
     <button class="control-btn" onclick="resetView()" title="Reset view">⟲</button>
+  </div>
+
+  <div id="search-container">
+    <input type="text" id="search-input" placeholder="Search notes..." oninput="handleSearch(this.value)" />
+    <div id="search-results"></div>
+  </div>
+
+  <button id="share-btn" onclick="toggleShareMenu()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/>
+    </svg>
+    Share
+  </button>
+
+  <div id="share-menu">
+    <button class="share-option" onclick="shareTwitter()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      Share on X
+    </button>
+    <button class="share-option" onclick="shareLinkedIn()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+      Share on LinkedIn
+    </button>
+    <button class="share-option" onclick="copyLink()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      Copy Link
+    </button>
   </div>
 
   <div id="stats"></div>
@@ -615,9 +748,132 @@ export function generateGraphHTML(notes: Note[], options: GraphExportOptions = D
       return \`<div class="legend-item"><div class="legend-dot" style="background:\${color}"></div><span>\${tag}</span></div>\`;
     }).join('');
     document.getElementById('legend').innerHTML = legendHtml || '<div class="legend-item">No tags</div>';
+
+    // Search functionality
+    let searchTimeout;
+    function handleSearch(query) {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => performSearch(query), 150);
+    }
+
+    function performSearch(query) {
+      const resultsEl = document.getElementById('search-results');
+
+      if (!query.trim()) {
+        // Clear search - remove all highlighting
+        nodeElements.forEach(({ element }) => {
+          element.classList.remove('highlighted', 'dimmed');
+        });
+        links.forEach(({ element }) => {
+          element.classList.remove('dimmed');
+        });
+        resultsEl.classList.remove('visible');
+        return;
+      }
+
+      const lowerQuery = query.toLowerCase();
+      const matchingIds = new Set();
+
+      // Find matching nodes
+      nodes.forEach(node => {
+        if (node.title.toLowerCase().includes(lowerQuery) ||
+            node.tags.some(t => t.toLowerCase().includes(lowerQuery)) ||
+            (node.excerpt && node.excerpt.toLowerCase().includes(lowerQuery))) {
+          matchingIds.add(node.id);
+        }
+      });
+
+      // Update node highlighting
+      nodeElements.forEach(({ element, node }) => {
+        if (matchingIds.has(node.id)) {
+          element.classList.add('highlighted');
+          element.classList.remove('dimmed');
+        } else {
+          element.classList.remove('highlighted');
+          element.classList.add('dimmed');
+        }
+      });
+
+      // Update link dimming
+      links.forEach(({ element, edge }) => {
+        if (matchingIds.has(edge.source.id) || matchingIds.has(edge.target.id)) {
+          element.classList.remove('dimmed');
+        } else {
+          element.classList.add('dimmed');
+        }
+      });
+
+      // Show results count
+      resultsEl.textContent = \`\${matchingIds.size} match\${matchingIds.size === 1 ? '' : 'es'}\`;
+      resultsEl.classList.add('visible');
+
+      // Center view on first match
+      if (matchingIds.size > 0) {
+        const firstMatch = nodes.find(n => matchingIds.has(n.id));
+        if (firstMatch) {
+          translateX = width / 2 - firstMatch.x * scale;
+          translateY = height / 2 - firstMatch.y * scale;
+          updateTransform();
+        }
+      }
+    }
+
+    // Share functionality
+    let shareMenuOpen = false;
+    function toggleShareMenu() {
+      shareMenuOpen = !shareMenuOpen;
+      document.getElementById('share-menu').classList.toggle('visible', shareMenuOpen);
+    }
+
+    // Close share menu when clicking elsewhere
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('#share-btn') && !e.target.closest('#share-menu')) {
+        shareMenuOpen = false;
+        document.getElementById('share-menu').classList.remove('visible');
+      }
+    });
+
+    function getShareUrl() {
+      return window.location.href;
+    }
+
+    function getShareTitle() {
+      return document.title;
+    }
+
+    function shareTwitter() {
+      const url = encodeURIComponent(getShareUrl());
+      const text = encodeURIComponent(\`Check out my knowledge graph: \${getShareTitle()}\`);
+      window.open(\`https://twitter.com/intent/tweet?url=\${url}&text=\${text}\`, '_blank', 'width=550,height=420');
+      toggleShareMenu();
+    }
+
+    function shareLinkedIn() {
+      const url = encodeURIComponent(getShareUrl());
+      window.open(\`https://www.linkedin.com/sharing/share-offsite/?url=\${url}\`, '_blank', 'width=550,height=420');
+      toggleShareMenu();
+    }
+
+    function copyLink() {
+      navigator.clipboard.writeText(getShareUrl()).then(() => {
+        const btn = document.querySelector('.share-option:last-child');
+        const originalText = btn.innerHTML;
+        btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg> Copied!';
+        setTimeout(() => { btn.innerHTML = originalText; }, 2000);
+      });
+      toggleShareMenu();
+    }
   </script>
 </body>
 </html>`;
+}
+
+/**
+ * Generate interactive HTML - alias for generateGraphHTML
+ * This is the primary export function for creating shareable graph visualizations.
+ */
+export function generateInteractiveHTML(notes: Note[], options: GraphExportOptions = DEFAULT_EXPORT_OPTIONS): string {
+  return generateGraphHTML(notes, options);
 }
 
 /**

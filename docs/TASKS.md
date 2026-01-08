@@ -229,15 +229,15 @@ PatchPad is a personal knowledge operating system with AI-powered capture, refin
 
 **Tasks:**
 
-#### Phase 1: Graph Export Enhancement
-- [ ] Extend `src/services/graphExport.ts`
+#### Phase 1: Graph Export Enhancement - COMPLETE
+- [x] Extend `src/services/graphExport.ts`
   - `generateInteractiveHTML(notes: Note[], options: GraphOptions): string`
   - Embed D3.js force-directed graph (self-contained, no external deps)
   - Include note excerpts in data attributes
   - Support light/dark themes
   - Add zoom controls and node search
 
-- [ ] Create `src/templates/graph-viewer.html`
+- [x] Create `src/templates/graph-viewer.html` (embedded in graphExport.ts for dynamic generation)
   - Standalone HTML template with embedded JS/CSS
   - Mobile-responsive layout
   - Click node to show excerpt popup
