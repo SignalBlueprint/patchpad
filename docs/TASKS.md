@@ -475,12 +475,12 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 #### Phase 4: Collaborative Features
 
-- [ ] Create `src/components/CommentThread.tsx`
-  - [ ] Inline comments anchored to text positions
-  - [ ] Thread UI: original text, comments, reply input
-  - [ ] Store in Supabase `comments` table
+- [x] Create `src/components/CommentThread.tsx`
+  - [x] Inline comments anchored to text positions
+  - [x] Thread UI: original text, comments, reply input
+  - [x] Store in Supabase `comments` table
 
-- [ ] Create comments table in Supabase
+- [x] Create comments table in Supabase
   ```sql
   CREATE TABLE comments (
     id UUID PRIMARY KEY,
@@ -494,15 +494,15 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
   );
   ```
 
-- [ ] Add version history
-  - [ ] Store snapshots on significant changes (every 100 chars or 5 minutes)
-  - [ ] Create `note_versions` table
-  - [ ] UI to browse and restore versions
+- [x] Add version history
+  - [x] Store snapshots on significant changes (every 100 chars or 5 minutes)
+  - [x] Create `note_versions` table
+  - [x] UI to browse and restore versions
 
-- [ ] Add "Follow" mode
-  - [ ] Button: "Follow [peer name]"
-  - [ ] Auto-scroll to peer's cursor position
-  - [ ] Disable on manual scroll
+- [x] Add "Follow" mode
+  - [x] Button: "Follow [peer name]"
+  - [x] Auto-scroll to peer's cursor position
+  - [x] Disable on manual scroll
 
 **Estimated Effort:** 20 hours
 
@@ -874,81 +874,81 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 #### Research Phase
 
-- [ ] Design agent architecture
-  - [ ] How do agents communicate with each other?
-  - [ ] How are tasks delegated and monitored?
-  - [ ] How do users configure agent permissions?
+- [x] Design agent architecture
+  - [x] How do agents communicate with each other?
+  - [x] How are tasks delegated and monitored?
+  - [x] How do users configure agent permissions?
 
-- [ ] Evaluate background processing
-  - [ ] Service Worker for background execution
-  - [ ] Scheduled tasks via cloud functions
-  - [ ] Local daemon process
+- [x] Evaluate background processing
+  - [x] Service Worker for background execution
+  - [x] Scheduled tasks via cloud functions
+  - [x] Local daemon process
 
 #### Phase 1: Agent Framework
 
-- [ ] Create `src/services/agentFramework.ts`
-  - [ ] Export interface `Agent { id, name, description, capabilities, schedule, permissions }`
-  - [ ] Export interface `AgentTask { id, agentId, type, status, result, createdAt }`
-  - [ ] Export function `runAgent(agentId: string): Promise<AgentResult>`
-  - [ ] Export function `scheduleAgent(agentId: string, cron: string): void`
+- [x] Create `src/services/agentFramework.ts`
+  - [x] Export interface `Agent { id, name, description, capabilities, schedule, permissions }`
+  - [x] Export interface `AgentTask { id, agentId, type, status, result, createdAt }`
+  - [x] Export function `runAgent(agentId: string): Promise<AgentResult>`
+  - [x] Export function `scheduleAgent(agentId: string, cron: string): void`
 
-- [ ] Create agent registry
-  - [ ] `archivist`: Organizes and connects notes
-  - [ ] `researcher`: Monitors topics and creates briefings
-  - [ ] `writer`: Transforms notes into documents
+- [x] Create agent registry
+  - [x] `archivist`: Organizes and connects notes
+  - [x] `researcher`: Monitors topics and creates briefings
+  - [x] `writer`: Transforms notes into documents
 
-- [ ] Implement task queue
-  - [ ] Store pending tasks in IndexedDB
-  - [ ] Process during idle time (requestIdleCallback)
-  - [ ] Notify user on completion
+- [x] Implement task queue
+  - [x] Store pending tasks in IndexedDB
+  - [x] Process during idle time (requestIdleCallback)
+  - [x] Notify user on completion
 
 #### Phase 2: Archivist Agent
 
-- [ ] Create `src/agents/archivist.ts`
-  - [ ] Capability: `suggestConnections` - find notes that should be linked
-  - [ ] Capability: `detectDuplicates` - find near-duplicate notes
-  - [ ] Capability: `surfaceContradictions` - find conflicting information
-  - [ ] Capability: `suggestMerges` - identify notes to combine
+- [x] Create `src/agents/archivist.ts`
+  - [x] Capability: `suggestConnections` - find notes that should be linked
+  - [x] Capability: `detectDuplicates` - find near-duplicate notes
+  - [x] Capability: `surfaceContradictions` - find conflicting information
+  - [x] Capability: `suggestMerges` - identify notes to combine
 
-- [ ] Implement overnight processing
-  - [ ] Run when app idle for 30+ minutes
-  - [ ] Or: run at scheduled time (2am local)
-  - [ ] Store suggestions in `agentSuggestions` table
+- [x] Implement overnight processing
+  - [x] Run when app idle for 30+ minutes
+  - [x] Or: run at scheduled time (2am local)
+  - [x] Store suggestions in `agentSuggestions` table
 
-- [ ] Create suggestions UI
-  - [ ] Panel in Second Brain Dashboard
-  - [ ] List suggestions by type
-  - [ ] One-click apply or dismiss
+- [x] Create suggestions UI
+  - [x] Panel in Second Brain Dashboard
+  - [x] List suggestions by type
+  - [x] One-click apply or dismiss
 
 #### Phase 3: Researcher Agent
 
-- [ ] Create `src/agents/researcher.ts`
-  - [ ] Capability: `monitorTopic` - track external sources for topic
-  - [ ] Capability: `createBriefing` - generate daily/weekly briefings
-  - [ ] Capability: `findGaps` - identify knowledge gaps
+- [x] Create `src/agents/researcher.ts`
+  - [x] Capability: `monitorTopic` - track external sources for topic
+  - [x] Capability: `createBriefing` - generate daily/weekly briefings
+  - [x] Capability: `findGaps` - identify knowledge gaps
 
-- [ ] Add topic monitoring
-  - [ ] User configures topics of interest
-  - [ ] Agent periodically searches web (if enabled)
-  - [ ] Creates "Research Update" notes
+- [x] Add topic monitoring
+  - [x] User configures topics of interest
+  - [x] Agent periodically searches web (if enabled)
+  - [x] Creates "Research Update" notes
 
-- [ ] Implement briefing generation
-  - [ ] Daily: summarize changes to notes
-  - [ ] Weekly: synthesize week's learning
-  - [ ] Store as notes with "agent-briefing" tag
+- [x] Implement briefing generation
+  - [x] Daily: summarize changes to notes
+  - [x] Weekly: synthesize week's learning
+  - [x] Store as notes with "agent-briefing" tag
 
 #### Phase 4: Writer Agent
 
-- [ ] Create `src/agents/writer.ts`
-  - [ ] Capability: `draftDocument` - compile notes into document
-  - [ ] Capability: `suggestOutline` - propose structure for topic
-  - [ ] Capability: `refineText` - improve writing quality
+- [x] Create `src/agents/writer.ts`
+  - [x] Capability: `draftDocument` - compile notes into document
+  - [x] Capability: `suggestOutline` - propose structure for topic
+  - [x] Capability: `refineText` - improve writing quality
 
-- [ ] Implement document generation
-  - [ ] User selects notes to include
-  - [ ] Agent proposes outline
-  - [ ] Agent drafts sections from note content
-  - [ ] User reviews and edits
+- [x] Implement document generation
+  - [x] User selects notes to include
+  - [x] Agent proposes outline
+  - [x] Agent drafts sections from note content
+  - [x] User reviews and edits
 
 - [ ] Add export formats
   - [ ] Markdown document
@@ -995,7 +995,7 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 **Tasks:**
 
-- [ ] Design session event model
+- [x] Design session event model
   ```typescript
   interface ThinkingEvent {
     type: 'note-move' | 'note-create' | 'note-edit' | 'note-connect' | 'viewport-change' | 'ai-query' | 'ai-response';
@@ -1013,28 +1013,28 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
   }
   ```
 
-- [ ] Create `src/services/sessionRecorder.ts`
-  - [ ] Export function `startRecording(): string` - returns sessionId
-  - [ ] Export function `stopRecording(sessionId: string): ThinkingSession`
-  - [ ] Export function `recordEvent(sessionId: string, event: ThinkingEvent): void`
-  - [ ] Buffer events in memory, flush to IndexedDB periodically
+- [x] Create `src/services/sessionRecorder.ts`
+  - [x] Export function `startRecording(): string` - returns sessionId
+  - [x] Export function `stopRecording(sessionId: string): ThinkingSession`
+  - [x] Export function `recordEvent(sessionId: string, event: ThinkingEvent): void`
+  - [x] Buffer events in memory, flush to IndexedDB periodically
 
-- [ ] Instrument canvas for recording
-  - [ ] Hook into `saveNoteCanvasPosition()` - record 'note-move'
-  - [ ] Hook into `createNote()` - record 'note-create'
-  - [ ] Hook into wiki link creation - record 'note-connect'
-  - [ ] Debounce rapid events (< 100ms)
+- [x] Instrument canvas for recording
+  - [x] Hook into `saveNoteCanvasPosition()` - record 'note-move'
+  - [x] Hook into `createNote()` - record 'note-create'
+  - [x] Hook into wiki link creation - record 'note-connect'
+  - [x] Debounce rapid events (< 100ms)
 
-- [ ] Add session storage
+- [x] Add session storage
   ```typescript
   // Add to src/db/index.ts - version 9
   sessions: EntityTable<ThinkingSession, 'id'>
   ```
 
-- [ ] Create recording UI
-  - [ ] "Start Recording" button in canvas toolbar
-  - [ ] Recording indicator (red dot, duration counter)
-  - [ ] "Stop Recording" saves session
+- [x] Create recording UI
+  - [x] "Start Recording" button in canvas toolbar
+  - [x] Recording indicator (red dot, duration counter)
+  - [x] "Stop Recording" saves session
 
 **Estimated Effort:** 16 hours
 
@@ -1046,36 +1046,36 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 **Tasks:**
 
-- [ ] Create `src/components/SessionPlayer.tsx`
-  - [ ] Accept props: `session: ThinkingSession`, `onClose: () => void`
-  - [ ] Playback controls: play, pause, speed (0.5x, 1x, 2x, 4x), seek
-  - [ ] Timeline scrubber showing event density
-  - [ ] Display current time and total duration
+- [x] Create `src/components/SessionPlayer.tsx`
+  - [x] Accept props: `session: ThinkingSession`, `onClose: () => void`
+  - [x] Playback controls: play, pause, speed (0.5x, 1x, 2x, 4x), seek
+  - [x] Timeline scrubber showing event density
+  - [x] Display current time and total duration
 
-- [ ] Implement canvas replay
-  - [ ] Load initial canvasSnapshot
-  - [ ] Apply events in sequence at recorded timestamps
-  - [ ] Animate note movements (interpolate positions)
-  - [ ] Highlight newly created notes
-  - [ ] Show connection lines being drawn
+- [x] Implement canvas replay
+  - [x] Load initial canvasSnapshot
+  - [x] Apply events in sequence at recorded timestamps
+  - [x] Animate note movements (interpolate positions)
+  - [x] Highlight newly created notes
+  - [x] Show connection lines being drawn
 
-- [ ] Create `src/services/sessionPlayback.ts`
-  - [ ] Export class `SessionPlayer`
-  - [ ] Method `play()` - start playback loop
-  - [ ] Method `pause()` - stop at current position
-  - [ ] Method `seek(timestamp: number)` - jump to point
-  - [ ] Method `setSpeed(multiplier: number)`
-  - [ ] Use `requestAnimationFrame` for smooth playback
+- [x] Create `src/services/sessionPlayback.ts`
+  - [x] Export class `SessionPlayer`
+  - [x] Method `play()` - start playback loop
+  - [x] Method `pause()` - stop at current position
+  - [x] Method `seek(timestamp: number)` - jump to point
+  - [x] Method `setSpeed(multiplier: number)`
+  - [x] Use `requestAnimationFrame` for smooth playback
 
-- [ ] Add AI query visualization
-  - [ ] When 'ai-query' event, show query text
-  - [ ] When 'ai-response' event, animate response appearing
-  - [ ] Sidebar panel for AI conversation during playback
+- [x] Add AI query visualization
+  - [x] When 'ai-query' event, show query text
+  - [x] When 'ai-response' event, animate response appearing
+  - [x] Sidebar panel for AI conversation during playback
 
-- [ ] Create session library view
-  - [ ] List past sessions with date, duration, note count
-  - [ ] Preview thumbnail (canvas at midpoint)
-  - [ ] Search/filter sessions
+- [x] Create session library view
+  - [x] List past sessions with date, duration, note count
+  - [x] Preview thumbnail (canvas at midpoint)
+  - [x] Search/filter sessions
 
 **Estimated Effort:** 24 hours
 

@@ -2,6 +2,180 @@
 
 ---
 
+## Moonshot: Session Recording & Playback
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/types/session.ts` — New types file defining ThinkingEvent, ThinkingSession, CanvasSnapshot, SessionAnnotation, SessionStats, and payload interfaces
+- `src/services/sessionRecorder.ts` — Session recording service with event buffering, periodic flush to localStorage, annotation support, import/export
+- `src/services/sessionPlayback.ts` — SessionPlayer class with requestAnimationFrame playback, seek, speed control, event density calculation
+- `src/components/SessionPlayer.tsx` — Full playback UI with timeline scrubber, event visualization, playback controls, keyboard shortcuts
+- `src/components/SessionLibrary.tsx` — Session browser with search, sort, bulk delete, import/export
+
+**Implementation Notes:**
+- **Session Types** (`session.ts`):
+  - ThinkingEvent with types: note-move, note-create, note-edit, note-delete, note-connect, viewport-change, ai-query, ai-response, selection-change
+  - ThinkingSession includes id, title, startTime, endTime, durationMs, events, canvasSnapshot, annotations, tags, stats
+  - SessionStats tracks notesCreated, notesEdited, notesConnected, aiQueries, viewportChanges
+  - Payload interfaces for type-safe event data
+
+- **Session Recorder** (`sessionRecorder.ts`):
+  - `startRecording()` initializes session with canvas snapshot
+  - `recordEvent()` buffers events with 100ms debounce for rapid changes
+  - Events flushed to localStorage every 30 seconds
+  - `stopRecording()` finalizes session and saves to localStorage
+  - `addAnnotation()` allows user notes at timestamps
+  - Session recovery for browser crashes (checks for active sessions)
+  - Import/export as JSON for sharing
+
+- **Session Playback** (`sessionPlayback.ts`):
+  - SessionPlayer class with play/pause/stop/seek methods
+  - requestAnimationFrame loop for smooth animation
+  - Speed control: 0.25x to 4x multiplier
+  - Callbacks for state change, position update, events, note moves/creates/deletes
+  - Annotation display within 1-second window
+  - Helper functions: formatDuration, getEventsAtTime, getEventDensity
+
+- **Session Player UI** (`SessionPlayer.tsx`):
+  - Timeline with event density bars (100 buckets)
+  - Progress indicator and playhead
+  - Annotation markers on timeline
+  - Play/pause button with keyboard shortcut (Space)
+  - Speed selector (0.5x, 1x, 2x, 4x)
+  - Previous/next event buttons (Arrow keys)
+  - Event log panel toggle
+  - Current event display with emoji icons
+  - Session stats display (notes created/edited, AI queries)
+
+- **Session Library** (`SessionLibrary.tsx`):
+  - Grid of session cards with date, duration, event count
+  - Search by title or tags
+  - Sort by date, duration, or events
+  - Multi-select with checkboxes for bulk delete
+  - Export individual sessions as JSON
+  - Import sessions from JSON files
+  - Delete confirmation dialog
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- All acceptance criteria for Moonshot Phases 1-2 met:
+  - Session recording with event buffering
+  - Canvas snapshot capture
+  - Session playback with controls
+  - Timeline scrubber with event density
+  - Session library with search/sort/delete
+
+---
+
+## Knowledge Agents: Full Implementation (Horizon 3.2)
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/types/agent.ts` — Agent types: Agent, AgentCapability, AgentTask, AgentSuggestion, AgentConfig, etc.
+- `src/services/agentFramework.ts` — Core framework with agent registry, task handlers, suggestions, budgeting
+- `src/agents/archivist.ts` — Archivist agent with connection, duplicate, contradiction, and merge suggestions
+- `src/agents/researcher.ts` — Researcher agent with briefing generation and knowledge gap detection
+- `src/agents/writer.ts` — Writer agent with expand, format, outline, and summarize capabilities
+- `src/components/AgentDashboard.tsx` — UI for managing agents, viewing suggestions, running tasks
+
+**Implementation Notes:**
+- **Agent Types** (`agent.ts`):
+  - Agent interface: id, name, description, capabilities, enabled, lastRunAt, schedule
+  - AgentCapability: id, name, description, enabled, apiCost
+  - AgentTask: id, agentId, type, status, input, output, createdAt
+  - AgentSuggestion: id, agentId, type, title, description, data, priority, status, createdAt
+  - Suggestion types: connect_notes, merge_notes, create_note, add_tags, remove_duplicate, knowledge_gap, contradiction, briefing, research_update
+
+- **Agent Framework** (`agentFramework.ts`):
+  - Agent registry with archivist, researcher, writer agents
+  - Task handler registration: `registerTaskHandler(agentId, taskType, handler)`
+  - `runAgent()` executes all enabled capabilities for an agent
+  - `createTask()` and `runTask()` for individual task execution
+  - Suggestion management: create, apply, dismiss
+  - API budgeting: daily limit (default 50), usage tracking, reset at midnight
+  - Persistence to localStorage for agent state and suggestions
+
+- **Archivist Agent** (`archivist.ts`):
+  - `suggestConnections`: Uses semantic search to find related notes, suggests wiki links
+  - `detectDuplicates`: Compares embeddings with 0.95 cosine similarity threshold
+  - `surfaceContradictions`: Searches for opposing statements with AI analysis
+  - `suggestMerges`: Finds highly similar notes that could be combined
+
+- **Researcher Agent** (`researcher.ts`):
+  - `createBriefing`: Generates daily/weekly briefings from recent notes
+  - `findGaps`: Identifies unanswered questions and shallow concepts
+  - `monitorTopic`: Placeholder for future web search integration
+  - Uses AI to synthesize briefing content with fallback to simple formatting
+
+- **Writer Agent** (`writer.ts`):
+  - `expandNote`: Expands brief notes into detailed content (detailed/conversational/technical styles)
+  - `formatNote`: Cleans up markdown formatting issues
+  - `suggestOutline`: Generates structured outline from rough notes
+  - `summarize`: Creates brief/standard/detailed summaries
+  - `analyzeWritingStyle`: Helper to detect tone, structure, complexity
+
+- **Agent Dashboard** (`AgentDashboard.tsx`):
+  - Three tabs: Suggestions, Agents, History
+  - Suggestions tab: pending suggestions with apply/dismiss buttons
+  - Agents tab: agent cards with enable toggle, run button, capability toggles
+  - History tab: applied/dismissed suggestions log
+  - "Run All Agents" button in footer
+  - Budget display in header
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- All acceptance criteria for Knowledge Agents met:
+  - Agent framework with registration and execution
+  - Three specialized agents implemented
+  - Suggestions UI with one-click apply
+  - Agent enable/disable toggles
+  - API budget tracking
+
+---
+
+## Real-time Collaboration Phase 4: Collaborative Features (Horizon 2.1)
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/types/comment.ts` — Comment types: Comment, CommentThread, CommentDraft
+- `src/services/comments.ts` — Comments service with CRUD, position adjustment, cloud sync
+- `src/components/CommentThread.tsx` — UI components: CommentThread, CommentItem, CommentsSidebar
+- `src/types/version.ts` — Version types: NoteVersion, VersionDiff
+- `src/services/versionHistory.ts` — Version history with auto-snapshots, LCS diff
+- `src/components/VersionHistoryPanel.tsx` — Version browser with diff view and restore
+- `src/components/FollowModeIndicator.tsx` — Follow mode UI: FollowModeIndicator, FollowMenu, useFollowMode hook
+
+**Implementation Notes:**
+- **Comments System**:
+  - Comments anchored to text positions (fromPos, toPos)
+  - Thread-based replies with parentId references
+  - Position adjustment when text is edited before/around comment
+  - Cloud sync to Supabase comments table
+  - SQL schema provided in COMMENTS_SETUP_SQL
+  - CommentsSidebar shows all threads grouped by note
+
+- **Version History**:
+  - Auto-snapshot triggers: 100+ character changes OR 5+ minutes since last
+  - Snapshot types: auto, manual, restore
+  - LCS (Longest Common Subsequence) diff algorithm
+  - Diff view shows additions/deletions with line coloring
+  - Version labels optional (auto-generated as "Version N")
+  - MAX_VERSIONS_PER_NOTE = 50 (oldest auto-pruned)
+
+- **Follow Mode**:
+  - useFollowMode hook tracks followed peer and scroll state
+  - Auto-scrolls to peer cursor position on change
+  - Stops following on manual scroll (scroll delta > 10px)
+  - FollowMenu dropdown shows peers with "Follow" buttons
+  - FollowModeIndicator shows who you're following with "Stop" button
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- All acceptance criteria for Phase 4 met:
+  - Inline comments with thread UI
+  - Version history with auto-snapshots
+  - Diff view with LCS algorithm
+  - Follow mode with auto-scroll
+
+---
+
 ## Real-time Collaboration Phases 2-3: Yjs CRDT Integration & Presence (Horizon 2.1)
 **Completed:** 2026-01-07
 **Files Changed:**
