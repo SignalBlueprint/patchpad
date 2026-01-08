@@ -5,8 +5,43 @@
  * Accessed via /graphs/:userIdPrefix/:slug URL.
  */
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { getGraphBySlug, type PublishedGraph as PublishedGraphType } from '../services/graphPublishing';
+import { getSupabase } from '../config/supabase';
+
+/**
+ * Track analytics event for a published graph
+ */
+async function trackAnalyticsEvent(
+  graphId: string,
+  eventType: 'view' | 'node-click',
+  nodeId?: string,
+  nodeTitle?: string
+): Promise<void> {
+  const supabase = getSupabase();
+  if (!supabase) return; // Skip if Supabase not configured
+
+  try {
+    // Generate a simple visitor ID from localStorage
+    let visitorId = localStorage.getItem('patchpad_visitor_id');
+    if (!visitorId) {
+      visitorId = `v_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+      localStorage.setItem('patchpad_visitor_id', visitorId);
+    }
+
+    await supabase.from('graph_analytics').insert({
+      graph_id: graphId,
+      visitor_id: visitorId,
+      referrer: document.referrer || 'direct',
+      clicked_node_id: eventType === 'node-click' ? nodeId : null,
+      clicked_node_title: eventType === 'node-click' ? nodeTitle : null,
+      viewed_at: new Date().toISOString(),
+    });
+  } catch (error) {
+    // Silently fail - analytics shouldn't break the page
+    console.debug('Analytics tracking failed:', error);
+  }
+}
 
 interface PublishedGraphProps {
   userIdPrefix: string;
@@ -17,6 +52,7 @@ export function PublishedGraph({ userIdPrefix, slug }: PublishedGraphProps) {
   const [graph, setGraph] = useState<PublishedGraphType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [analyticsTracked, setAnalyticsTracked] = useState(false);
   const iframeRef = useRef<HTMLIFrameElement>(null);
 
   useEffect(() => {
@@ -26,6 +62,7 @@ export function PublishedGraph({ userIdPrefix, slug }: PublishedGraphProps) {
   async function loadGraph() {
     setLoading(true);
     setError(null);
+    setAnalyticsTracked(false);
     try {
       const publishedGraph = await getGraphBySlug(userIdPrefix, slug);
       if (publishedGraph) {
@@ -40,14 +77,73 @@ export function PublishedGraph({ userIdPrefix, slug }: PublishedGraphProps) {
     }
   }
 
-  // Inject HTML content into iframe
+  // Track page view analytics once when graph loads
+  useEffect(() => {
+    if (graph && !analyticsTracked) {
+      trackAnalyticsEvent(graph.id, 'view');
+      setAnalyticsTracked(true);
+    }
+  }, [graph, analyticsTracked]);
+
+  // Handle node click messages from iframe
+  const handleNodeClick = useCallback(
+    (nodeId: string, nodeTitle: string) => {
+      if (graph) {
+        trackAnalyticsEvent(graph.id, 'node-click', nodeId, nodeTitle);
+      }
+    },
+    [graph]
+  );
+
+  // Listen for messages from iframe (for node click tracking)
+  useEffect(() => {
+    function handleMessage(event: MessageEvent) {
+      if (event.data?.type === 'patchpad-node-click') {
+        handleNodeClick(event.data.nodeId, event.data.nodeTitle);
+      }
+    }
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [handleNodeClick]);
+
+  // Inject HTML content into iframe with analytics tracking code
   useEffect(() => {
     if (graph && iframeRef.current) {
       const iframe = iframeRef.current;
       const doc = iframe.contentDocument || iframe.contentWindow?.document;
       if (doc) {
+        // Inject analytics tracking into the graph HTML
+        const analyticsScript = `
+          <script>
+            // Override showPanel to track node clicks
+            const _originalShowPanel = typeof showPanel === 'function' ? showPanel : null;
+            if (_originalShowPanel) {
+              window.showPanel = function(node) {
+                _originalShowPanel(node);
+                // Send message to parent for analytics
+                if (window.parent && window.parent !== window) {
+                  window.parent.postMessage({
+                    type: 'patchpad-node-click',
+                    nodeId: node.id,
+                    nodeTitle: node.title
+                  }, '*');
+                }
+              };
+            }
+          </script>
+        `;
+
+        // Insert analytics script before closing body tag
+        let htmlContent = graph.htmlContent;
+        if (htmlContent.includes('</body>')) {
+          htmlContent = htmlContent.replace('</body>', analyticsScript + '</body>');
+        } else {
+          htmlContent += analyticsScript;
+        }
+
         doc.open();
-        doc.write(graph.htmlContent);
+        doc.write(htmlContent);
         doc.close();
       }
     }

@@ -267,19 +267,19 @@ PatchPad is a personal knowledge operating system with AI-powered capture, refin
   - Unpublish button
   - Link to analytics
 
-#### Phase 4: Analytics Dashboard
-- [ ] Create `src/components/GraphAnalytics.tsx`
+#### Phase 4: Analytics Dashboard - COMPLETE
+- [x] Create `src/components/GraphAnalytics.tsx`
   - View count over time chart
   - Most-clicked nodes list
   - Referrer breakdown
-  - Geographic distribution (if available)
+  - Geographic distribution (if available) — skipped (requires geo IP infrastructure)
 
-- [ ] Extend `src/services/graphPublishing.ts`
+- [x] Extend `src/services/graphPublishing.ts` (pre-existing)
   - `getGraphAnalytics(slug): Promise<GraphAnalytics>`
   - Track node clicks via URL parameters
 
-#### Phase 5: Public Graph Viewer
-- [ ] Extend `src/pages/PublishedGraph.tsx` (already exists)
+#### Phase 5: Public Graph Viewer - COMPLETE
+- [x] Extend `src/pages/PublishedGraph.tsx` (already exists)
   - Serve published graph by slug
   - Inject analytics tracking
   - Show "Powered by PatchPad" footer with CTA

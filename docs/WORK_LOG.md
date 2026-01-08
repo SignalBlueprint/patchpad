@@ -1,5 +1,45 @@
 # PatchPad Work Log
 
+## Knowledge Graph Publishing - Phase 5: Public Graph Viewer
+**Completed:** 2026-01-08
+
+**Files Changed:**
+- `src/pages/PublishedGraph.tsx` — Added analytics tracking for page views and node clicks; injected tracking script into graph iframe
+
+**Implementation Notes:**
+- Page view tracked via Supabase graph_analytics table on graph load
+- Visitor ID generated and stored in localStorage for unique visitor tracking
+- Referrer tracked from document.referrer
+- Node click events tracked by injecting analytics script into graph HTML
+- Analytics script overrides showPanel to send postMessage to parent
+- Parent listens for 'patchpad-node-click' messages and records to database
+
+**Verification:**
+- TypeScript compilation passes for modified files
+- Analytics integration non-blocking (silently fails if Supabase unavailable)
+
+---
+
+## Knowledge Graph Publishing - Phase 4: Analytics Dashboard
+**Completed:** 2026-01-08
+
+**Files Changed:**
+- `src/components/GraphAnalytics.tsx` — New analytics dashboard component with charts and stats
+
+**Implementation Notes:**
+- Overview stats: total views, unique visitors, nodes clicked
+- View count over time chart: bar chart showing last 14 days with filled gaps
+- Most-clicked nodes list: top 5 nodes with rank and click count
+- Top referrers list: top 5 referrers with domain names
+- Graph info section: publish date, update date, nodes, connections, visibility
+- Data fetched via existing getGraphAnalytics service function
+
+**Verification:**
+- TypeScript compilation passes for new component
+- Chart handles empty data gracefully with "No data available" state
+
+---
+
 ## Knowledge Graph Publishing - Phase 3: Publishing UI
 **Completed:** 2026-01-08
 
