@@ -2,6 +2,33 @@
 
 ---
 
+## Conversation Insights (Horizon 1.3)
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/services/conversationInsights.ts` — New service with analyzeConversations, getTopQuestions, getTopTopics, getKnowledgeGaps, filterConversationsByTopic, getQuestionsFromConversation, getConversationActivity functions
+- `src/services/conversationInsights.test.ts` — Comprehensive test suite (18 tests) covering question aggregation, topic extraction, knowledge gap detection, and activity tracking
+- `src/components/ResearchPartner/InsightsPanel.tsx` — New component with tabbed UI (Questions, Topics, Gaps, Activity), expandable question cards, topic bar chart, knowledge gap alerts, and 30-day activity sparkline
+- `src/components/ResearchPartner/ChatInterface.tsx` — Added showInsights state, insights toggle button in header, InsightsPanel integration
+
+**Implementation Notes:**
+- Insights panel accessible via chart icon button in Research Partner header
+- Questions tab shows most-asked questions with frequency count and conversation links
+- Topics tab displays topic frequency as bar chart with counts
+- Gaps tab shows knowledge gaps where AI couldn't find information (amber alert cards)
+- Activity tab shows 30-day sparkline chart and recent 7-day breakdown
+- Question normalization groups similar questions by keyword matching
+- Knowledge gaps detected via phrases like "couldn't find", "don't have information", "don't mention"
+- Activity chart has hover tooltips showing exact counts per day
+- Stats summary shows total conversations and questions asked
+
+**Verification:**
+- All 18 tests pass for conversationInsights.ts
+- TypeScript compiles without errors
+- InsightsPanel toggles correctly from header button
+- All acceptance criteria met (core functionality - Phases 1, 2, 4)
+
+---
+
 ## Thinking Timeline (Horizon 1.2)
 **Completed:** 2026-01-07
 **Files Changed:**

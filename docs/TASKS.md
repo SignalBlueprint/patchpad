@@ -206,48 +206,48 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 #### Phase 1: Insights Analysis Service
 
-- [ ] Create `src/services/conversationInsights.ts`
-  - [ ] Export interface `ConversationInsights { topQuestions, topTopics, knowledgeGaps, questionCount, avgResponseTime }`
-  - [ ] Export async function `analyzeConversations(conversations: Conversation[]): ConversationInsights`
-  - [ ] Export function `getTopQuestions(conversations: Conversation[], limit: number = 10): QuestionSummary[]`
+- [x] Create `src/services/conversationInsights.ts`
+  - [x] Export interface `ConversationInsights { topQuestions, topTopics, knowledgeGaps, questionCount, avgResponseTime }`
+  - [x] Export async function `analyzeConversations(conversations: Conversation[]): ConversationInsights`
+  - [x] Export function `getTopQuestions(conversations: Conversation[], limit: number = 10): QuestionSummary[]`
     - Extract user messages (role === 'user')
     - Group similar questions using simple keyword matching
     - Return with frequency count
-  - [ ] Export function `getTopTopics(conversations: Conversation[]): TopicCount[]`
+  - [x] Export function `getTopTopics(conversations: Conversation[]): TopicCount[]`
     - Extract topics from user messages using `extractConcepts()`
     - Aggregate across all conversations
     - Return sorted by frequency
-  - [ ] Export function `getKnowledgeGaps(conversations: Conversation[]): KnowledgeGap[]`
+  - [x] Export function `getKnowledgeGaps(conversations: Conversation[]): KnowledgeGap[]`
     - Find AI responses containing phrases like "I don't have information", "your notes don't mention", "I couldn't find"
     - Extract the topic/question that caused the gap
     - Return unique gaps with conversation references
 
-- [ ] Add tests in `src/services/conversationInsights.test.ts`
-  - [ ] Test: topQuestions aggregates similar questions
-  - [ ] Test: topTopics extracts concepts correctly
-  - [ ] Test: knowledgeGaps detects "no information" responses
+- [x] Add tests in `src/services/conversationInsights.test.ts`
+  - [x] Test: topQuestions aggregates similar questions
+  - [x] Test: topTopics extracts concepts correctly
+  - [x] Test: knowledgeGaps detects "no information" responses
 
 #### Phase 2: Insights Panel Component
 
-- [ ] Create `src/components/ResearchPartner/InsightsPanel.tsx`
-  - [ ] Accept props: `conversations: Conversation[]`, `onCreateNote: (content: string, title: string) => void`
-  - [ ] Collapsible panel in ChatInterface (right sidebar or bottom drawer)
-  - [ ] Tab navigation: "Top Questions" | "Topics" | "Gaps"
+- [x] Create `src/components/ResearchPartner/InsightsPanel.tsx`
+  - [x] Accept props: `conversations: Conversation[]`, `onCreateNote: (content: string, title: string) => void`
+  - [x] Collapsible panel in ChatInterface (right sidebar or bottom drawer)
+  - [x] Tab navigation: "Top Questions" | "Topics" | "Gaps"
 
-- [ ] Implement "Top Questions" tab
-  - [ ] List questions with frequency badges
-  - [ ] Click question → scroll to original conversation
-  - [ ] "Create Brief" button → synthesize answer into new note
+- [x] Implement "Top Questions" tab
+  - [x] List questions with frequency badges
+  - [x] Click question → scroll to original conversation
+  - [x] "Create Brief" button → synthesize answer into new note
 
-- [ ] Implement "Topics" tab
-  - [ ] Tag cloud or bar chart of most-discussed topics
-  - [ ] Click topic → filter conversations to those mentioning it
-  - [ ] Show trend: "You've asked about X 15 times this month"
+- [x] Implement "Topics" tab
+  - [x] Tag cloud or bar chart of most-discussed topics
+  - [x] Click topic → filter conversations to those mentioning it
+  - [x] Show trend: "You've asked about X 15 times this month"
 
-- [ ] Implement "Knowledge Gaps" tab
-  - [ ] List topics where AI couldn't find information
-  - [ ] "Create Note" button → creates empty note with topic as title
-  - [ ] "Research" button → opens web search (if available)
+- [x] Implement "Knowledge Gaps" tab
+  - [x] List topics where AI couldn't find information
+  - [x] "Create Note" button → creates empty note with topic as title
+  - [x] "Research" button → opens web search (if available)
 
 #### Phase 3: Quick Brief Generation
 
@@ -267,14 +267,14 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 #### Phase 4: Integration
 
-- [ ] Add insights toggle to ChatInterface
-  - [ ] Button in header: "Insights" with icon
-  - [ ] Toggle `insightsPanelOpen` state
-  - [ ] Panel slides in from right
+- [x] Add insights toggle to ChatInterface
+  - [x] Button in header: "Insights" with icon
+  - [x] Toggle `insightsPanelOpen` state
+  - [x] Panel slides in from right
 
-- [ ] Load conversations on mount
-  - [ ] Use `getAllConversations()` from researchPartner.ts
-  - [ ] Cache analysis results (recompute on new conversation)
+- [x] Load conversations on mount
+  - [x] Use `getAllConversations()` from researchPartner.ts
+  - [x] Cache analysis results (recompute on new conversation)
 
 - [ ] Add command palette entry
   ```typescript
