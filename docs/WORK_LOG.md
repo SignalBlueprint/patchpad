@@ -1,5 +1,26 @@
 # PatchPad Work Log
 
+## Template Intelligence - Phase 3: Template Suggestion UI
+**Completed:** 2026-01-08
+
+**Files Changed:**
+- `src/components/TemplateSuggestionBanner.tsx` — New banner component for pattern-based template suggestions; includes preview toggle, confidence indicator, create/dismiss/don't-show-again actions
+- `src/App.tsx` — Added patternSuggestion state; added debounced pattern detection effect on app load; integrated TemplateSuggestionBanner in notes view
+
+**Implementation Notes:**
+- Banner shows when patterns detected in 5+ notes with >= 0.6 confidence
+- Pattern detection runs 2 seconds after notes load (debounced)
+- Users can permanently dismiss via localStorage ('patchpad_pattern_dismissed')
+- Expandable preview shows detected template structure
+- Confidence indicators: "Very strong" (0.9+), "Strong" (0.7+), "Moderate" (0.5+)
+- Creates template using patternToTemplate() and saveTemplate()
+
+**Verification:**
+- All 113 template-related tests pass
+- TypeScript compilation passes for new files
+
+---
+
 ## Template Intelligence - Phase 2: AI-Fillable Placeholders
 **Completed:** 2026-01-08
 

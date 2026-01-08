@@ -332,16 +332,18 @@ PatchPad is a personal knowledge operating system with AI-powered capture, refin
 
 - [x] Add tests for AI placeholder filling (11 new tests in templates.test.ts)
 
-#### Phase 3: Template Suggestion UI
-- [ ] Create `src/components/TemplateSuggestionBanner.tsx`
+#### Phase 3: Template Suggestion UI - COMPLETE
+- [x] Create `src/components/TemplateSuggestionBanner.tsx`
   - Appears when pattern detected in notes
   - "We noticed you have 15 notes starting with 'Meeting:'. Create a template?"
-  - Preview of detected structure
-  - Accept/Dismiss buttons
+  - Preview of detected structure (expandable)
+  - Accept/Dismiss/Don't show again buttons
+  - Confidence indicator with pattern description
 
-- [ ] Add suggestion state to `src/App.tsx`
-  - Check for patterns on app load (debounced)
-  - Show banner if strong pattern detected
+- [x] Add suggestion state to `src/App.tsx`
+  - Check for patterns on app load (debounced 2 seconds)
+  - Show banner if confidence >= 0.6
+  - Respects localStorage dismissal preference
 
 #### Phase 4: Enhanced Template Picker
 - [ ] Extend `src/components/TemplatePicker.tsx` (already exists)
