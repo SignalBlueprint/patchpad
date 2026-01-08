@@ -95,23 +95,34 @@ export function getActiveSession(): ThinkingSession | null {
   return activeSession;
 }
 
+interface StartRecordingOptions {
+  title?: string;
+  templateId?: string;
+  templateName?: string;
+  autoTags?: string[];
+}
+
 /**
  * Start recording a new session
  */
 export function startRecording(
   canvasSnapshot: CanvasSnapshot,
-  title?: string
+  options?: StartRecordingOptions | string // Support legacy string title
 ): string {
   if (activeSession) {
     throw new Error('A session is already being recorded');
   }
+
+  // Handle legacy string title argument
+  const opts: StartRecordingOptions =
+    typeof options === 'string' ? { title: options } : options || {};
 
   const sessionId = uuidv4();
   sessionStartTime = Date.now();
 
   activeSession = {
     id: sessionId,
-    title: title || `Session ${new Date().toLocaleString()}`,
+    title: opts.title || `Session ${new Date().toLocaleString()}`,
     canvasSnapshot,
     events: [],
     annotations: [],
@@ -120,7 +131,10 @@ export function startRecording(
     durationMs: 0,
     createdNoteIds: [],
     modifiedNoteIds: [],
-    tags: [],
+    tags: opts.autoTags || [],
+    templateId: opts.templateId,
+    templateName: opts.templateName,
+    currentWorkflowStep: opts.templateId ? 0 : undefined,
   };
 
   eventBuffer = [];
@@ -278,11 +292,11 @@ export function deleteSession(sessionId: string): boolean {
 }
 
 /**
- * Update session title or tags
+ * Update session title, tags, or workflow step
  */
 export function updateSession(
   sessionId: string,
-  updates: Partial<Pick<ThinkingSession, 'title' | 'tags'>>
+  updates: Partial<Pick<ThinkingSession, 'title' | 'tags' | 'currentWorkflowStep'>>
 ): ThinkingSession | null {
   const sessions = getAllSessions();
   const index = sessions.findIndex((s) => s.id === sessionId);
@@ -292,7 +306,21 @@ export function updateSession(
   sessions[index] = { ...sessions[index], ...updates };
   saveSessions(sessions);
 
+  // Also update active session if it matches
+  if (activeSession && activeSession.id === sessionId) {
+    activeSession = { ...activeSession, ...updates };
+  }
+
   return sessions[index];
+}
+
+/**
+ * Update the current workflow step for the active session
+ */
+export function updateWorkflowStep(stepIndex: number): void {
+  if (!activeSession) return;
+  activeSession.currentWorkflowStep = stepIndex;
+  flushEvents(); // Persist change
 }
 
 /**
