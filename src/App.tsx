@@ -30,6 +30,18 @@ import { ConflictResolutionModal } from './components/ConflictResolutionModal';
 import { ChatInterface, AIKnowledgeDashboard } from './components/ResearchPartner';
 import { ShareNoteDialog } from './components/ShareNoteDialog';
 import { DocumentExportDialog } from './components/DocumentExportDialog';
+import { SessionTemplatePicker } from './components/SessionTemplatePicker';
+import { SessionWorkflowGuide } from './components/SessionWorkflowGuide';
+import { SessionLibrary } from './components/SessionLibrary';
+import { SessionPlayer } from './components/SessionPlayer';
+import {
+  startRecording,
+  stopRecording,
+  isRecording,
+  updateWorkflowStep,
+} from './services/sessionRecorder';
+import type { SessionTemplate } from './types/sessionTemplate';
+import type { ThinkingSession, CanvasSnapshot } from './types/session';
 import { useNotes, type SortOption, type NotesFilter } from './hooks/useNotes';
 import { isResearchPartnerAvailable } from './services/researchPartner';
 import { useSync, useSyncReceiver } from './hooks/useSync';
@@ -131,6 +143,15 @@ export default function App() {
   const [templateDialogOpen, setTemplateDialogOpen] = useState(false);
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
   const [templateAppliedToNote, setTemplateAppliedToNote] = useState<string | null>(null);
+
+  // Session recording state
+  const [sessionTemplatePickerOpen, setSessionTemplatePickerOpen] = useState(false);
+  const [sessionLibraryOpen, setSessionLibraryOpen] = useState(false);
+  const [activeSessionTemplate, setActiveSessionTemplate] = useState<SessionTemplate | null>(null);
+  const [sessionDurationMs, setSessionDurationMs] = useState(0);
+  const [workflowGuideCollapsed, setWorkflowGuideCollapsed] = useState(false);
+  const [playbackSession, setPlaybackSession] = useState<ThinkingSession | null>(null);
+  const sessionTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const editorContainerRef = useRef<HTMLDivElement>(null);
@@ -678,6 +699,73 @@ export default function App() {
     // The canvas will re-read from notes on next render
   }, [notes, success]);
 
+  // Session recording handlers
+  const handleStartSession = useCallback((template: SessionTemplate | null) => {
+    // Build canvas snapshot from current notes
+    const canvasSnapshot: CanvasSnapshot = {
+      positions: notes.reduce((acc, note) => {
+        if (note.canvasPosition) {
+          acc[note.id] = {
+            x: note.canvasPosition.x,
+            y: note.canvasPosition.y,
+            width: note.canvasPosition.width ?? 200,
+            height: note.canvasPosition.height ?? 150,
+          };
+        }
+        return acc;
+      }, {} as CanvasSnapshot['positions']),
+      viewport: { x: 0, y: 0, zoom: 1 },
+      existingNoteIds: notes.map((n) => n.id),
+    };
+
+    const options = template
+      ? {
+          title: `${template.name} Session - ${new Date().toLocaleDateString()}`,
+          templateId: template.id,
+          templateName: template.name,
+          autoTags: template.autoTags,
+        }
+      : undefined;
+
+    startRecording(canvasSnapshot, options);
+    setActiveSessionTemplate(template);
+    setSessionTemplatePickerOpen(false);
+    setSessionDurationMs(0);
+
+    // Start duration timer
+    sessionTimerRef.current = setInterval(() => {
+      setSessionDurationMs((prev) => prev + 1000);
+    }, 1000);
+
+    // Switch to canvas view
+    setMainView('canvas');
+    success('Recording started', template ? `Using "${template.name}" template` : 'Freeform session started');
+  }, [notes, success]);
+
+  const handleStopSession = useCallback(() => {
+    const session = stopRecording();
+    if (session) {
+      // Clear timer
+      if (sessionTimerRef.current) {
+        clearInterval(sessionTimerRef.current);
+        sessionTimerRef.current = null;
+      }
+
+      setActiveSessionTemplate(null);
+      setSessionDurationMs(0);
+      success('Session saved', `Recorded ${session.events.length} events over ${Math.round(session.durationMs / 60000)} minutes`);
+    }
+  }, [success]);
+
+  const handleWorkflowStepChange = useCallback((stepIndex: number) => {
+    updateWorkflowStep(stepIndex);
+  }, []);
+
+  const handlePlaySession = useCallback((session: ThinkingSession) => {
+    setPlaybackSession(session);
+    setSessionLibraryOpen(false);
+  }, []);
+
   // Build command list
   const commands: Command[] = [
     // Note commands
@@ -808,6 +896,24 @@ export default function App() {
       category: 'view',
       icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>,
       action: () => setMainView('timeline'),
+    },
+
+    // Session recording commands
+    {
+      id: 'session-start',
+      name: isRecording() ? 'Stop Recording' : 'Start Recording Session',
+      description: isRecording() ? 'End the current recording session' : 'Record your thinking session on canvas',
+      category: 'session',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={isRecording() ? "M21 12a9 9 0 11-18 0 9 9 0 0118 0z M9 10a1 1 0 011-1h4a1 1 0 011 1v4a1 1 0 01-1 1h-4a1 1 0 01-1-1v-4z" : "M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z M21 12a9 9 0 11-18 0 9 9 0 0118 0z"} /></svg>,
+      action: () => isRecording() ? handleStopSession() : setSessionTemplatePickerOpen(true),
+    },
+    {
+      id: 'session-library',
+      name: 'Session Library',
+      description: 'Browse and replay recorded sessions',
+      category: 'session',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" /></svg>,
+      action: () => setSessionLibraryOpen(true),
     },
 
     // AI commands - basic
@@ -1599,6 +1705,57 @@ export default function App() {
           selectedNoteIds={currentNote ? [currentNote.id] : Array.from(selectedIds)}
           onClose={() => setDocumentExportDialogOpen(false)}
         />
+      )}
+
+      {/* Session Template Picker */}
+      {sessionTemplatePickerOpen && (
+        <SessionTemplatePicker
+          onSelectTemplate={handleStartSession}
+          onClose={() => setSessionTemplatePickerOpen(false)}
+        />
+      )}
+
+      {/* Session Library */}
+      {sessionLibraryOpen && (
+        <SessionLibrary
+          onSelectSession={handlePlaySession}
+          onClose={() => setSessionLibraryOpen(false)}
+        />
+      )}
+
+      {/* Session Playback */}
+      {playbackSession && (
+        <SessionPlayer
+          session={playbackSession}
+          onClose={() => setPlaybackSession(null)}
+        />
+      )}
+
+      {/* Session Workflow Guide - shown during recording with template */}
+      {isRecording() && activeSessionTemplate && (
+        <SessionWorkflowGuide
+          template={activeSessionTemplate}
+          sessionDurationMs={sessionDurationMs}
+          onStepChange={handleWorkflowStepChange}
+          collapsed={workflowGuideCollapsed}
+          onToggleCollapse={() => setWorkflowGuideCollapsed(!workflowGuideCollapsed)}
+        />
+      )}
+
+      {/* Recording indicator */}
+      {isRecording() && (
+        <div className="fixed top-4 right-4 z-50 flex items-center gap-3 px-4 py-2 bg-red-500 text-white rounded-full shadow-lg animate-pulse">
+          <div className="w-3 h-3 bg-white rounded-full" />
+          <span className="text-sm font-medium">
+            Recording: {Math.floor(sessionDurationMs / 60000)}:{String(Math.floor((sessionDurationMs % 60000) / 1000)).padStart(2, '0')}
+          </span>
+          <button
+            onClick={handleStopSession}
+            className="ml-2 px-2 py-0.5 bg-white/20 hover:bg-white/30 rounded text-xs font-medium"
+          >
+            Stop
+          </button>
+        </div>
       )}
     </div>
   );

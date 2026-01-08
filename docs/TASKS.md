@@ -585,27 +585,27 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 #### Phase 2: Hosted Publishing (Future)
 
-- [ ] Design hosting infrastructure
+- [!] Design hosting infrastructure — BLOCKED: Requires external hosting infrastructure (S3/CloudFront/Vercel), backend API, and domain management not available in this frontend-only codebase
   - [ ] Subdomain: `{username}.patchpad.pub`
   - [ ] Static hosting: S3 + CloudFront or Vercel
   - [ ] API: `POST /api/publish`, `GET /api/graphs/:id`
 
-- [ ] Create publish API endpoints
+- [!] Create publish API endpoints — BLOCKED: Requires backend server
   - [ ] `POST /api/publish` - upload graph HTML + metadata
   - [ ] `GET /api/graphs/:username/:slug` - serve published graph
   - [ ] `DELETE /api/graphs/:id` - unpublish
 
-- [ ] Add authentication for publishing
+- [!] Add authentication for publishing — BLOCKED: Requires backend server
   - [ ] Require logged-in user
   - [ ] Rate limit: 10 publishes per day
   - [ ] Storage limit: 10MB per user (free tier)
 
-- [ ] Add custom domain support
+- [!] Add custom domain support — BLOCKED: Requires DNS/SSL infrastructure
   - [ ] CNAME record verification
   - [ ] SSL provisioning via Let's Encrypt
   - [ ] Premium feature gate
 
-- [ ] Add analytics
+- [!] Add analytics — BLOCKED: Requires backend analytics database
   - [ ] Track views per graph
   - [ ] Most-clicked nodes
   - [ ] Referrer tracking
@@ -776,66 +776,66 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 **Tasks:**
 
-#### Research Phase
+#### Research Phase — BLOCKED: Ambient Knowledge Capture requires creating a separate Electron/Tauri desktop application, which is outside the scope of this web application codebase
 
-- [ ] Evaluate cross-platform frameworks
+- [!] Evaluate cross-platform frameworks — BLOCKED: Requires separate project setup
   - [ ] Electron: Full desktop app, largest bundle, most mature
   - [ ] Tauri: Rust-based, smaller bundle, newer
   - [ ] Native: Separate apps per platform
 
-- [ ] Research system integration APIs
+- [!] Research system integration APIs — BLOCKED: Requires native app context
   - [ ] Clipboard monitoring: macOS Pasteboard, Windows Clipboard API
   - [ ] Browser integration: WebExtension API
   - [ ] Calendar access: Google Calendar API, Outlook API
 
-- [ ] Determine privacy boundaries
+- [!] Determine privacy boundaries — BLOCKED: Requires native app design decisions
   - [ ] What data is captured automatically?
   - [ ] What requires explicit user action?
   - [ ] Local-only vs cloud storage
 
-#### Phase 1: Menu Bar App (Electron)
+#### Phase 1: Menu Bar App (Electron) — BLOCKED: Requires separate Electron project
 
-- [ ] Initialize Electron project
+- [!] Initialize Electron project — BLOCKED: Separate project required
   ```bash
   npm create electron-app@latest patchpad-companion
   ```
 
-- [ ] Implement system tray icon
+- [!] Implement system tray icon — BLOCKED: Requires Electron
   - [ ] Tray icon with status indicator
   - [ ] Right-click menu: "New Note", "Search Notes", "Settings", "Quit"
   - [ ] Left-click: open quick capture
 
-- [ ] Create quick capture window
+- [!] Create quick capture window — BLOCKED: Requires Electron
   - [ ] Floating window, always-on-top option
   - [ ] Text input that creates note
   - [ ] Global keyboard shortcut (configurable)
 
-- [ ] Implement clipboard monitoring
+- [!] Implement clipboard monitoring — BLOCKED: Requires Electron
   - [ ] Watch clipboard for changes
   - [ ] On URL copy, suggest "Save to notes?"
   - [ ] On text copy (> 50 chars), suggest "Create note?"
   - [ ] User can enable/disable monitoring
 
-#### Phase 2: Calendar Integration
+#### Phase 2: Calendar Integration — BLOCKED: Requires Electron + OAuth setup
 
-- [ ] Add Google Calendar OAuth
+- [!] Add Google Calendar OAuth — BLOCKED: Requires native app + OAuth
   - [ ] Connect Google account
   - [ ] Fetch upcoming events
   - [ ] Trigger 15-min-before notification
 
-- [ ] Create meeting prep notification
+- [!] Create meeting prep notification — BLOCKED: Requires native app
   - [ ] Before meeting, search notes for attendee names
   - [ ] Generate brief via `generateMeetingBrief()`
   - [ ] Notification: "Meeting with X in 15 min - prep brief ready"
 
-#### Phase 3: Browser Extension
+#### Phase 3: Browser Extension — BLOCKED: Requires separate WebExtension project
 
-- [ ] Create WebExtension (Chrome + Firefox)
+- [!] Create WebExtension (Chrome + Firefox) — BLOCKED: Separate project required
   - [ ] Popup with quick note entry
   - [ ] Right-click context menu: "Save to PatchPad"
   - [ ] Sync with main app via API or localStorage
 
-- [ ] Implement page capture
+- [!] Implement page capture — BLOCKED: Requires WebExtension
   - [ ] Save URL + title + selected text
   - [ ] Optional: full page content as markdown
   - [ ] Tag with "web-clip"
@@ -1138,21 +1138,21 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 **Tasks:**
 
-- [ ] Enable live session broadcasting
+- [!] Enable live session broadcasting — BLOCKED: Requires WebSocket backend and multi-user infrastructure
   - [ ] "Broadcast" mode: others watch your thinking live
   - [ ] Viewer list with presence indicators
   - [ ] Chat sidebar for questions/comments
 
-- [ ] Add collaborative annotation
+- [!] Add collaborative annotation — BLOCKED: Requires multi-user infrastructure
   - [ ] Multiple people can annotate same session
   - [ ] Color-coded by contributor
   - [ ] "Annotation conversation" threads
 
-- [ ] Create thinking session templates
-  - [ ] "Brainstorming" - optimized for rapid idea capture
-  - [ ] "Problem-solving" - structured with problem statement
-  - [ ] "Review" - for going through existing notes
-  - [ ] Templates set canvas layout and suggested flow
+- [x] Create thinking session templates
+  - [x] "Brainstorming" - optimized for rapid idea capture
+  - [x] "Problem-solving" - structured with problem statement
+  - [x] "Review" - for going through existing notes
+  - [x] Templates set canvas layout and suggested flow
 
 - [ ] Implement session comparison
   - [ ] Compare two sessions on same topic

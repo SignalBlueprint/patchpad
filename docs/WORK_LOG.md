@@ -2,6 +2,67 @@
 
 ---
 
+## Moonshot Phase 4: Session Templates (Partial)
+**Completed:** 2026-01-08
+**Files Changed:**
+- `src/types/sessionTemplate.ts` — Session template types (layout, workflow steps, zones)
+- `src/services/sessionTemplates.ts` — Template management with 4 built-in templates
+- `src/components/SessionTemplatePicker.tsx` — Template selection modal with preview
+- `src/components/SessionWorkflowGuide.tsx` — Workflow guide component shown during recording
+- `src/types/session.ts` — Extended ThinkingSession with template reference fields
+- `src/services/sessionRecorder.ts` — Added StartRecordingOptions for template support
+- `src/App.tsx` — Integrated session recording UI, commands, and workflow guide
+
+**Implementation Notes:**
+
+- **Session Template Types** (`sessionTemplate.ts`):
+  - `SessionTemplate` interface with name, description, color, icon
+  - `CanvasLayout` with types: freeform, grid, radial, columns, kanban
+  - `LayoutZone` for defining canvas regions with labels and placeholders
+  - `WorkflowStep` with order, title, description, estimated time, tips
+
+- **Built-in Templates** (`sessionTemplates.ts`):
+  - **Brainstorming**: Radial layout, 4-step workflow (Set Theme, Rapid Capture, Cluster, Identify Winners)
+  - **Problem-solving**: Column layout (Problem, Causes, Solutions, Actions), structured analysis
+  - **Review & Organize**: Kanban layout (To Review, Needs Update, To Connect, Archive, Done)
+  - **Freeform**: Blank canvas for complete freedom
+  - `calculateLayoutPositions()` for initial note arrangement
+  - User templates stored in localStorage with CRUD operations
+
+- **Session Template Picker** (`SessionTemplatePicker.tsx`):
+  - Modal with gradient header and template cards
+  - Quick Start button for immediate recording without template
+  - Template cards show icon, name, description, estimated time, auto-tags
+  - Layout preview SVG visualization for each layout type
+  - Collapsible workflow steps with tips
+  - Optional session title input
+
+- **Session Workflow Guide** (`SessionWorkflowGuide.tsx`):
+  - Fixed position during recording, collapsible to pill
+  - Progress bar and step completion tracking
+  - Auto-advance based on elapsed time estimates
+  - Click step number to mark complete
+  - Expand/collapse step details
+  - Tips shown for current step
+
+- **App Integration**:
+  - Session state: templatePickerOpen, activeTemplate, durationMs, workflowGuideCollapsed
+  - Recording handlers: handleStartSession, handleStopSession, handleWorkflowStepChange
+  - Command palette entries: Start/Stop Recording, Session Library
+  - Recording indicator with duration timer and stop button
+  - Workflow guide shown when recording with template
+
+**Blocked Tasks:**
+- Knowledge Graph Publishing Phase 2 — Requires backend infrastructure
+- Ambient Knowledge Capture — Requires separate Electron/Tauri project
+- Live Session Broadcasting — Requires WebSocket backend
+- Collaborative Annotation — Requires multi-user infrastructure
+
+**Verification:**
+TypeScript compilation passes for new files (pre-existing issues in codebase unrelated to this work).
+
+---
+
 ## Moonshot Phase 3: Session Intelligence
 **Completed:** 2026-01-07
 **Files Changed:**

@@ -130,6 +130,12 @@ export interface ThinkingSession {
   modifiedNoteIds: string[];
   /** Tags for organization */
   tags: string[];
+  /** Template used for this session (if any) */
+  templateId?: string;
+  /** Template name at time of recording */
+  templateName?: string;
+  /** Current workflow step index (for ongoing sessions) */
+  currentWorkflowStep?: number;
 }
 
 export interface SessionStats {
