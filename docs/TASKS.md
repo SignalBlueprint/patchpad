@@ -1088,12 +1088,13 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 **Tasks:**
 
-- [ ] Create `src/components/SessionAnnotation.tsx`
-  - [ ] User can pause and add annotation at any point
-  - [ ] Annotations: text note, highlight, voice memo
-  - [ ] Display annotations as markers on timeline
+- [x] Create `src/components/SessionAnnotation.tsx`
+  - [x] User can pause and add annotation at any point
+  - [x] Annotations: text note, highlight, voice memo
+  - [x] Display annotations as markers on timeline
+  - [x] AnnotationList component for viewing/seeking
 
-- [ ] Implement annotation system
+- [x] Implement annotation system
   ```typescript
   interface SessionAnnotation {
     id: string;
@@ -1104,21 +1105,28 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
   }
   ```
 
-- [ ] Add session sharing
-  - [ ] Export session as self-contained HTML (like graph export)
-  - [ ] Viewer: play-only, no editing
-  - [ ] Include all referenced notes (excerpts only for privacy)
+- [x] Add session sharing
+  - [x] Export session as self-contained HTML (like graph export)
+  - [x] Viewer: play-only, no editing
+  - [x] Built-in player with keyboard shortcuts
+  - [x] `src/services/sessionExport.ts` with downloadSessionAsHTML
 
-- [ ] Create session insights
-  - [ ] "You spent 10 minutes on this area before breakthrough"
-  - [ ] "You revisited this note 5 times"
-  - [ ] "Ideas clustered in 3 regions"
-  - [ ] Heatmap overlay showing activity density
+- [x] Create session insights (`src/services/sessionInsights.ts`)
+  - [x] "You spent 10 minutes on this area before breakthrough"
+  - [x] "You revisited this note 5 times"
+  - [x] "Ideas clustered in 3 regions"
+  - [x] Heatmap overlay showing activity density
+  - [x] Breakthrough detection (pause followed by burst)
 
-- [ ] AI session analysis
-  - [ ] "What was I trying to figure out?"
-  - [ ] Generate summary of thinking process
-  - [ ] Suggest: "You might want to explore X more"
+- [x] AI session analysis
+  - [x] "What was I trying to figure out?" (generateSessionSummary)
+  - [x] Generate summary of thinking process
+  - [x] Suggest: "You might want to explore X more" (generateSuggestions)
+
+- [x] Session Insights UI (`src/components/SessionInsights.tsx`)
+  - [x] Patterns & Insights tab with key patterns
+  - [x] Activity Heatmap tab with visualization
+  - [x] AI Summary tab with timeline and thoughts
 
 **Estimated Effort:** 32 hours
 

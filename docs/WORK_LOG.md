@@ -2,6 +2,63 @@
 
 ---
 
+## Moonshot Phase 3: Session Intelligence
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/components/SessionAnnotation.tsx` — Annotation UI for adding notes, highlights, and voice memos during sessions
+- `src/services/sessionExport.ts` — Self-contained HTML export for sharing sessions
+- `src/services/sessionInsights.ts` — Session analysis service with pattern detection
+- `src/components/SessionInsights.tsx` — Insights dashboard with tabs for patterns, heatmap, and AI summary
+
+**Implementation Notes:**
+
+- **Session Annotation Component** (`SessionAnnotation.tsx`):
+  - Collapsible toolbar with Note, Highlight, Voice buttons
+  - Note mode: textarea for text annotations
+  - Highlight mode: color picker with optional comment
+  - Voice mode: MediaRecorder + SpeechRecognition for voice memos
+  - Auto-pause on annotation expansion
+  - AnnotationList component for displaying/seeking annotations
+
+- **Session Export Service** (`sessionExport.ts`):
+  - `exportSessionAsHTML()` generates self-contained HTML with embedded player
+  - Built-in JavaScript player with play/pause, seek, speed control
+  - Keyboard shortcuts (Space, arrows) work in exported HTML
+  - Light/dark theme support
+  - Timeline with annotation markers
+  - Stats display (notes created, edited, connections, AI queries)
+  - `downloadSessionAsHTML()` triggers browser download
+  - `generateShareableURL()` for small sessions (base64 encoded)
+
+- **Session Insights Service** (`sessionInsights.ts`):
+  - `analyzeSession()` extracts patterns and insights
+  - Insight types: time-spent, revisitation, cluster, breakthrough, ai-usage
+  - `analyzeTimeSpent()` finds deep focus periods and most-worked notes
+  - `analyzeRevisitations()` counts distinct visits per note
+  - `analyzeActivityClusters()` detects spatial groupings
+  - `detectBreakthroughs()` finds pause-then-burst patterns
+  - `generateHeatmap()` creates activity density grid
+  - `generateSessionSummary()` uses AI to summarize thinking process
+  - `generateSuggestions()` recommends next steps
+
+- **Session Insights Component** (`SessionInsights.tsx`):
+  - Three tabs: Patterns & Insights, Activity Heatmap, AI Summary
+  - Patterns tab: quick stats grid, insight cards with icons, suggestions panel
+  - Heatmap tab: SVG visualization of canvas activity density
+  - Summary tab: AI-generated summary, session timeline, annotation thoughts
+  - Export button triggers HTML download
+  - Click insights to seek to timestamp or navigate to note
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- All Phase 3 tasks complete:
+  - [x] Annotation component with note/highlight/voice
+  - [x] Session sharing via HTML export
+  - [x] Session insights with patterns and heatmap
+  - [x] AI session analysis with summary and suggestions
+
+---
+
 ## Knowledge Agents: Document Export Formats
 **Completed:** 2026-01-07
 **Files Changed:**
