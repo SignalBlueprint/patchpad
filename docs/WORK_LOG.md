@@ -2,6 +2,53 @@
 
 ---
 
+## Real-time Collaboration Phases 2-3: Yjs CRDT Integration & Presence (Horizon 2.1)
+**Completed:** 2026-01-07
+**Files Changed:**
+- `package.json` — Added yjs, y-indexeddb, y-websocket, y-codemirror.next dependencies
+- `src/services/collaboration.ts` — New collaboration service with Yjs document management, WebSocket connection, awareness protocol, and sync utilities
+- `src/hooks/useCollaboration.ts` — React hook for collaboration state: doc, yText, provider, peers, connection status, cursor/selection broadcasts
+- `src/components/PresenceIndicator.tsx` — Shows peer avatars/initials with colored circles, connection status dot, overflow badge
+- `src/components/RemoteCursor.tsx` — Renders remote cursors at peer positions with colored lines and name labels that fade after 2 seconds
+- `src/components/RemoteSelection.tsx` — Highlights peer text selections with semi-transparent colored overlays
+- `src/components/CollaborativeEditor.tsx` — Wrapper component integrating Yjs with CodeMirror via y-codemirror.next extension
+
+**Implementation Notes:**
+- **Yjs Dependencies**: yjs (CRDT engine), y-indexeddb (local persistence), y-websocket (network sync), y-codemirror.next (CodeMirror 6 binding)
+- **Collaboration Service** (`collaboration.ts`):
+  - `createYDoc(noteId)`: Creates Y.Doc with IndexedDB persistence
+  - `getYText(doc)`: Gets shared Y.Text for document content
+  - `connectToRoom(doc, noteId, userName)`: Connects to WebSocket provider with awareness
+  - `disconnectFromRoom(noteId)`: Disconnects and cleans up provider
+  - `destroyCollaboration(noteId)`: Full cleanup including Y.Doc and IndexedDB persistence
+  - `syncDocToNote(doc, noteId)`: Syncs Y.Doc content to local note storage
+  - `initDocFromNote(doc, note)`: Initializes Y.Doc from existing note content
+  - `getPeers(noteId)`: Gets current peers with cursor/selection state
+  - `updateCursor(noteId, cursor)`: Broadcasts cursor position via awareness
+  - `updateSelection(noteId, selection)`: Broadcasts selection range via awareness
+  - Event handlers: `onAwarenessChange`, `onConnectionChange`, `onSyncChange`
+- **Peer Interface**: id, name, color (from 10-color palette), cursor (line/ch), selection (from/to)
+- **Color Assignment**: Deterministic hash of user ID for consistent colors across sessions
+- **WebSocket Configuration**: Uses `VITE_YJS_WEBSOCKET_URL` env var, defaults to yjs.dev demo server
+- **useCollaboration Hook**: Full React integration with setup/cleanup effects, state management
+- **PresenceIndicator**: Shows up to 4 peer avatars with "+N" badge for overflow, green/amber connection dot
+- **RemoteCursor**: Colored 2px cursor line with floating name label, label auto-fades after 2 seconds
+- **RemoteSelection**: Semi-transparent rectangles at 30% opacity in peer's assigned color
+- **CollaborativeEditor**: Wraps CodeMirror with y-codemirror.next extension, manages collaboration lifecycle
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- All tests pass (`npx vitest run`)
+- All acceptance criteria for Phases 2-3 met:
+  - Yjs CRDT documents sync via WebSocket
+  - IndexedDB persistence for offline support
+  - Peer presence with avatars and connection status
+  - Remote cursors rendered at correct positions
+  - Remote selections highlighted with peer colors
+  - Cursor/selection changes broadcast via awareness protocol
+
+---
+
 ## Template Intelligence Phase 4: AI-Powered Templates (Horizon 2.3)
 **Completed:** 2026-01-07
 **Files Changed:**

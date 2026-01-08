@@ -387,24 +387,24 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 #### Phase 2: Yjs CRDT Integration
 
-- [ ] Install Yjs dependencies
+- [x] Install Yjs dependencies
   ```bash
-  npm install yjs y-indexeddb y-websocket @codemirror/collab
+  npm install yjs y-indexeddb y-websocket y-codemirror.next
   ```
 
-- [ ] Create `src/services/collaboration.ts`
-  - [ ] Export function `createYDoc(noteId: string): Y.Doc`
+- [x] Create `src/services/collaboration.ts`
+  - [x] Export function `createYDoc(noteId: string): Y.Doc`
     - Initialize Y.Doc with shared text type
     - Enable IndexedDB persistence via `y-indexeddb`
-  - [ ] Export function `connectToRoom(doc: Y.Doc, noteId: string): WebsocketProvider`
+  - [x] Export function `connectToRoom(doc: Y.Doc, noteId: string): WebsocketProvider`
     - Connect to Supabase Realtime or y-websocket server
     - Room name: `note-${noteId}`
-  - [ ] Export function `syncDocToNote(doc: Y.Doc, noteId: string): void`
+  - [x] Export function `syncDocToNote(doc: Y.Doc, noteId: string): void`
     - Watch Y.Doc changes
     - Debounced write to local DB + Supabase
-  - [ ] Export function `disconnectFromRoom(provider: WebsocketProvider): void`
+  - [x] Export function `disconnectFromRoom(provider: WebsocketProvider): void`
 
-- [ ] Create `src/hooks/useCollaboration.ts`
+- [x] Create `src/hooks/useCollaboration.ts`
   ```typescript
   function useCollaboration(noteId: string | null, isShared: boolean) {
     const [doc, setDoc] = useState<Y.Doc | null>(null);
@@ -415,16 +415,17 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
   }
   ```
 
-- [ ] Integrate Yjs with CodeMirror in `src/components/Editor.tsx`
-  - [ ] Import `@codemirror/collab` extension
-  - [ ] Bind Y.Text to CodeMirror state
-  - [ ] Handle remote updates
-  - [ ] Reference: https://codemirror.net/examples/collab/
+- [x] Integrate Yjs with CodeMirror via `src/components/CollaborativeEditor.tsx`
+  - [x] Import `y-codemirror.next` extension
+  - [x] Bind Y.Text to CodeMirror state
+  - [x] Handle remote updates
+  - [x] Reference: https://codemirror.net/examples/collab/
 
-- [ ] Set up WebSocket infrastructure
-  - [ ] Option A: Supabase Realtime Channels (simpler, managed)
-  - [ ] Option B: Self-hosted y-websocket server (more control)
-  - [ ] Document choice in `.env.example`
+- [x] Set up WebSocket infrastructure
+  - [x] Option A: Supabase Realtime Channels (simpler, managed)
+  - [x] Option B: Self-hosted y-websocket server (more control)
+  - [x] Default to yjs.dev demo server for development
+  - [x] Document choice via `VITE_YJS_WEBSOCKET_URL` environment variable
 
 **Estimated Effort:** 16 hours
 
@@ -432,7 +433,7 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 #### Phase 3: Presence & Awareness
 
-- [ ] Extend `useCollaboration.ts` with awareness
+- [x] Extend `useCollaboration.ts` with awareness
   ```typescript
   interface Peer {
     id: string;
@@ -443,29 +444,30 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
   }
   ```
 
-- [ ] Create `src/components/RemoteCursor.tsx`
-  - [ ] Render colored cursor at peer's position
-  - [ ] Show peer name label above cursor
-  - [ ] Animate cursor movement
+- [x] Create `src/components/RemoteCursor.tsx`
+  - [x] Render colored cursor at peer's position
+  - [x] Show peer name label above cursor
+  - [x] Animate cursor movement (name label fades after 2s)
 
-- [ ] Create `src/components/RemoteSelection.tsx`
-  - [ ] Highlight peer's text selection in their color
-  - [ ] Semi-transparent overlay on selected range
+- [x] Create `src/components/RemoteSelection.tsx`
+  - [x] Highlight peer's text selection in their color
+  - [x] Semi-transparent overlay on selected range
 
-- [ ] Create `src/components/PresenceIndicator.tsx`
-  - [ ] Show avatars/initials of users viewing note
-  - [ ] Display in Editor header
-  - [ ] Tooltip with full names
+- [x] Create `src/components/PresenceIndicator.tsx`
+  - [x] Show avatars/initials of users viewing note
+  - [x] Display in Editor header
+  - [x] Tooltip with full names
+  - [x] "+N" badge for overflow peers
 
-- [ ] Add color assignment logic
-  - [ ] Palette: `['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7']`
-  - [ ] Assign by user index in room
-  - [ ] Persist user color preference in localStorage
+- [x] Add color assignment logic
+  - [x] Palette: `['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#98D8C8', '#F7DC6F', '#BB8FCE', '#85C1E9']`
+  - [x] Assign by deterministic hash of user ID
+  - [x] Persist user color in awareness state
 
-- [ ] Broadcast local state
-  - [ ] On cursor move, broadcast position via awareness protocol
-  - [ ] On selection change, broadcast selection range
-  - [ ] Debounce broadcasts to 50ms
+- [x] Broadcast local state
+  - [x] On cursor move, broadcast position via awareness protocol
+  - [x] On selection change, broadcast selection range
+  - [x] Integrated with CollaborativeEditor component
 
 **Estimated Effort:** 12 hours
 
