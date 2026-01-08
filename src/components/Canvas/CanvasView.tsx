@@ -3,6 +3,8 @@ import type { Note, CanvasPosition } from '../../types/note';
 import { StickyNote, type StickyNoteData } from './StickyNote';
 import { ConnectionLine } from './ConnectionLine';
 import { CanvasGroup, type CanvasGroupData } from './CanvasGroup';
+import { PresenceIndicator } from '../PresenceIndicator';
+import type { Peer } from '../../services/collaboration';
 
 // Re-export CanvasPosition for convenience
 export type { CanvasPosition } from '../../types/note';
@@ -19,6 +21,12 @@ interface CanvasViewProps {
   onAddNote?: () => void;
   onAutoLayout?: (algorithm: 'grid' | 'force') => void;
   selectedNoteIds?: string[];
+  /** Whether collaboration mode is active */
+  collaborationMode?: boolean;
+  /** List of peers in the collaboration room */
+  collaborationPeers?: Peer[];
+  /** Whether connected to the collaboration server */
+  collaborationConnected?: boolean;
 }
 
 interface Viewport {
@@ -129,6 +137,9 @@ export function CanvasView({
   onAddNote,
   onAutoLayout,
   selectedNoteIds = [],
+  collaborationMode = false,
+  collaborationPeers = [],
+  collaborationConnected = false,
 }: CanvasViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasContentRef = useRef<HTMLDivElement>(null);
@@ -903,6 +914,18 @@ export function CanvasView({
         <span className="text-xs text-gray-400 px-2">
           Drag: pan • Scroll: zoom • Alt+drag: group
         </span>
+
+        {/* Collaboration presence indicator */}
+        {collaborationMode && (
+          <>
+            <div className="w-px h-6 bg-gray-200 mx-1" />
+            <PresenceIndicator
+              peers={collaborationPeers}
+              isConnected={collaborationConnected}
+              maxVisible={3}
+            />
+          </>
+        )}
       </div>
     </div>
   );

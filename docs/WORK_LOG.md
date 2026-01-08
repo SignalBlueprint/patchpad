@@ -1,5 +1,28 @@
 # PatchPad Work Log
 
+## Live Collaborative Canvases - Phase 2: Presence Awareness
+**Completed:** 2026-01-08
+
+**Files Changed:**
+- `src/App.tsx` — Added collaboration peer/connection state (`collaborationPeers`, `collaborationConnected`), imported collaboration functions (`onRoomPeersChange`, `onRoomConnectionChange`, `getRoomPeers`, `isRoomConnected`), added useEffect to subscribe to room events, passed collaboration props to CanvasView
+- `src/components/Canvas/CanvasView.tsx` — Extended props interface with `collaborationMode`, `collaborationPeers`, `collaborationConnected`, added PresenceIndicator to toolbar when in collaboration mode
+- `src/components/Editor.tsx` — Extended props interface with collaboration props, imported RemoteCursors and RemoteSelections, added helper functions (`getPositionFromCoords`, `getRangeRects`) for coordinate conversion, integrated cursor/selection change callbacks, rendered RemoteCursors and RemoteSelections overlays
+
+**Implementation Notes:**
+- PresenceIndicator shows collaborator avatars in canvas toolbar with connection status dot
+- RemoteCursors render peer cursor positions in the editor with name labels
+- RemoteSelections highlight peer text selections with their assigned color
+- Editor broadcasts cursor position and selection range on every selection change
+- Uses line/character coordinates for cursors, absolute positions for selections
+- CodeMirror 6 integration via `coordsAtPos` and `lineAt` methods
+
+**Verification:**
+- TypeScript compilation passes for modified files
+- Components render conditionally when `collaborationMode` is true
+- Cursor/selection callbacks wired to editor update listener
+
+---
+
 ## Live Collaborative Canvases - Phase 1: Collaboration Mode Toggle
 **Completed:** 2026-01-08
 

@@ -38,6 +38,13 @@ import { SessionComparison } from './components/SessionComparison';
 import { PublishedGraphsManager } from './components/PublishedGraphsManager';
 import { CollaborationControls } from './components/CollaborationControls';
 import {
+  onRoomPeersChange,
+  onRoomConnectionChange,
+  getRoomPeers,
+  isRoomConnected,
+  type Peer,
+} from './services/collaboration';
+import {
   startRecording,
   stopRecording,
   isRecording,
@@ -161,6 +168,8 @@ export default function App() {
   const [collaborationMode, setCollaborationMode] = useState(false);
   const [collaborationRoomId, setCollaborationRoomId] = useState<string | null>(null);
   const [collaborationControlsOpen, setCollaborationControlsOpen] = useState(false);
+  const [collaborationPeers, setCollaborationPeers] = useState<Peer[]>([]);
+  const [collaborationConnected, setCollaborationConnected] = useState(false);
 
   const sessionTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
@@ -273,6 +282,35 @@ export default function App() {
       });
     }
   }, [secondBrainOpen, dashboardConcepts.length, notes]);
+
+  // Subscribe to collaboration room events
+  useEffect(() => {
+    if (!collaborationMode) {
+      // Reset peer state when leaving collaboration mode
+      setCollaborationPeers([]);
+      setCollaborationConnected(false);
+      return;
+    }
+
+    // Get initial state
+    setCollaborationPeers(getRoomPeers());
+    setCollaborationConnected(isRoomConnected());
+
+    // Subscribe to peer changes
+    const unsubPeers = onRoomPeersChange((peers) => {
+      setCollaborationPeers(peers);
+    });
+
+    // Subscribe to connection changes
+    const unsubConnection = onRoomConnectionChange((connected) => {
+      setCollaborationConnected(connected);
+    });
+
+    return () => {
+      unsubPeers();
+      unsubConnection();
+    };
+  }, [collaborationMode]);
 
   // Handle closing the daily digest
   const handleCloseDigest = useCallback(() => {
@@ -1451,6 +1489,9 @@ export default function App() {
               onAddNote={handleCanvasAddNote}
               onAutoLayout={handleCanvasAutoLayout}
               selectedNoteIds={currentNote ? [currentNote.id] : Array.from(selectedIds)}
+              collaborationMode={collaborationMode}
+              collaborationPeers={collaborationPeers}
+              collaborationConnected={collaborationConnected}
             />
           ) : mainView === 'timeline' ? (
             <TimelineView

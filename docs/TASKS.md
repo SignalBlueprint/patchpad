@@ -150,23 +150,24 @@ PatchPad is a personal knowledge operating system with AI-powered capture, refin
   - Added: `onRoomPeersChange()`, `onRoomConnectionChange()`
   - Added: `getRoomDoc()`, `getRoomCanvasPositions()`
 
-#### Phase 2: Presence Awareness
-- [ ] Wire `src/components/PresenceIndicator.tsx` to show collaborators
-  - Already exists; connect to `useCollaboration` hook
-  - Show avatar circles with initials in canvas header
-  - Tooltip shows full name
+#### Phase 2: Presence Awareness - COMPLETE
+- [x] Wire `src/components/PresenceIndicator.tsx` to show collaborators
+  - Connected to collaboration state in App.tsx
+  - Shows avatar circles with initials in canvas toolbar
+  - Tooltip shows full name, connection status indicator
 
-- [ ] Wire `src/components/RemoteCursor.tsx` to render peer cursors
-  - Already exists; position based on awareness state
-  - Smooth animation on cursor move
+- [x] Wire `src/components/RemoteCursor.tsx` to render peer cursors
+  - Integrated into Editor.tsx with getPositionFromCoords helper
+  - Smooth animation on cursor move via CSS transitions
 
-- [ ] Wire `src/components/RemoteSelection.tsx` for text selections
-  - Already exists; highlight peer selections in editor
+- [x] Wire `src/components/RemoteSelection.tsx` for text selections
+  - Integrated into Editor.tsx with getRangeRects helper
+  - Highlights peer selections with their assigned color
 
-- [ ] Update `src/hooks/useCollaboration.ts`
-  - Broadcast local cursor position on canvas
-  - Subscribe to peer awareness updates
-  - Handle peer connect/disconnect events
+- [x] Update `src/hooks/useCollaboration.ts`
+  - Already supports cursor/selection broadcasting via setCursor/setSelection
+  - Room-level collaboration uses direct functions from collaboration.ts
+  - Peer connect/disconnect handled via onRoomPeersChange subscription
 
 #### Phase 3: Collaborative Canvas
 - [ ] Extend `src/components/Canvas/CanvasView.tsx`
