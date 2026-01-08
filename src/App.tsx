@@ -34,6 +34,7 @@ import { SessionTemplatePicker } from './components/SessionTemplatePicker';
 import { SessionWorkflowGuide } from './components/SessionWorkflowGuide';
 import { SessionLibrary } from './components/SessionLibrary';
 import { SessionPlayer } from './components/SessionPlayer';
+import { SessionComparison } from './components/SessionComparison';
 import {
   startRecording,
   stopRecording,
@@ -151,6 +152,7 @@ export default function App() {
   const [sessionDurationMs, setSessionDurationMs] = useState(0);
   const [workflowGuideCollapsed, setWorkflowGuideCollapsed] = useState(false);
   const [playbackSession, setPlaybackSession] = useState<ThinkingSession | null>(null);
+  const [sessionComparisonOpen, setSessionComparisonOpen] = useState(false);
   const sessionTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -914,6 +916,14 @@ export default function App() {
       category: 'session',
       icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" /></svg>,
       action: () => setSessionLibraryOpen(true),
+    },
+    {
+      id: 'session-compare',
+      name: 'Compare Sessions',
+      description: 'Compare two sessions to see how thinking evolved',
+      category: 'session',
+      icon: <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>,
+      action: () => setSessionComparisonOpen(true),
     },
 
     // AI commands - basic
@@ -1728,6 +1738,13 @@ export default function App() {
         <SessionPlayer
           session={playbackSession}
           onClose={() => setPlaybackSession(null)}
+        />
+      )}
+
+      {/* Session Comparison */}
+      {sessionComparisonOpen && (
+        <SessionComparison
+          onClose={() => setSessionComparisonOpen(false)}
         />
       )}
 

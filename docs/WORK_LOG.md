@@ -2,7 +2,40 @@
 
 ---
 
-## Moonshot Phase 4: Session Templates (Partial)
+## Moonshot Phase 4: Session Comparison
+**Completed:** 2026-01-08
+**Files Changed:**
+- `src/services/sessionComparison.ts` — Session comparison service with analysis functions
+- `src/components/SessionComparison.tsx` — Comparison UI with tabs for overview, timeline, topics, insights
+- `src/App.tsx` — Added session comparison command and dialog state
+
+**Implementation Notes:**
+
+- **Session Comparison Service** (`sessionComparison.ts`):
+  - `compareSessions()` generates comprehensive comparison between two sessions
+  - `StatsComparison` tracks note creation, editing, connections, duration changes
+  - `TimelineComparison` with 5-minute segment analysis and activity patterns
+  - `TopicEvolution` tracks abandoned, new, and expanded topics
+  - `FocusComparison` identifies notes with increased/decreased attention
+  - `generateLearningInsights()` with AI-enhanced summaries
+  - `findRelatedSessions()` to suggest sessions for comparison
+  - `areSessionsRelated()` checks tag and note overlap
+
+- **Session Comparison Component** (`SessionComparison.tsx`):
+  - Session selector with related session suggestions
+  - Four tabs: Overview, Timeline, Topics, Insights
+  - Overview: Stats grid with change indicators, note distribution
+  - Timeline: Color-coded activity segments with pattern analysis
+  - Topics: New/abandoned topics, depth changes, connection visualization
+  - Insights: AI-generated summary, key learnings, questions, recommendations
+  - Assessment badges: significant-progress, iterative-refinement, exploratory, revisiting
+
+**Verification:**
+Component integrated with command palette entry "Compare Sessions".
+
+---
+
+## Moonshot Phase 4: Session Templates
 **Completed:** 2026-01-08
 **Files Changed:**
 - `src/types/sessionTemplate.ts` — Session template types (layout, workflow steps, zones)

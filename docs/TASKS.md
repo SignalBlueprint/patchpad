@@ -1154,10 +1154,10 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
   - [x] "Review" - for going through existing notes
   - [x] Templates set canvas layout and suggested flow
 
-- [ ] Implement session comparison
-  - [ ] Compare two sessions on same topic
-  - [ ] Visualize how thinking evolved
-  - [ ] "What did you learn between sessions?"
+- [x] Implement session comparison
+  - [x] Compare two sessions on same topic
+  - [x] Visualize how thinking evolved
+  - [x] "What did you learn between sessions?"
 
 **Open Questions:**
 - How much session data can be stored before performance issues?
