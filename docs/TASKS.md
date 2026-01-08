@@ -636,22 +636,22 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 #### Phase 1: Pattern Detection
 
-- [ ] Create `src/services/templateDetection.ts`
-  - [ ] Export interface `NotePattern { name, frequency, structure, exampleNoteIds }`
-  - [ ] Export function `detectPatterns(notes: Note[]): NotePattern[]`
+- [x] Create `src/services/templateDetection.ts`
+  - [x] Export interface `NotePattern { name, frequency, structure, exampleNoteIds }`
+  - [x] Export function `detectPatterns(notes: Note[]): NotePattern[]`
     - Analyze note titles for common prefixes ("Meeting:", "Research:", etc.)
     - Analyze content for structural patterns (headers, bullet lists, checkboxes)
     - Group notes with similar structures
     - Return patterns with 3+ occurrences
-  - [ ] Export function `extractStructure(content: string): NoteStructure`
+  - [x] Export function `extractStructure(content: string): NoteStructure`
     - Parse markdown headers
     - Identify bullet point sections
     - Detect code blocks, quotes, etc.
 
-- [ ] Implement pattern matching heuristics
-  - [ ] Title prefix matching: "Meeting with X" → "Meeting" pattern
-  - [ ] Header structure: notes with same H2 headers
-  - [ ] Content length clustering: short (< 200 chars) vs long (> 1000 chars)
+- [x] Implement pattern matching heuristics
+  - [x] Title prefix matching: "Meeting with X" → "Meeting" pattern
+  - [x] Header structure: notes with same H2 headers
+  - [x] Content length clustering: short (< 200 chars) vs long (> 1000 chars)
 
 #### Phase 2: Template System
 

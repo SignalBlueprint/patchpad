@@ -2,6 +2,30 @@
 
 ---
 
+## Template Intelligence Phase 1: Pattern Detection (Horizon 2.3)
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/services/templateDetection.ts` — New service with pattern detection functions: extractStructure() parses markdown features (headers, lists, checkboxes, code blocks, quotes, wiki links), extractTitlePrefix() finds common prefixes ("Meeting:", "Research:", etc.), groupByTitlePrefix() and groupBySimilarStructure() cluster notes, detectPatterns() identifies patterns appearing 3+ times, generateTemplateFromPattern() creates template markdown, matchTitleToPattern() suggests templates for new note titles
+- `src/services/templateDetection.test.ts` — Comprehensive test suite with 33 tests covering structure extraction, title prefix detection, similarity calculation, grouping, pattern detection, template generation, and pattern matching
+
+**Implementation Notes:**
+- NoteStructure interface captures: headers (level + text), hasBulletLists, hasNumberedLists, hasCheckboxes, hasCodeBlocks, hasQuotes, hasWikiLinks, contentLength (short/medium/long), sections (H2 headers)
+- NotePattern interface: name, frequency, structure, exampleNoteIds, titlePrefix, commonTags, avgContentLength
+- Pattern detection works two ways:
+  1. Title prefix grouping: "Meeting: X", "Research: Y" patterns
+  2. Structure similarity: groups notes with similar markdown features (threshold 0.7)
+- Only patterns with 3+ occurrences are returned
+- calculateStructureSimilarity() uses Jaccard similarity for sections plus boolean feature matching
+- generateTemplateFromPattern() creates markdown with {{placeholders}} based on detected structure
+- matchTitleToPattern() matches new titles to existing patterns with confidence scores
+
+**Verification:**
+- All 33 tests pass (`npx vitest run src/services/templateDetection.test.ts`)
+- No type errors in templateDetection files
+- Service is ready for Phase 2 (Template System) and Phase 3 (Template UI) integration
+
+---
+
 ## Knowledge Graph Publishing Phase 1: Static Export (Horizon 2.2)
 **Completed:** 2026-01-07
 **Files Changed:**
