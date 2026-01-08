@@ -243,25 +243,25 @@ PatchPad is a personal knowledge operating system with AI-powered capture, refin
   - Click node to show excerpt popup
   - Share button for social media
 
-#### Phase 2: Publishing Service
-- [ ] Extend `src/services/graphPublishing.ts` (already exists)
+#### Phase 2: Publishing Service - COMPLETE (Pre-existing)
+- [x] Extend `src/services/graphPublishing.ts` (already exists)
   - Verify Supabase tables exist (create if needed)
   - `publishGraph(userId, graphHTML, metadata): Promise<{ slug: string; url: string }>`
   - `getPublishedGraphs(userId): Promise<PublishedGraph[]>`
   - `unpublishGraph(slug): Promise<void>`
   - `incrementViewCount(slug): Promise<void>`
 
-- [ ] Create Supabase migration for `published_graphs` table
+- [x] Create Supabase migration for `published_graphs` table
   - Run SQL from `graphPublishing.ts` GRAPH_PUBLISHING_SQL constant
 
-#### Phase 3: Publishing UI
-- [ ] Extend `src/components/PublishGraphDialog.tsx` (already exists)
+#### Phase 3: Publishing UI - COMPLETE
+- [x] Extend `src/components/PublishGraphDialog.tsx` (already exists)
   - Add "Publish to Web" tab alongside "Download HTML"
   - Show preview of published URL
   - Tag selection for filtered publish
   - Theme selection
 
-- [ ] Extend `src/components/PublishedGraphsManager.tsx` (already exists)
+- [x] Extend `src/components/PublishedGraphsManager.tsx` (already exists - pre-existing implementation)
   - List published graphs with view counts
   - Copy URL button
   - Unpublish button

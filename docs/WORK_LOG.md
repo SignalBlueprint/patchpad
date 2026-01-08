@@ -1,5 +1,40 @@
 # PatchPad Work Log
 
+## Knowledge Graph Publishing - Phase 3: Publishing UI
+**Completed:** 2026-01-08
+
+**Files Changed:**
+- `src/components/PublishGraphDialog.tsx` — Added "Publish to Web" tab with title, description, slug inputs; publish success state with URL display; conditional footer with Download/Publish buttons
+
+**Implementation Notes:**
+- Tab bar switches between "Download HTML" and "Publish to Web" modes
+- Publish form includes: title (required), description, custom slug (optional)
+- Slug auto-generates from title if not provided
+- Error handling with user-friendly messages
+- Success state shows published URL with copy and open buttons
+- Form state resets on close
+- PublishedGraphsManager already had full implementation (list, copy URL, unpublish, analytics)
+
+**Verification:**
+- TypeScript compilation passes for modified files
+- Publish flow integrates with existing graphPublishing service
+
+---
+
+## Knowledge Graph Publishing - Phase 2: Publishing Service (Pre-existing)
+**Status:** Already implemented
+
+**Pre-existing Implementation:**
+- `src/services/graphPublishing.ts` already contained:
+  - `publishGraph()`, `getUserGraphs()`, `getGraphBySlug()`, `unpublishGraph()`
+  - Auto-increment view count in `getGraphBySlug()`
+  - Rate limiting (10 publishes/day)
+  - Storage limiting (10MB)
+  - Supabase and localStorage fallback
+  - `GRAPH_PUBLISHING_SQL` with table definitions
+
+---
+
 ## Knowledge Graph Publishing - Phase 1: Graph Export Enhancement
 **Completed:** 2026-01-08
 
