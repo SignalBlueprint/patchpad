@@ -251,7 +251,7 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 #### Phase 3: Quick Brief Generation
 
-- [ ] Add `generateInsightBrief()` to `src/services/researchPartner.ts`
+- [x] Add `generateInsightBrief()` to `src/services/researchPartner.ts`
   ```typescript
   async function generateInsightBrief(topic: string, conversations: Conversation[]): Promise<string>
   ```
@@ -260,10 +260,10 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
   - Synthesize into cohesive brief
   - Include citations to original conversations
 
-- [ ] Add "Create Brief from Questions" action
-  - [ ] In InsightsPanel, button on frequently-asked topics
-  - [ ] Calls `generateInsightBrief()` then `createNote()`
-  - [ ] Auto-tags note with "insight-brief"
+- [x] Add "Create Brief from Questions" action
+  - [x] In InsightsPanel, button on frequently-asked topics
+  - [x] Calls `generateInsightBrief()` then `createNote()`
+  - [x] Auto-tags note with "insight-brief"
 
 #### Phase 4: Integration
 

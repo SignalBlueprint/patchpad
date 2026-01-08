@@ -2,6 +2,33 @@
 
 ---
 
+## Conversation Insights Phase 3: Quick Brief Generation (Horizon 1.3)
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/services/researchPartner.ts` — Added `generateInsightBrief()` function that filters conversations by topic, extracts AI responses, and synthesizes a cohesive brief with conversation citations; Added `insightBriefToNoteContent()` helper to format briefs as notes with `insight-brief` and `ai-generated` tags
+- `src/components/ResearchPartner/InsightsPanel.tsx` — Added `onCreateNote` prop, `generatingBrief` state, `handleCreateBrief()` handler; Updated TopicCard with "Brief" button that appears on hover; Updated QuestionCard with "Create Brief" button for frequently-asked questions (count >= 2)
+- `src/components/ResearchPartner/ChatInterface.tsx` — Passed `onCreateNote` prop to InsightsPanel
+
+**Implementation Notes:**
+- `generateInsightBrief()` filters conversations containing the topic in any message
+- Extracts assistant messages mentioning the topic for synthesis
+- Uses GPT-4o-mini to generate a structured brief with summary, key points, questions asked, and follow-up suggestions
+- Brief includes conversation citations with titles and excerpts
+- "Brief" button on TopicCard appears on hover with loading state
+- "Create Brief" button on QuestionCard appears for questions asked 2+ times
+- Question card extracts topic from question by removing common question words (what, how, why, etc.)
+- Notes created with `insight-brief` tag for easy filtering
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- All tests pass (`npx vitest run`)
+- All acceptance criteria for Phase 3 met:
+  - generateInsightBrief synthesizes topic from conversations
+  - Button on frequently-asked topics in InsightsPanel
+  - Auto-tags note with "insight-brief"
+
+---
+
 ## Real-time Collaboration Phase 1: Shareable Links (Horizon 2.1)
 **Completed:** 2026-01-07
 **Files Changed:**

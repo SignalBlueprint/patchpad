@@ -633,6 +633,7 @@ export function ChatInterface({ isOpen, onClose, notes, onSelectNote, onCreateNo
         onClose={() => setShowInsights(false)}
         conversations={conversations}
         onSelectConversation={handleSelectConversation}
+        onCreateNote={onCreateNote}
       />
     </div>
   );

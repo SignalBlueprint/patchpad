@@ -856,6 +856,134 @@ export function updateKnowledgeFact(factId: string, newFact: string): void {
 }
 
 /**
+ * Generate an insight brief from conversations about a specific topic
+ * Phase 3: Quick Brief Generation
+ */
+export async function generateInsightBrief(
+  topic: string,
+  conversations: Conversation[]
+): Promise<{ brief: string; conversationCitations: { id: string; title: string; excerpt: string }[] }> {
+  const apiKey = getOpenAIKey();
+  if (!apiKey) {
+    throw new Error('OpenAI API key not configured');
+  }
+
+  // Filter conversations that mention the topic
+  const topicLower = topic.toLowerCase();
+  const relevantConversations = conversations.filter(conv => {
+    const allText = conv.messages.map(m => m.content).join(' ').toLowerCase();
+    return allText.includes(topicLower);
+  });
+
+  if (relevantConversations.length === 0) {
+    return {
+      brief: `No conversations found about "${topic}". Ask a question about this topic first.`,
+      conversationCitations: [],
+    };
+  }
+
+  // Extract AI responses about the topic
+  const conversationCitations: { id: string; title: string; excerpt: string }[] = [];
+  const excerpts: string[] = [];
+
+  for (const conv of relevantConversations.slice(0, 10)) {
+    // Get assistant messages that might be about the topic
+    const assistantMessages = conv.messages.filter(m => m.role === 'assistant');
+    for (const msg of assistantMessages) {
+      if (msg.content.toLowerCase().includes(topicLower)) {
+        excerpts.push(`[From: ${conv.title}]\n${msg.content.slice(0, 800)}`);
+
+        // Add citation if not already added
+        if (!conversationCitations.find(c => c.id === conv.id)) {
+          conversationCitations.push({
+            id: conv.id,
+            title: conv.title,
+            excerpt: msg.content.slice(0, 150) + '...',
+          });
+        }
+      }
+    }
+  }
+
+  if (excerpts.length === 0) {
+    return {
+      brief: `Found conversations mentioning "${topic}" but no AI responses about it.`,
+      conversationCitations: [],
+    };
+  }
+
+  const context = excerpts.join('\n\n---\n\n');
+
+  // Generate synthesized brief
+  const response = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [
+        {
+          role: 'system',
+          content: `You are a knowledge synthesizer. Create a concise brief that summarizes what was discussed about a topic across multiple conversations.
+
+Include:
+1. **Summary**: What the user has learned about this topic
+2. **Key Points**: Important information mentioned
+3. **Questions Asked**: What questions led to these insights
+4. **Follow-up Suggestions**: What else the user might want to explore
+
+Use markdown formatting. Reference source conversations as [Conversation: Title].`,
+        },
+        {
+          role: 'user',
+          content: `Create an insight brief about "${topic}" from these conversation excerpts:\n\n${context}`,
+        },
+      ],
+      temperature: 0.7,
+      max_tokens: 1200,
+    }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error?.message || 'Failed to generate insight brief');
+  }
+
+  const data = await response.json();
+  const brief = data.choices[0]?.message?.content || 'Failed to generate brief.';
+
+  return { brief, conversationCitations };
+}
+
+/**
+ * Create a note from an insight brief
+ */
+export function insightBriefToNoteContent(
+  topic: string,
+  brief: string,
+  conversationCitations: { id: string; title: string; excerpt: string }[]
+): { title: string; content: string; tags: string[] } {
+  const title = `Insight Brief: ${topic}`;
+
+  let content = `# ${title}\n\n`;
+  content += `*Generated on ${new Date().toLocaleDateString()} from ${conversationCitations.length} conversation${conversationCitations.length !== 1 ? 's' : ''}*\n\n`;
+  content += brief;
+
+  if (conversationCitations.length > 0) {
+    content += '\n\n---\n\n## Source Conversations\n\n';
+    content += conversationCitations.map(c => `- **${c.title}**: "${c.excerpt}"`).join('\n');
+  }
+
+  return {
+    title,
+    content,
+    tags: ['insight-brief', 'ai-generated'],
+  };
+}
+
+/**
  * Reference past conversations in context
  */
 export async function getConversationContext(

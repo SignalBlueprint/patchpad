@@ -8,6 +8,10 @@
 import { useState, useEffect, useMemo } from 'react';
 import type { Conversation } from '../../services/researchPartner';
 import {
+  generateInsightBrief,
+  insightBriefToNoteContent,
+} from '../../services/researchPartner';
+import {
   type QuestionSummary,
   type TopicCount,
   type KnowledgeGap,
@@ -22,6 +26,7 @@ interface InsightsPanelProps {
   onClose: () => void;
   conversations: Conversation[];
   onSelectConversation?: (id: string) => void;
+  onCreateNote?: (title: string, content: string, tags: string[]) => void;
 }
 
 type Tab = 'questions' | 'topics' | 'gaps' | 'activity';
@@ -31,11 +36,13 @@ export function InsightsPanel({
   onClose,
   conversations,
   onSelectConversation,
+  onCreateNote,
 }: InsightsPanelProps) {
   const [activeTab, setActiveTab] = useState<Tab>('questions');
   const [insights, setInsights] = useState<ConversationInsights | null>(null);
   const [activity, setActivity] = useState<DailyActivity[]>([]);
   const [loading, setLoading] = useState(false);
+  const [generatingBrief, setGeneratingBrief] = useState<string | null>(null);
 
   // Load insights when panel opens
   useEffect(() => {
@@ -57,6 +64,22 @@ export function InsightsPanel({
   const maxActivityCount = useMemo(() => {
     return Math.max(...activity.map(a => a.count), 1);
   }, [activity]);
+
+  // Handle creating a brief from a topic
+  async function handleCreateBrief(topic: string) {
+    if (!onCreateNote || generatingBrief) return;
+
+    setGeneratingBrief(topic);
+    try {
+      const { brief, conversationCitations } = await generateInsightBrief(topic, conversations);
+      const noteContent = insightBriefToNoteContent(topic, brief, conversationCitations);
+      onCreateNote(noteContent.title, noteContent.content, noteContent.tags);
+    } catch (err) {
+      console.error('Failed to generate brief:', err);
+    } finally {
+      setGeneratingBrief(null);
+    }
+  }
 
   if (!isOpen) return null;
 
@@ -178,6 +201,8 @@ export function InsightsPanel({
                       question={q}
                       rank={i + 1}
                       onSelectConversation={onSelectConversation}
+                      onCreateBrief={onCreateNote ? handleCreateBrief : undefined}
+                      isGenerating={generatingBrief === q.question}
                     />
                   ))
                 )}
@@ -191,7 +216,12 @@ export function InsightsPanel({
                   <p className="text-sm text-gray-500 text-center py-4">No topics found</p>
                 ) : (
                   insights.topTopics.map((topic, i) => (
-                    <TopicCard key={i} topic={topic} />
+                    <TopicCard
+                      key={i}
+                      topic={topic}
+                      onCreateBrief={onCreateNote ? handleCreateBrief : undefined}
+                      isGenerating={generatingBrief === topic.topic}
+                    />
                   ))
                 )}
               </div>
@@ -289,12 +319,30 @@ function QuestionCard({
   question,
   rank,
   onSelectConversation,
+  onCreateBrief,
+  isGenerating,
 }: {
   question: QuestionSummary;
   rank: number;
   onSelectConversation?: (id: string) => void;
+  onCreateBrief?: (topic: string) => void;
+  isGenerating?: boolean;
 }) {
   const [expanded, setExpanded] = useState(false);
+
+  // Extract key terms from the question for the brief topic
+  function getBriefTopic(): string {
+    // Try to extract the main subject from the question
+    const q = question.question.toLowerCase();
+    // Remove common question words
+    const cleaned = q
+      .replace(/^(what|how|why|when|where|who|can|could|would|should|do|does|did|is|are|was|were|has|have|had)\s+(is|are|was|were|do|does|did|i|you|we|they|it|the|a|an|my|your)?\s*/gi, '')
+      .replace(/\?$/g, '')
+      .trim();
+    // Take first few words as topic
+    const words = cleaned.split(/\s+/).slice(0, 4);
+    return words.join(' ') || question.question.slice(0, 30);
+  }
 
   return (
     <div className="bg-gray-50 rounded-lg p-3 border border-gray-100">
@@ -304,7 +352,7 @@ function QuestionCard({
         </div>
         <div className="flex-1 min-w-0">
           <p className="text-sm text-gray-800 line-clamp-2">{question.question}</p>
-          <div className="flex items-center gap-2 mt-1">
+          <div className="flex items-center gap-2 mt-1 flex-wrap">
             <span className="text-xs text-gray-500">
               Asked {question.count}x
             </span>
@@ -314,6 +362,20 @@ function QuestionCard({
                 className="text-xs text-indigo-600 hover:text-indigo-700"
               >
                 {expanded ? 'Hide' : 'Show'} conversations
+              </button>
+            )}
+            {onCreateBrief && question.count >= 2 && (
+              <button
+                onClick={() => onCreateBrief(getBriefTopic())}
+                disabled={isGenerating}
+                className={`text-xs px-2 py-0.5 rounded ${
+                  isGenerating
+                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                    : 'bg-purple-100 text-purple-600 hover:bg-purple-200'
+                }`}
+                title="Create insight brief about this frequently-asked question"
+              >
+                {isGenerating ? 'Creating...' : 'Create Brief'}
               </button>
             )}
           </div>
@@ -336,12 +398,20 @@ function QuestionCard({
   );
 }
 
-function TopicCard({ topic }: { topic: TopicCount }) {
+function TopicCard({
+  topic,
+  onCreateBrief,
+  isGenerating,
+}: {
+  topic: TopicCount;
+  onCreateBrief?: (topic: string) => void;
+  isGenerating?: boolean;
+}) {
   const maxWidth = 100;
   const barWidth = Math.min((topic.count / 10) * maxWidth, maxWidth);
 
   return (
-    <div className="flex items-center gap-3 py-1.5">
+    <div className="flex items-center gap-3 py-1.5 group">
       <div className="flex-1 min-w-0">
         <span className="text-sm font-medium text-gray-700 capitalize">{topic.topic}</span>
       </div>
@@ -354,6 +424,30 @@ function TopicCard({ topic }: { topic: TopicCount }) {
         </div>
         <span className="text-xs text-gray-500 w-6 text-right">{topic.count}</span>
       </div>
+      {onCreateBrief && (
+        <button
+          onClick={() => onCreateBrief(topic.topic)}
+          disabled={isGenerating}
+          className={`opacity-0 group-hover:opacity-100 transition-opacity px-2 py-0.5 text-xs rounded ${
+            isGenerating
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              : 'bg-indigo-100 text-indigo-600 hover:bg-indigo-200'
+          }`}
+          title="Create insight brief from conversations about this topic"
+        >
+          {isGenerating ? (
+            <span className="flex items-center gap-1">
+              <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Creating...
+            </span>
+          ) : (
+            'Brief'
+          )}
+        </button>
+      )}
     </div>
   );
 }
