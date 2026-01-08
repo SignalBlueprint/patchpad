@@ -35,6 +35,38 @@ export interface PatternMatch {
   confidence: number; // 0-1
 }
 
+// Types for Phase 1: Pattern Detection Enhancement
+
+export interface TitlePattern {
+  prefix: string;
+  count: number;
+  noteIds: string[];
+  format: 'colon' | 'dash' | 'bracket';
+}
+
+export interface StructurePattern {
+  name: string;
+  sections: string[];
+  features: {
+    hasBulletLists: boolean;
+    hasNumberedLists: boolean;
+    hasCheckboxes: boolean;
+    hasCodeBlocks: boolean;
+    hasQuotes: boolean;
+  };
+  count: number;
+  noteIds: string[];
+}
+
+export interface TemplateSuggestion {
+  title: string;
+  description: string;
+  templateContent: string;
+  confidence: number; // 0-1
+  basedOnNotes: number;
+  sourcePattern: 'title' | 'structure' | 'combined';
+}
+
 /**
  * Extract structural information from note content
  */
@@ -491,4 +523,270 @@ export function matchTitleToPattern(title: string, patterns: NotePattern[]): Pat
   }
 
   return null;
+}
+
+// =============================================================================
+// Phase 1: Pattern Detection Enhancement Functions
+// =============================================================================
+
+/**
+ * Detect title prefix patterns in notes
+ * Returns patterns like "Meeting:", "Research:", "[WIP]"
+ */
+export function detectTitlePatterns(notes: Note[]): TitlePattern[] {
+  const patterns: TitlePattern[] = [];
+  const prefixGroups = new Map<string, { noteIds: string[]; format: 'colon' | 'dash' | 'bracket' }>();
+
+  for (const note of notes) {
+    const title = note.title;
+
+    // Check colon format: "Prefix: Rest"
+    const colonMatch = title.match(/^([A-Za-z]+):\s+/);
+    if (colonMatch) {
+      const prefix = colonMatch[1];
+      const existing = prefixGroups.get(prefix) || { noteIds: [], format: 'colon' as const };
+      existing.noteIds.push(note.id);
+      prefixGroups.set(prefix, existing);
+      continue;
+    }
+
+    // Check dash format: "Prefix - Rest"
+    const dashMatch = title.match(/^([A-Za-z]+)\s+-\s+/);
+    if (dashMatch) {
+      const prefix = dashMatch[1];
+      const existing = prefixGroups.get(prefix) || { noteIds: [], format: 'dash' as const };
+      existing.noteIds.push(note.id);
+      prefixGroups.set(prefix, existing);
+      continue;
+    }
+
+    // Check bracket format: "[Prefix] Rest"
+    const bracketMatch = title.match(/^\[([A-Za-z]+)\]\s+/);
+    if (bracketMatch) {
+      const prefix = bracketMatch[1];
+      const existing = prefixGroups.get(prefix) || { noteIds: [], format: 'bracket' as const };
+      existing.noteIds.push(note.id);
+      prefixGroups.set(prefix, existing);
+    }
+  }
+
+  // Convert to array, filter by minimum count (3+)
+  for (const [prefix, data] of prefixGroups) {
+    if (data.noteIds.length >= 3) {
+      patterns.push({
+        prefix,
+        count: data.noteIds.length,
+        noteIds: data.noteIds,
+        format: data.format
+      });
+    }
+  }
+
+  // Sort by count descending
+  patterns.sort((a, b) => b.count - a.count);
+
+  return patterns;
+}
+
+/**
+ * Detect structure patterns in notes (common header sequences)
+ * Returns patterns based on section headers and content features
+ */
+export function detectStructurePatterns(notes: Note[]): StructurePattern[] {
+  const patterns: StructurePattern[] = [];
+
+  // Group notes by their structure signature
+  const structureGroups = new Map<string, { noteIds: string[]; structure: NoteStructure }>();
+
+  for (const note of notes) {
+    const structure = extractStructure(note.content);
+
+    // Create a signature from the structure
+    const sectionsKey = structure.sections.map(s => s.toLowerCase()).sort().join('|');
+    const featuresKey = [
+      structure.hasBulletLists ? 'b' : '',
+      structure.hasNumberedLists ? 'n' : '',
+      structure.hasCheckboxes ? 'c' : '',
+      structure.hasCodeBlocks ? 'k' : '',
+      structure.hasQuotes ? 'q' : ''
+    ].filter(Boolean).join('');
+
+    const signature = `${sectionsKey}:${featuresKey}:${structure.contentLength}`;
+
+    const existing = structureGroups.get(signature);
+    if (existing) {
+      existing.noteIds.push(note.id);
+    } else {
+      structureGroups.set(signature, { noteIds: [note.id], structure });
+    }
+  }
+
+  // Convert to patterns (minimum 3 notes)
+  for (const [_, data] of structureGroups) {
+    if (data.noteIds.length >= 3) {
+      const structure = data.structure;
+
+      // Generate name based on structure
+      let name = 'General Notes';
+      if (structure.sections.length > 0) {
+        name = `${structure.sections.slice(0, 2).join(' / ')} Structure`;
+      } else if (structure.hasCheckboxes) {
+        name = 'Task Lists';
+      } else if (structure.hasCodeBlocks) {
+        name = 'Code Documentation';
+      } else if (structure.hasBulletLists) {
+        name = 'Bullet Point Notes';
+      } else if (structure.hasNumberedLists) {
+        name = 'Sequential Notes';
+      } else if (structure.contentLength === 'short') {
+        name = 'Quick Notes';
+      } else if (structure.contentLength === 'long') {
+        name = 'Long-form Content';
+      }
+
+      patterns.push({
+        name,
+        sections: structure.sections,
+        features: {
+          hasBulletLists: structure.hasBulletLists,
+          hasNumberedLists: structure.hasNumberedLists,
+          hasCheckboxes: structure.hasCheckboxes,
+          hasCodeBlocks: structure.hasCodeBlocks,
+          hasQuotes: structure.hasQuotes
+        },
+        count: data.noteIds.length,
+        noteIds: data.noteIds
+      });
+    }
+  }
+
+  // Sort by count descending
+  patterns.sort((a, b) => b.count - a.count);
+
+  return patterns;
+}
+
+/**
+ * Suggest a template based on detected patterns
+ * Returns the best template suggestion with confidence score
+ */
+export function suggestTemplateFromPatterns(
+  titlePatterns: TitlePattern[],
+  structurePatterns: StructurePattern[]
+): TemplateSuggestion | null {
+  // Find the strongest pattern
+  const allPatterns: { type: 'title' | 'structure'; pattern: TitlePattern | StructurePattern }[] = [
+    ...titlePatterns.map(p => ({ type: 'title' as const, pattern: p })),
+    ...structurePatterns.map(p => ({ type: 'structure' as const, pattern: p }))
+  ];
+
+  if (allPatterns.length === 0) {
+    return null;
+  }
+
+  // Sort by count
+  allPatterns.sort((a, b) => b.pattern.count - a.pattern.count);
+
+  const best = allPatterns[0];
+  const count = best.pattern.count;
+
+  // Calculate confidence based on count
+  // 3-5 notes: low confidence (0.5-0.6)
+  // 6-10 notes: medium confidence (0.7-0.8)
+  // 11+ notes: high confidence (0.9)
+  let confidence: number;
+  if (count <= 5) {
+    confidence = 0.5 + (count - 3) * 0.05;
+  } else if (count <= 10) {
+    confidence = 0.6 + (count - 5) * 0.04;
+  } else {
+    confidence = 0.9;
+  }
+
+  if (best.type === 'title') {
+    const titlePattern = best.pattern as TitlePattern;
+
+    // Format prefix based on format type
+    let titleTemplate: string;
+    switch (titlePattern.format) {
+      case 'colon':
+        titleTemplate = `${titlePattern.prefix}: {{title}}`;
+        break;
+      case 'dash':
+        titleTemplate = `${titlePattern.prefix} - {{title}}`;
+        break;
+      case 'bracket':
+        titleTemplate = `[${titlePattern.prefix}] {{title}}`;
+        break;
+    }
+
+    const templateContent = `# ${titleTemplate}
+
+## Overview
+
+
+
+## Details
+
+
+
+## Notes
+
+- `;
+
+    return {
+      title: `${titlePattern.prefix} Template`,
+      description: `You have ${count} notes starting with "${titlePattern.prefix}". Create a template for them?`,
+      templateContent,
+      confidence,
+      basedOnNotes: count,
+      sourcePattern: 'title'
+    };
+  } else {
+    const structurePattern = best.pattern as StructurePattern;
+
+    // Generate template content
+    const lines: string[] = ['# {{title}}', ''];
+
+    if (structurePattern.sections.length > 0) {
+      for (const section of structurePattern.sections) {
+        lines.push(`## ${section}`);
+        lines.push('');
+        if (structurePattern.features.hasBulletLists) {
+          lines.push('- ');
+        } else if (structurePattern.features.hasCheckboxes) {
+          lines.push('- [ ] ');
+        }
+        lines.push('');
+      }
+    } else {
+      if (structurePattern.features.hasCheckboxes) {
+        lines.push('## Tasks');
+        lines.push('');
+        lines.push('- [ ] ');
+        lines.push('');
+      } else if (structurePattern.features.hasBulletLists) {
+        lines.push('## Notes');
+        lines.push('');
+        lines.push('- ');
+        lines.push('');
+      } else if (structurePattern.features.hasCodeBlocks) {
+        lines.push('## Code');
+        lines.push('');
+        lines.push('```');
+        lines.push('');
+        lines.push('```');
+        lines.push('');
+      }
+    }
+
+    return {
+      title: structurePattern.name,
+      description: `You have ${count} notes with similar structure. Create a template for them?`,
+      templateContent: lines.join('\n'),
+      confidence,
+      basedOnNotes: count,
+      sourcePattern: 'structure'
+    };
+  }
 }

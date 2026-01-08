@@ -14,6 +14,10 @@ import type {
   CanvasSnapshot,
   SessionAnnotation,
   SessionStats,
+  CollaborationPeer,
+  PeerJoinPayload,
+  PeerLeavePayload,
+  ChatMessagePayload,
 } from '../types/session';
 
 const SESSIONS_STORAGE_KEY = 'patchpad_sessions';
@@ -100,6 +104,9 @@ interface StartRecordingOptions {
   templateId?: string;
   templateName?: string;
   autoTags?: string[];
+  // Collaboration options
+  isCollaborative?: boolean;
+  collaborationRoomId?: string;
 }
 
 /**
@@ -135,6 +142,11 @@ export function startRecording(
     templateId: opts.templateId,
     templateName: opts.templateName,
     currentWorkflowStep: opts.templateId ? 0 : undefined,
+    // Collaboration metadata
+    isCollaborative: opts.isCollaborative || false,
+    collaborationRoomId: opts.collaborationRoomId,
+    collaborationPeers: [],
+    chatMessageCount: 0,
   };
 
   eventBuffer = [];
@@ -329,7 +341,7 @@ export function updateWorkflowStep(stepIndex: number): void {
 export function getSessionStats(session: ThinkingSession): SessionStats {
   const events = session.events;
 
-  return {
+  const stats: SessionStats = {
     totalEvents: events.length,
     notesMoved: events.filter((e) => e.type === 'note-move').length,
     notesCreated: events.filter((e) => e.type === 'note-create').length,
@@ -338,6 +350,16 @@ export function getSessionStats(session: ThinkingSession): SessionStats {
     aiQueries: events.filter((e) => e.type === 'ai-query').length,
     durationMs: session.durationMs,
   };
+
+  // Add collaboration stats if this was a collaborative session
+  if (session.isCollaborative) {
+    stats.peerJoins = events.filter((e) => e.type === 'peer-join').length;
+    stats.peerLeaves = events.filter((e) => e.type === 'peer-leave').length;
+    stats.chatMessages = events.filter((e) => e.type === 'chat-message').length;
+    stats.uniquePeers = session.collaborationPeers?.length || 0;
+  }
+
+  return stats;
 }
 
 /**
@@ -398,6 +420,104 @@ export function recoverActiveSession(): ThinkingSession | null {
 
   localStorage.removeItem(ACTIVE_SESSION_KEY);
   return null;
+}
+
+// =============================================================================
+// Collaboration Event Recording
+// =============================================================================
+
+/**
+ * Record a peer joining the collaboration session
+ */
+export function recordPeerJoin(peerId: string, peerName: string, peerColor: string): void {
+  if (!activeSession || !activeSession.isCollaborative) return;
+
+  const payload: PeerJoinPayload = { peerId, peerName, peerColor };
+  recordEvent('peer-join', payload);
+
+  // Add to peer list if not already present
+  if (!activeSession.collaborationPeers) {
+    activeSession.collaborationPeers = [];
+  }
+
+  const existingPeer = activeSession.collaborationPeers.find(p => p.id === peerId);
+  if (!existingPeer) {
+    const peer: CollaborationPeer = {
+      id: peerId,
+      name: peerName,
+      color: peerColor,
+      joinedAt: Date.now() - sessionStartTime,
+    };
+    activeSession.collaborationPeers.push(peer);
+  }
+}
+
+/**
+ * Record a peer leaving the collaboration session
+ */
+export function recordPeerLeave(peerId: string, peerName: string): void {
+  if (!activeSession || !activeSession.isCollaborative) return;
+
+  const payload: PeerLeavePayload = { peerId, peerName };
+  recordEvent('peer-leave', payload);
+
+  // Update peer's leftAt timestamp
+  if (activeSession.collaborationPeers) {
+    const peer = activeSession.collaborationPeers.find(p => p.id === peerId);
+    if (peer && !peer.leftAt) {
+      peer.leftAt = Date.now() - sessionStartTime;
+    }
+  }
+}
+
+/**
+ * Record a chat message sent during collaboration
+ */
+export function recordChatMessage(
+  messageId: string,
+  senderId: string,
+  senderName: string,
+  content: string
+): void {
+  if (!activeSession || !activeSession.isCollaborative) return;
+
+  const payload: ChatMessagePayload = { messageId, senderId, senderName, content };
+  recordEvent('chat-message', payload);
+
+  // Increment chat message count
+  if (activeSession.chatMessageCount === undefined) {
+    activeSession.chatMessageCount = 0;
+  }
+  activeSession.chatMessageCount++;
+}
+
+/**
+ * Enable collaboration mode for the current session
+ * Can be called after session starts if collaboration is enabled mid-session
+ */
+export function enableCollaborationMode(roomId: string): void {
+  if (!activeSession) return;
+
+  activeSession.isCollaborative = true;
+  activeSession.collaborationRoomId = roomId;
+  if (!activeSession.collaborationPeers) {
+    activeSession.collaborationPeers = [];
+  }
+  flushEvents(); // Persist change
+}
+
+/**
+ * Check if the current session is collaborative
+ */
+export function isCollaborativeSession(): boolean {
+  return activeSession?.isCollaborative || false;
+}
+
+/**
+ * Get collaboration peers from the current session
+ */
+export function getCollaborationPeers(): CollaborationPeer[] {
+  return activeSession?.collaborationPeers || [];
 }
 
 /**

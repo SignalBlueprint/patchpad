@@ -12,6 +12,9 @@ import { LinkPreviewCard } from './LinkPreviewCard';
 import { useLinkSuggestions, type LinkSuggestion } from '../hooks/useLinkSuggestions';
 import { LinkSuggestionToast } from './LinkSuggestionToast';
 import { AudioPlaybackButton } from './AudioPlaybackButton';
+import { RemoteCursors } from './RemoteCursor';
+import { RemoteSelections } from './RemoteSelection';
+import type { Peer } from '../services/collaboration';
 
 interface EditorProps {
   note: Note | null;
@@ -23,6 +26,16 @@ interface EditorProps {
   allNotes?: Note[];
   onShare?: () => void;
   isSyncEnabled?: boolean;
+  /** Whether collaboration is active for this note */
+  collaborationActive?: boolean;
+  /** Peers currently editing this note */
+  collaborationPeers?: Peer[];
+  /** Whether connected to collaboration server */
+  collaborationConnected?: boolean;
+  /** Callback when local cursor changes */
+  onCursorChange?: (cursor: { line: number; ch: number } | null) => void;
+  /** Callback when local selection changes */
+  onSelectionRangeChange?: (selection: { from: number; to: number } | null) => void;
 }
 
 // Line height for text alignment with dot grid
@@ -260,7 +273,23 @@ const highlightsField = StateField.define<DecorationSet>({
   provide: f => EditorView.decorations.from(f),
 });
 
-export function Editor({ note, onSave, showPreview, onTogglePreview, onSelectionChange, onWikiLinkClick, allNotes = [], onShare, isSyncEnabled = false, editorContainerRef }: EditorProps & { editorContainerRef?: React.RefObject<HTMLDivElement> }) {
+export function Editor({
+  note,
+  onSave,
+  showPreview,
+  onTogglePreview,
+  onSelectionChange,
+  onWikiLinkClick,
+  allNotes = [],
+  onShare,
+  isSyncEnabled = false,
+  editorContainerRef,
+  collaborationActive = false,
+  collaborationPeers = [],
+  collaborationConnected = false,
+  onCursorChange,
+  onSelectionRangeChange,
+}: EditorProps & { editorContainerRef?: React.RefObject<HTMLDivElement> }) {
   const editorRef = useRef<HTMLDivElement>(null);
   const viewRef = useRef<EditorView | null>(null);
   const [showLineNumbers, setShowLineNumbers] = useState(true);
@@ -398,13 +427,23 @@ export function Editor({ note, onSave, showPreview, onTogglePreview, onSelection
       }
 
       // Handle selection changes
-      if (update.selectionSet && onSelectionChange) {
+      if (update.selectionSet) {
         const selection = update.state.selection.main;
         if (selection.from !== selection.to) {
           const text = update.state.doc.sliceString(selection.from, selection.to);
-          onSelectionChange({ from: selection.from, to: selection.to, text });
+          onSelectionChange?.({ from: selection.from, to: selection.to, text });
+          // Broadcast selection range for collaboration
+          onSelectionRangeChange?.({ from: selection.from, to: selection.to });
         } else {
-          onSelectionChange(null);
+          onSelectionChange?.(null);
+          onSelectionRangeChange?.(null);
+        }
+
+        // Broadcast cursor position for collaboration
+        if (onCursorChange) {
+          const pos = selection.head;
+          const line = update.state.doc.lineAt(pos);
+          onCursorChange({ line: line.number, ch: pos - line.from });
         }
       }
     });
@@ -607,6 +646,70 @@ export function Editor({ note, onSave, showPreview, onTogglePreview, onSelection
     });
   }, []);
 
+  // Get pixel position from line/ch coordinates (for RemoteCursor)
+  const getPositionFromCoords = useCallback((line: number, ch: number): { top: number; left: number } | null => {
+    if (!viewRef.current || !editorRef.current) return null;
+
+    const view = viewRef.current;
+    const doc = view.state.doc;
+
+    // Convert line/ch to absolute position
+    if (line < 1 || line > doc.lines) return null;
+    const lineStart = doc.line(line).from;
+    const pos = Math.min(lineStart + ch, doc.line(line).to);
+
+    // Get coordinates from CodeMirror
+    const coords = view.coordsAtPos(pos);
+    if (!coords) return null;
+
+    // Get container position
+    const containerRect = editorRef.current.getBoundingClientRect();
+
+    return {
+      top: coords.top - containerRect.top,
+      left: coords.left - containerRect.left,
+    };
+  }, []);
+
+  // Get DOMRects for a character range (for RemoteSelection)
+  const getRangeRects = useCallback((from: number, to: number): DOMRect[] => {
+    if (!viewRef.current) return [];
+
+    const view = viewRef.current;
+    const doc = view.state.doc;
+
+    // Clamp range to document length
+    const clampedFrom = Math.max(0, Math.min(from, doc.length));
+    const clampedTo = Math.max(0, Math.min(to, doc.length));
+
+    if (clampedFrom >= clampedTo) return [];
+
+    // Get all rectangles for the range
+    const rects: DOMRect[] = [];
+    const lineFrom = doc.lineAt(clampedFrom);
+    const lineTo = doc.lineAt(clampedTo);
+
+    for (let lineNum = lineFrom.number; lineNum <= lineTo.number; lineNum++) {
+      const line = doc.line(lineNum);
+      const lineStart = Math.max(clampedFrom, line.from);
+      const lineEnd = Math.min(clampedTo, line.to);
+
+      const startCoords = view.coordsAtPos(lineStart);
+      const endCoords = view.coordsAtPos(lineEnd);
+
+      if (startCoords && endCoords) {
+        rects.push(new DOMRect(
+          startCoords.left,
+          startCoords.top,
+          endCoords.left - startCoords.left,
+          startCoords.bottom - startCoords.top
+        ));
+      }
+    }
+
+    return rects;
+  }, []);
+
   if (!note) {
     return (
       <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-50 to-gray-100 text-gray-400">
@@ -728,12 +831,32 @@ export function Editor({ note, onSave, showPreview, onTogglePreview, onSelection
       )}
 
       {/* Editor area */}
-      <div ref={(el) => {
-        (editorRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
-        if (editorContainerRef) {
-          (editorContainerRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
-        }
-      }} className={`flex-1 overflow-auto relative ${darkMode ? 'graph-paper-dark' : 'graph-paper'} ${focusMode ? 'focus-mode' : ''}`} />
+      <div className={`flex-1 overflow-auto relative ${darkMode ? 'graph-paper-dark' : 'graph-paper'} ${focusMode ? 'focus-mode' : ''}`}>
+        <div ref={(el) => {
+          (editorRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+          if (editorContainerRef) {
+            (editorContainerRef as React.MutableRefObject<HTMLDivElement | null>).current = el;
+          }
+        }} className="h-full" />
+
+        {/* Remote cursors from collaborators */}
+        {collaborationActive && (
+          <RemoteCursors
+            peers={collaborationPeers}
+            editorContainer={editorRef.current}
+            getPositionFromCoords={getPositionFromCoords}
+          />
+        )}
+
+        {/* Remote selections from collaborators */}
+        {collaborationActive && (
+          <RemoteSelections
+            peers={collaborationPeers}
+            editorContainer={editorRef.current}
+            getRangeRects={getRangeRects}
+          />
+        )}
+      </div>
 
       {/* Link Preview Card */}
       {hoveredLink && onWikiLinkClick && (
