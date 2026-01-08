@@ -1,5 +1,27 @@
 # PatchPad Work Log
 
+## Template Intelligence - Phase 4: Enhanced Template Picker
+**Completed:** 2026-01-08
+
+**Files Changed:**
+- `src/components/TemplatePicker.tsx` — Added AI preview state and generation; added isAIPlaceholder helper; shows AI placeholders with lightning bolt icons; added AI preview toggle in preview section with loading state
+- `src/components/TemplatePreviewPane.tsx` — New component with raw/preview/AI view modes; placeholder highlighting; AI content generation with source indicators
+- `src/components/TemplateDialog.tsx` — Updated to use new ai-search/ai-generate types instead of deprecated ai-fill
+
+**Implementation Notes:**
+- AI placeholders shown with lightning bolt icon and type indicator (searches/generates)
+- TemplatePicker now uses notes prop for AI content generation
+- Preview section has Template/AI Preview toggle buttons
+- Loading spinner during AI preview generation
+- TemplatePreviewPane provides detailed preview with view mode switching
+- Placeholder legend in raw view shows color coding
+
+**Verification:**
+- All 113 template-related tests pass
+- TypeScript compilation passes for modified files
+
+---
+
 ## Template Intelligence - Phase 3: Template Suggestion UI
 **Completed:** 2026-01-08
 

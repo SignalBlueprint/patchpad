@@ -95,10 +95,14 @@ export function TemplateDialog({
 
     const placeholders: Placeholder[] = Array.from(placeholderKeys).map(key => {
       if (key.startsWith('ai:')) {
+        // Determine AI type based on key name
+        const aiType = key.includes('related') || key.includes('context') || key.includes('notes')
+          ? 'ai-search' as const
+          : 'ai-generate' as const;
         return {
           key,
           label: key.replace('ai:', '').replace(/_/g, ' '),
-          type: 'ai-fill' as const,
+          type: aiType,
           aiPrompt: `Generate ${key.replace('ai:', '').replace(/_/g, ' ')}`,
         };
       }
@@ -118,7 +122,7 @@ export function TemplateDialog({
       description: description.trim() || `Custom template: ${name}`,
       structure,
       placeholders,
-      aiEnhanced: placeholders.some(p => p.type === 'ai-fill'),
+      aiEnhanced: placeholders.some(p => p.type === 'ai-search' || p.type === 'ai-generate'),
       tags: tags.split(',').map(t => t.trim()).filter(Boolean),
       titlePrefix: titlePrefix.trim() || undefined,
       category: category.trim() || undefined,

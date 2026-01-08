@@ -345,15 +345,21 @@ PatchPad is a personal knowledge operating system with AI-powered capture, refin
   - Show banner if confidence >= 0.6
   - Respects localStorage dismissal preference
 
-#### Phase 4: Enhanced Template Picker
-- [ ] Extend `src/components/TemplatePicker.tsx` (already exists)
+#### Phase 4: Enhanced Template Picker - COMPLETE
+- [x] Extend `src/components/TemplatePicker.tsx` (already exists)
   - Show AI-fillable placeholders with lightning bolt icon
-  - Preview of what AI will generate
-  - Loading state during AI generation
+  - AI-Generated Sections list with type indicators (searches/generates)
+  - AI Preview toggle button with loading state
+  - Template/AI Preview mode toggle in preview section
 
-- [ ] Create `src/components/TemplatePreviewPane.tsx`
+- [x] Create `src/components/TemplatePreviewPane.tsx`
   - Live preview of template with placeholders filled
-  - Toggle between raw template and preview
+  - Toggle between raw template, preview, and AI preview
+  - Placeholder highlighting in raw view
+  - AI-filled placeholders info with source indicators
+
+- [x] Update `src/components/TemplateDialog.tsx`
+  - Use new placeholder types (ai-search/ai-generate) instead of ai-fill
 
 **Acceptance Criteria:**
 - App detects notes with similar titles/structures
