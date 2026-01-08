@@ -2,6 +2,41 @@
 
 ---
 
+## Template Intelligence Phase 4: AI-Powered Templates (Horizon 2.3)
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/services/templates.ts` — Added "Research Summary" and "Meeting Prep" built-in templates with AI placeholders, enhanced `generateAIContent()` to handle different placeholder types, added `generateRelatedNotesContent()`, `generateOpenQuestionsContent()`, and `generateContextContent()` functions
+- `src/services/templates.test.ts` — Added 5 tests for new AI-powered templates
+
+**Implementation Notes:**
+- **Research Summary template**:
+  - Placeholders: `{{topic}}`, `{{ai:related_notes}}`, `{{ai:open_questions}}`
+  - Uses semantic search to find related notes
+  - Extracts questions from notes using regex patterns (lines ending with ?, bullet points with questions, question words followed by ?)
+  - Auto-tags with `research`, `summary`, `ai-generated`
+  - Title prefix: "Research:"
+
+- **Meeting Prep template**:
+  - Placeholders: `{{title}}`, `{{date}}`, `{{company}}`, `{{participants}}`, `{{ai:context}}`
+  - Searches for company and participant mentions across notes
+  - Splits participant list by comma, semicolon, ampersand, or "and"
+  - Deduplicates results and shows which term matched
+  - Auto-tags with `meeting`, `prep`, `ai-generated`
+  - Title prefix: "Prep:"
+
+- **AI content generators**:
+  - `generateRelatedNotesContent()`: Semantic search for topic, returns wiki links with excerpts
+  - `generateOpenQuestionsContent()`: Extracts questions from related notes using regex patterns
+  - `generateContextContent()`: Searches for company/participant mentions, deduplicates, shows match context
+
+**Verification:**
+- TypeScript compilation passes (`npx tsc --noEmit`)
+- All tests pass (`npx vitest run src/services/templates.test.ts`)
+- Templates appear in Template Picker under "learning" and "work" categories
+- AI placeholders filled with semantic search results
+
+---
+
 ## Template Trigger Detection (Horizon 2.3)
 **Completed:** 2026-01-07
 **Files Changed:**

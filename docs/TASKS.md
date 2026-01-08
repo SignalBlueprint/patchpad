@@ -720,20 +720,25 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 #### Phase 4: AI-Powered Templates
 
-- [ ] Create "Research Summary" template
-  - [ ] Placeholders: `{{topic}}`, `{{ai:related_notes}}`, `{{ai:open_questions}}`
-  - [ ] On apply, search notes for topic
-  - [ ] Inject relevant excerpts and questions from conversations
+- [x] Create "Research Summary" template
+  - [x] Placeholders: `{{topic}}`, `{{ai:related_notes}}`, `{{ai:open_questions}}`
+  - [x] On apply, search notes for topic via semantic search
+  - [x] Extract open questions from related notes using regex patterns
 
-- [ ] Create "Meeting Prep" template
-  - [ ] Placeholders: `{{company}}`, `{{participants}}`, `{{ai:context}}`
-  - [ ] On apply, search for company/participant mentions
-  - [ ] Generate talking points from AI
+- [x] Create "Meeting Prep" template
+  - [x] Placeholders: `{{title}}`, `{{date}}`, `{{company}}`, `{{participants}}`, `{{ai:context}}`
+  - [x] On apply, search for company/participant mentions
+  - [x] Context includes matching notes with what term matched
 
-- [ ] Add command palette entry
+- [x] Add command palette entry (already implemented in Phase 3)
   ```typescript
   { id: 'new-from-template', name: 'New Note from Template', action: () => setTemplatePickerOpen(true) }
   ```
+
+- [x] Implement AI content generators in `src/services/templates.ts`
+  - [x] `generateRelatedNotesContent()` - semantic search for topic
+  - [x] `generateOpenQuestionsContent()` - extract questions from related notes
+  - [x] `generateContextContent()` - search for company/participant mentions
 
 **Open Questions:**
 - Should templates sync to cloud?

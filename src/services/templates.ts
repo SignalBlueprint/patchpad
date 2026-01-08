@@ -186,6 +186,80 @@ const BUILT_IN_TEMPLATES: BuiltInTemplate[] = [
     category: 'learning',
     builtIn: true,
   },
+  {
+    name: 'Research Summary',
+    description: 'AI-powered research summary with related notes and open questions from your knowledge base',
+    structure: `# Research Summary: {{topic}}
+
+## Overview
+Summarizing what I know about **{{topic}}**.
+
+## Related Notes
+{{ai:related_notes}}
+
+## Key Insights
+-
+
+## Open Questions
+{{ai:open_questions}}
+
+## Next Steps
+- [ ]
+
+## Sources & References
+-
+
+`,
+    placeholders: [
+      { key: 'topic', label: 'Research Topic', type: 'text', required: true },
+      { key: 'ai:related_notes', label: 'Related Notes', type: 'ai-fill', aiPrompt: 'Find and summarize notes related to this topic' },
+      { key: 'ai:open_questions', label: 'Open Questions', type: 'ai-fill', aiPrompt: 'Find unanswered questions from conversations about this topic' },
+    ],
+    aiEnhanced: true,
+    tags: ['research', 'summary', 'ai-generated'],
+    titlePrefix: 'Research:',
+    category: 'learning',
+    builtIn: true,
+  },
+  {
+    name: 'Meeting Prep',
+    description: 'AI-powered meeting preparation with context from your notes about participants and company',
+    structure: `# Meeting Prep: {{title}}
+
+## Meeting Details
+- **Date:** {{date}}
+- **Company:** {{company}}
+- **Participants:** {{participants}}
+
+## Context from My Notes
+{{ai:context}}
+
+## Talking Points
+-
+
+## Questions to Ask
+-
+
+## Goals for This Meeting
+- [ ]
+
+## Follow-up Items
+- [ ]
+
+`,
+    placeholders: [
+      { key: 'title', label: 'Meeting Title', type: 'text', required: true },
+      { key: 'date', label: 'Date', type: 'date', required: false },
+      { key: 'company', label: 'Company', type: 'text', required: false },
+      { key: 'participants', label: 'Participants', type: 'text', required: false },
+      { key: 'ai:context', label: 'Context', type: 'ai-fill', aiPrompt: 'Find notes mentioning this company or participants' },
+    ],
+    aiEnhanced: true,
+    tags: ['meeting', 'prep', 'ai-generated'],
+    titlePrefix: 'Prep:',
+    category: 'work',
+    builtIn: true,
+  },
 ];
 
 /**
@@ -365,28 +439,167 @@ export async function aiEnhanceTemplate(
  * Uses semantic search to find related notes and formats them
  */
 async function generateAIContent(
-  _placeholder: Placeholder,
+  placeholder: Placeholder,
+  values: TemplateValues,
+  notes: Note[]
+): Promise<string> {
+  const key = placeholder.key;
+
+  // Handle different AI placeholder types
+  if (key === 'ai:related_notes') {
+    return generateRelatedNotesContent(values, notes);
+  }
+
+  if (key === 'ai:open_questions') {
+    return generateOpenQuestionsContent(values, notes);
+  }
+
+  if (key === 'ai:context') {
+    return generateContextContent(values, notes);
+  }
+
+  // Default: search for topic and return related notes
+  return generateRelatedNotesContent(values, notes);
+}
+
+/**
+ * Generate content for ai:related_notes placeholder
+ */
+async function generateRelatedNotesContent(
   values: TemplateValues,
   notes: Note[]
 ): Promise<string> {
   const topic = values.topic ?? values.title ?? '';
 
-  // Search for related notes
+  if (!topic) {
+    return '_No topic specified_';
+  }
+
   const searchResults = await searchNotes(topic, 5, notes);
 
   if (searchResults.length === 0) {
     return '_No related notes found_';
   }
 
-  // Format related notes as wiki links with excerpts
-  // This approach works for ai:related_notes and other AI placeholders
-  // Full AI synthesis can be added in Phase 4 with proper AI service integration
   return searchResults
     .map(r => {
-      const excerpt = r.relevantExcerpt ?? r.note.content.slice(0, 100);
+      const excerpt = r.relevantExcerpt ?? r.note.content.slice(0, 150);
       return `- [[${r.note.title}]]: ${excerpt.trim()}...`;
     })
     .join('\n');
+}
+
+/**
+ * Generate content for ai:open_questions placeholder
+ * Searches for question patterns in notes and conversations
+ */
+async function generateOpenQuestionsContent(
+  values: TemplateValues,
+  notes: Note[]
+): Promise<string> {
+  const topic = values.topic ?? values.title ?? '';
+
+  if (!topic) {
+    return '_No topic specified_';
+  }
+
+  // Search for notes related to topic
+  const searchResults = await searchNotes(topic, 10, notes);
+
+  if (searchResults.length === 0) {
+    return '_No related notes found to extract questions from_';
+  }
+
+  // Extract questions from note content
+  const questions: string[] = [];
+  const questionPatterns = [
+    /\?\s*$/gm,  // Lines ending with ?
+    /^[-*]\s*(.+\?)\s*$/gm,  // Bullet points ending with ?
+    /(?:what|how|why|when|where|who|which|should|could|would|can|will|is|are|do|does)\s+[^.!?\n]+\?/gi,
+  ];
+
+  for (const result of searchResults) {
+    const content = result.note.content;
+
+    for (const pattern of questionPatterns) {
+      const matches = content.match(pattern);
+      if (matches) {
+        for (const match of matches) {
+          const cleaned = match.replace(/^[-*]\s*/, '').trim();
+          if (cleaned.length > 10 && cleaned.length < 200 && !questions.includes(cleaned)) {
+            questions.push(cleaned);
+          }
+        }
+      }
+    }
+  }
+
+  if (questions.length === 0) {
+    return '_No open questions found in related notes_';
+  }
+
+  // Return top 5 questions
+  return questions.slice(0, 5).map(q => `- ${q}`).join('\n');
+}
+
+/**
+ * Generate content for ai:context placeholder
+ * Searches for mentions of company/participants in notes
+ */
+async function generateContextContent(
+  values: TemplateValues,
+  notes: Note[]
+): Promise<string> {
+  const searchTerms: string[] = [];
+
+  // Collect search terms from company and participants
+  if (values.company) {
+    searchTerms.push(values.company);
+  }
+  if (values.participants) {
+    // Split participants by comma, "and", or semicolon
+    const participants = values.participants.split(/[,;&]|\band\b/i).map(p => p.trim()).filter(Boolean);
+    searchTerms.push(...participants);
+  }
+  if (values.title) {
+    searchTerms.push(values.title);
+  }
+
+  if (searchTerms.length === 0) {
+    return '_No context available - add company or participant names_';
+  }
+
+  // Search for each term and collect results
+  const allResults: { note: Note; excerpt: string; term: string }[] = [];
+
+  for (const term of searchTerms) {
+    const results = await searchNotes(term, 3, notes);
+    for (const r of results) {
+      const excerpt = r.relevantExcerpt ?? r.note.content.slice(0, 150);
+      allResults.push({
+        note: r.note,
+        excerpt: excerpt.trim(),
+        term,
+      });
+    }
+  }
+
+  if (allResults.length === 0) {
+    return '_No notes found mentioning company or participants_';
+  }
+
+  // Deduplicate by note ID
+  const seenIds = new Set<string>();
+  const uniqueResults = allResults.filter(r => {
+    if (seenIds.has(r.note.id)) return false;
+    seenIds.add(r.note.id);
+    return true;
+  });
+
+  // Format with context about what matched
+  return uniqueResults.slice(0, 5).map(r => {
+    return `- [[${r.note.title}]] (mentions "${r.term}"): ${r.excerpt}...`;
+  }).join('\n');
 }
 
 /**

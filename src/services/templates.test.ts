@@ -406,4 +406,58 @@ describe('Template Service', () => {
       expect(formatted).toMatch(/\d{4}/); // Contains year
     });
   });
+
+  describe('AI-Powered Templates', () => {
+    it('should include Research Summary template', () => {
+      const templates = getTemplates();
+      const researchSummary = templates.find(t => t.name === 'Research Summary');
+
+      expect(researchSummary).toBeDefined();
+      expect(researchSummary?.aiEnhanced).toBe(true);
+      expect(researchSummary?.placeholders.find(p => p.key === 'ai:related_notes')).toBeDefined();
+      expect(researchSummary?.placeholders.find(p => p.key === 'ai:open_questions')).toBeDefined();
+      expect(researchSummary?.category).toBe('learning');
+    });
+
+    it('should include Meeting Prep template', () => {
+      const templates = getTemplates();
+      const meetingPrep = templates.find(t => t.name === 'Meeting Prep');
+
+      expect(meetingPrep).toBeDefined();
+      expect(meetingPrep?.aiEnhanced).toBe(true);
+      expect(meetingPrep?.placeholders.find(p => p.key === 'ai:context')).toBeDefined();
+      expect(meetingPrep?.placeholders.find(p => p.key === 'company')).toBeDefined();
+      expect(meetingPrep?.placeholders.find(p => p.key === 'participants')).toBeDefined();
+      expect(meetingPrep?.category).toBe('work');
+    });
+
+    it('should have correct placeholder types for Research Summary', () => {
+      const templates = getTemplates();
+      const researchSummary = templates.find(t => t.name === 'Research Summary');
+
+      expect(researchSummary?.placeholders.find(p => p.key === 'topic')?.type).toBe('text');
+      expect(researchSummary?.placeholders.find(p => p.key === 'topic')?.required).toBe(true);
+      expect(researchSummary?.placeholders.find(p => p.key === 'ai:related_notes')?.type).toBe('ai-fill');
+      expect(researchSummary?.placeholders.find(p => p.key === 'ai:open_questions')?.type).toBe('ai-fill');
+    });
+
+    it('should have correct placeholder types for Meeting Prep', () => {
+      const templates = getTemplates();
+      const meetingPrep = templates.find(t => t.name === 'Meeting Prep');
+
+      expect(meetingPrep?.placeholders.find(p => p.key === 'title')?.type).toBe('text');
+      expect(meetingPrep?.placeholders.find(p => p.key === 'date')?.type).toBe('date');
+      expect(meetingPrep?.placeholders.find(p => p.key === 'company')?.type).toBe('text');
+      expect(meetingPrep?.placeholders.find(p => p.key === 'ai:context')?.type).toBe('ai-fill');
+    });
+
+    it('should tag AI templates correctly', () => {
+      const templates = getTemplates();
+      const researchSummary = templates.find(t => t.name === 'Research Summary');
+      const meetingPrep = templates.find(t => t.name === 'Meeting Prep');
+
+      expect(researchSummary?.tags).toContain('ai-generated');
+      expect(meetingPrep?.tags).toContain('ai-generated');
+    });
+  });
 });
