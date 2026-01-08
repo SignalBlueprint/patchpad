@@ -2,6 +2,31 @@
 
 ---
 
+## Template Intelligence Phase 2: Template System (Horizon 2.3)
+**Completed:** 2026-01-07
+**Files Changed:**
+- `src/types/template.ts` — New types file defining Template, Placeholder, TemplateValues, AppliedTemplate, BuiltInTemplate, and TemplateSuggestion interfaces
+- `src/services/templates.ts` — New template service with CRUD operations (getTemplates, saveTemplate, updateTemplate, deleteTemplate), template application (applyTemplate, aiEnhanceTemplate), search and filtering (getTemplatesByCategory, getTemplateCategories, searchTemplates), and utilities (patternToTemplate, getFormattedDate)
+- `src/services/templates.test.ts` — Comprehensive test suite with 29 tests covering template CRUD, application, search, and utility functions
+- `src/db/index.ts` — Added Version 8 schema with templates table (id, name, category, updatedAt indexes)
+
+**Implementation Notes:**
+- Template type: id, name, description, structure (markdown with {{placeholders}}), placeholders, aiEnhanced, createdAt, updatedAt, tags, titlePrefix, category
+- Placeholder types: 'text', 'date', 'note-reference', 'ai-fill'
+- Built-in templates provided: Meeting Notes, Research Notes, Daily Journal, Project Brief, Book Notes
+- User templates stored in localStorage with version 8 DB migration for optional IndexedDB storage
+- applyTemplate() replaces placeholders with provided values, adds title prefix, collects tags
+- aiEnhanceTemplate() uses semantic search to find related notes and formats them as wiki links
+- searchTemplates() searches by name, description, and tags
+- patternToTemplate() converts detected NotePatterns into Template format
+
+**Verification:**
+- All 29 tests pass (`npx vitest run src/services/templates.test.ts`)
+- No type errors in template files
+- Service ready for Phase 3 (Template UI) integration
+
+---
+
 ## Template Intelligence Phase 1: Pattern Detection (Horizon 2.3)
 **Completed:** 2026-01-07
 **Files Changed:**

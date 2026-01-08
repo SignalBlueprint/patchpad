@@ -655,7 +655,7 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
 
 #### Phase 2: Template System
 
-- [ ] Create `src/types/template.ts`
+- [x] Create `src/types/template.ts`
   ```typescript
   interface Template {
     id: string;
@@ -675,16 +675,16 @@ PatchPad has evolved from an AI-enhanced markdown editor into a personal knowled
   }
   ```
 
-- [ ] Create `src/services/templates.ts`
-  - [ ] Export function `getTemplates(): Template[]` - load from localStorage
-  - [ ] Export function `saveTemplate(template: Template): void`
-  - [ ] Export function `deleteTemplate(id: string): void`
-  - [ ] Export function `applyTemplate(template: Template, values: Record<string, string>): string`
-  - [ ] Export async function `aiEnhanceTemplate(template: Template, values: Record<string, string>, notes: Note[]): string`
+- [x] Create `src/services/templates.ts`
+  - [x] Export function `getTemplates(): Template[]` - load from localStorage
+  - [x] Export function `saveTemplate(template: Template): void`
+  - [x] Export function `deleteTemplate(id: string): void`
+  - [x] Export function `applyTemplate(template: Template, values: Record<string, string>): string`
+  - [x] Export async function `aiEnhanceTemplate(template: Template, values: Record<string, string>, notes: Note[]): string`
     - Fill {{ai:topic}} placeholders using semantic search
     - Inject relevant note excerpts
 
-- [ ] Update database schema
+- [x] Update database schema
   ```typescript
   // Add to src/db/index.ts
   templates: EntityTable<Template, 'id'>

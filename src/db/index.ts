@@ -1,11 +1,13 @@
 import Dexie, { type EntityTable } from 'dexie';
 import type { Note, Folder } from '../types/note';
 import type { Patch } from '../types/patch';
+import type { Template } from '../types/template';
 
 const db = new Dexie('PatchPadDB') as Dexie & {
   notes: EntityTable<Note, 'id'>;
   patches: EntityTable<Patch, 'id'>;
   folders: EntityTable<Folder, 'id'>;
+  templates: EntityTable<Template, 'id'>;
 };
 
 // Version 2: original schema
@@ -57,5 +59,17 @@ db.version(7).stores({
   conversations: 'id, createdAt',
 });
 // Conversations store chat history with AI Research Partner
+
+// Version 8: add templates table for Template Intelligence
+db.version(8).stores({
+  notes: 'id, title, updatedAt, favorite, folder, *tags, parentId',
+  patches: 'id, noteId, status, createdAt',
+  folders: 'id, name',
+  embeddings: 'id, noteId',
+  conversations: 'id, createdAt',
+  templates: 'id, name, category, updatedAt',
+});
+// Templates store user-created note templates
+// Built-in templates are not stored in DB, only user templates
 
 export { db };
