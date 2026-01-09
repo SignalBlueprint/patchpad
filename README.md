@@ -14,6 +14,22 @@ A personal knowledge operating system that transforms scattered thoughts into in
 <!-- SB:SECTION:STATUS -->
 ## Status
 
+```
+[█████████░░░░░░░░░░░] 49% complete
+```
+
+**Current Focus:** Horizon 2 — System Expansions
+**Last Updated:** 2026-01-09
+
+| Section | Progress | Tasks |
+|---------|----------|-------|
+| Horizon 1 | `██████████` 100% | 36/36 |
+| Horizon 2 | `███████░░░` 70% | 66/94 |
+| Horizon 3 | `█░░░░░░░░░` 7% | 6/85 |
+| Moonshot  | `████░░░░░░` 42% | 23/55 |
+
+See [docs/PROGRESS.md](docs/PROGRESS.md) for full details.
+
 **Production Ready** - Full-featured personal knowledge base with:
 - Multi-device sync via Supabase (with offline support)
 - Voice-first capture with transcription and dictation mode
