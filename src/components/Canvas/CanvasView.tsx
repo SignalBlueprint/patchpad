@@ -13,6 +13,15 @@ import {
   onRemotePositionChange,
   getRoomPeersWithCanvasPositions,
 } from '../../services/collaboration';
+import {
+  recordEvent,
+  isRecording,
+} from '../../services/sessionRecorder';
+import type {
+  NoteMovePayload,
+  ViewportChangePayload,
+  NoteConnectPayload,
+} from '../../types/session';
 
 // Re-export CanvasPosition for convenience
 export type { CanvasPosition } from '../../types/note';
@@ -39,6 +48,12 @@ interface CanvasViewProps {
   collaborationChatOpen?: boolean;
   /** Callback to toggle chat open/closed */
   onToggleChat?: () => void;
+  /** Callback to start recording */
+  onStartRecording?: () => void;
+  /** Callback to stop recording */
+  onStopRecording?: () => void;
+  /** Current recording state (managed externally via isRecording()) */
+  showRecordingIndicator?: boolean;
 }
 
 interface Viewport {
@@ -154,6 +169,9 @@ export function CanvasView({
   collaborationConnected = false,
   collaborationChatOpen = false,
   onToggleChat,
+  onStartRecording,
+  onStopRecording,
+  showRecordingIndicator = false,
 }: CanvasViewProps) {
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasContentRef = useRef<HTMLDivElement>(null);
@@ -340,10 +358,18 @@ export function CanvasView({
     saveViewport(viewport);
   }, [viewport]);
 
+  // Track drag start position for recording
+  const dragStartPositionRef = useRef<{ x: number; y: number } | null>(null);
+
   // Handle note drag
   const handleNoteDragStart = useCallback((noteId: string) => {
     setDraggingNote(noteId);
-  }, []);
+    // Store initial position for recording
+    const pos = positions.get(noteId);
+    if (pos) {
+      dragStartPositionRef.current = { x: pos.x, y: pos.y };
+    }
+  }, [positions]);
 
   const handleNoteDrag = useCallback((noteId: string, x: number, y: number) => {
     setPositions(prev => {
@@ -364,6 +390,19 @@ export function CanvasView({
       onPositionChange?.(noteId, position);
       // Sync to collaboration room
       syncPositionToRoom(noteId, position);
+
+      // Record note-move event for session recording
+      if (isRecording() && dragStartPositionRef.current) {
+        const payload: NoteMovePayload = {
+          noteId,
+          fromX: dragStartPositionRef.current.x,
+          fromY: dragStartPositionRef.current.y,
+          toX: position.x,
+          toY: position.y,
+        };
+        recordEvent('note-move', payload);
+      }
+      dragStartPositionRef.current = null;
     }
   }, [positions, onPositionChange, syncPositionToRoom]);
 
@@ -506,6 +545,18 @@ export function CanvasView({
             canvasY <= note.y + note.height
           ) {
             onCreateConnection(connectionDrag.fromId, note.id);
+
+            // Record connection event for session recording
+            if (isRecording()) {
+              const fromNote = stickyNotes.find(n => n.id === connectionDrag.fromId);
+              const payload: NoteConnectPayload = {
+                sourceNoteId: connectionDrag.fromId,
+                targetNoteId: note.id,
+                sourceTite: fromNote?.title || '',
+                targetTitle: note.title,
+              };
+              recordEvent('note-connect', payload);
+            }
             break;
           }
         }
@@ -1016,6 +1067,34 @@ export function CanvasView({
         <span className="text-xs text-gray-400 px-2">
           Drag: pan • Scroll: zoom • Alt+drag: group
         </span>
+
+        {/* Recording button */}
+        {(onStartRecording || onStopRecording) && (
+          <>
+            <div className="w-px h-6 bg-gray-200 mx-1" />
+            {isRecording() || showRecordingIndicator ? (
+              <button
+                onClick={onStopRecording}
+                className="flex items-center gap-1.5 px-2 py-1.5 bg-red-100 hover:bg-red-200 rounded-md transition-colors"
+                title="Stop Recording"
+              >
+                <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                <span className="text-xs font-medium text-red-700">Recording</span>
+              </button>
+            ) : (
+              <button
+                onClick={onStartRecording}
+                className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+                title="Start Recording Session"
+              >
+                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+                  <circle cx="12" cy="12" r="9" strokeWidth={2} />
+                </svg>
+              </button>
+            )}
+          </>
+        )}
 
         {/* Collaboration presence indicator and chat toggle */}
         {collaborationMode && (

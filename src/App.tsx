@@ -15,8 +15,15 @@ import { SecondBrainDashboard } from './components/SecondBrainDashboard';
 import { TemplateDialog } from './components/TemplateDialog';
 import { TemplatePicker } from './components/TemplatePicker';
 import { TemplateSuggestionToast } from './components/TemplateSuggestionToast';
+import { TemplateSuggestionBanner } from './components/TemplateSuggestionBanner';
 import { useTemplateSuggestion } from './hooks/useTemplateSuggestion';
 import { applyTemplate } from './services/templates';
+import {
+  detectTitlePatterns,
+  detectStructurePatterns,
+  suggestTemplateFromPatterns,
+  type TemplateSuggestion as PatternTemplateSuggestion,
+} from './services/templateDetection';
 import { BacklinksPanel } from './components/BacklinksPanel';
 import { DailyDigestModal } from './components/DailyDigestModal';
 import { ExportDialog } from './components/ExportDialog';
@@ -156,6 +163,10 @@ export default function App() {
   const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
   const [templateAppliedToNote, setTemplateAppliedToNote] = useState<string | null>(null);
 
+  // Pattern-based template suggestion state
+  const [patternSuggestion, setPatternSuggestion] = useState<PatternTemplateSuggestion | null>(null);
+  const [patternSuggestionDismissed, setPatternSuggestionDismissed] = useState(false);
+
   // Session recording state
   const [sessionTemplatePickerOpen, setSessionTemplatePickerOpen] = useState(false);
   const [sessionLibraryOpen, setSessionLibraryOpen] = useState(false);
@@ -285,6 +296,37 @@ export default function App() {
       });
     }
   }, [secondBrainOpen, dashboardConcepts.length, notes]);
+
+  // Check for patterns in notes and suggest templates (debounced, on app load)
+  useEffect(() => {
+    // Skip if already checked, dismissed, or insufficient notes
+    if (patternSuggestionDismissed || notes.length < 5) {
+      return;
+    }
+
+    // Check if user has permanently dismissed pattern suggestions
+    const dismissedPattern = localStorage.getItem('patchpad_pattern_dismissed');
+    if (dismissedPattern) {
+      return;
+    }
+
+    // Debounce pattern detection to avoid running on every note change
+    const timeoutId = setTimeout(() => {
+      try {
+        const titlePatterns = detectTitlePatterns(notes);
+        const structurePatterns = detectStructurePatterns(notes);
+        const suggestion = suggestTemplateFromPatterns(titlePatterns, structurePatterns);
+
+        if (suggestion && suggestion.confidence >= 0.6) {
+          setPatternSuggestion(suggestion);
+        }
+      } catch (err) {
+        console.debug('Pattern detection error:', err);
+      }
+    }, 2000); // Wait 2 seconds after notes load
+
+    return () => clearTimeout(timeoutId);
+  }, [notes.length, patternSuggestionDismissed]);
 
   // Subscribe to collaboration room events
   useEffect(() => {
@@ -1489,6 +1531,23 @@ export default function App() {
           </div>
         </div>
 
+        {/* Pattern-based Template Suggestion Banner */}
+        {patternSuggestion && mainView === 'notes' && (
+          <div className="px-4 pt-4">
+            <TemplateSuggestionBanner
+              suggestion={patternSuggestion}
+              onAccept={() => {
+                setPatternSuggestion(null);
+                success('Template created', `"${patternSuggestion.title}" is now available in your templates`);
+              }}
+              onDismiss={() => {
+                setPatternSuggestion(null);
+                setPatternSuggestionDismissed(true);
+              }}
+            />
+          </div>
+        )}
+
         {/* Content based on selected view */}
         <div className="flex-1 min-h-0">
           {mainView === 'canvas' ? (
@@ -1505,6 +1564,9 @@ export default function App() {
               collaborationConnected={collaborationConnected}
               collaborationChatOpen={collaborationChatOpen}
               onToggleChat={() => setCollaborationChatOpen(!collaborationChatOpen)}
+              onStartRecording={() => setSessionTemplatePickerOpen(true)}
+              onStopRecording={handleStopSession}
+              showRecordingIndicator={isRecording()}
             />
           ) : mainView === 'timeline' ? (
             <TimelineView

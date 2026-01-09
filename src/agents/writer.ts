@@ -12,7 +12,7 @@
 import type { Note } from '../types/note';
 import type { AgentTask, AgentTaskResult } from '../types/agent';
 import { registerTaskHandler, createSuggestion } from '../services/agentFramework';
-import { askQuestionAboutNotes } from '../services/ai';
+import { askNotes } from '../services/ai';
 
 /**
  * Initialize the Writer agent by registering its task handlers
@@ -61,7 +61,7 @@ Provide an expanded version that:
 3. Improves clarity and structure
 4. Uses markdown formatting appropriately`;
 
-    const response = await askQuestionAboutNotes(prompt, [note]);
+    const response = await askNotes(prompt, [note]);
     const expandedContent = response.answer;
 
     log.push('Generated expanded content');
@@ -207,7 +207,7 @@ Generate a markdown outline that:
 3. Includes brief descriptions under each section
 4. Maintains all the original information`;
 
-    const response = await askQuestionAboutNotes(prompt, [note]);
+    const response = await askNotes(prompt, [note]);
     const outline = response.answer;
 
     log.push('Generated structured outline');
@@ -305,7 +305,7 @@ Create a summary that:
 2. Preserves important details
 3. Uses clear, concise language`;
 
-    const response = await askQuestionAboutNotes(prompt, [note]);
+    const response = await askNotes(prompt, [note]);
     const summary = response.answer;
 
     log.push('Generated summary');

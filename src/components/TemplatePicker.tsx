@@ -1,7 +1,14 @@
 import { useEffect, useState } from 'react';
 import type { Note } from '../types/note';
-import type { Template, TemplateValues } from '../types/template';
-import { getTemplates, applyTemplate, getFormattedDate, getTemplateCategories, deleteTemplate } from '../services/templates';
+import type { Template, TemplateValues, Placeholder } from '../types/template';
+import { getTemplates, applyTemplate, getFormattedDate, getTemplateCategories, deleteTemplate, fillAIPlaceholders } from '../services/templates';
+
+/**
+ * Check if a placeholder is an AI placeholder
+ */
+function isAIPlaceholder(placeholder: Placeholder): boolean {
+  return placeholder.type === 'ai-search' || placeholder.type === 'ai-generate';
+}
 
 interface TemplatePickerProps {
   isOpen: boolean;
@@ -13,7 +20,7 @@ interface TemplatePickerProps {
 
 export function TemplatePicker({
   isOpen,
-  notes: _notes, // Reserved for AI-enhanced templates
+  notes, // Used for AI-enhanced templates
   onClose,
   onCreateNote,
   onOpenTemplateDialog,
@@ -26,6 +33,11 @@ export function TemplatePicker({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
+  // AI preview state
+  const [aiPreviewMode, setAiPreviewMode] = useState(false);
+  const [aiPreviewContent, setAiPreviewContent] = useState<string | null>(null);
+  const [aiPreviewLoading, setAiPreviewLoading] = useState(false);
+
   useEffect(() => {
     if (isOpen) {
       setIsVisible(true);
@@ -35,6 +47,9 @@ export function TemplatePicker({
       setValues({});
       setSearchQuery('');
       setSelectedCategory(null);
+      setAiPreviewMode(false);
+      setAiPreviewContent(null);
+      setAiPreviewLoading(false);
     }
   }, [isOpen]);
 
@@ -53,6 +68,32 @@ export function TemplatePicker({
       ? getFormattedDate()
       : undefined;
     setValues(dateValue ? { date: dateValue } : {});
+    // Reset AI preview when selecting a new template
+    setAiPreviewMode(false);
+    setAiPreviewContent(null);
+  };
+
+  // Generate AI preview
+  const handleGenerateAIPreview = async () => {
+    if (!selectedTemplate) return;
+
+    setAiPreviewLoading(true);
+    try {
+      const result = await fillAIPlaceholders(selectedTemplate, notes, values);
+      // Apply regular placeholders first
+      const basicResult = applyTemplate(selectedTemplate, values);
+      // Combine: replace AI placeholders in the basic result
+      let finalContent = basicResult.content;
+      for (const filled of result.filledPlaceholders) {
+        finalContent = finalContent.replace(filled.originalValue, filled.filledValue);
+      }
+      setAiPreviewContent(finalContent);
+      setAiPreviewMode(true);
+    } catch (err) {
+      console.error('Failed to generate AI preview:', err);
+    } finally {
+      setAiPreviewLoading(false);
+    }
   };
 
   const handleValueChange = (key: string, value: string) => {
@@ -274,8 +315,9 @@ export function TemplatePicker({
                   <h3 className="font-semibold text-gray-900">Fill in details</h3>
                 </div>
 
+                {/* Regular placeholders (user input) */}
                 {selectedTemplate.placeholders
-                  .filter(p => p.type !== 'ai-fill')
+                  .filter(p => !isAIPlaceholder(p))
                   .map(placeholder => (
                     <div key={placeholder.key}>
                       <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -302,27 +344,97 @@ export function TemplatePicker({
                     </div>
                   ))}
 
-                {selectedTemplate.aiEnhanced && (
-                  <div className="p-3 bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg border border-violet-100">
-                    <div className="flex items-center gap-2 text-violet-700 text-sm font-medium">
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                {/* AI placeholders (shown as preview indicators) */}
+                {selectedTemplate.placeholders.filter(isAIPlaceholder).length > 0 && (
+                  <div className="mt-4 space-y-2">
+                    <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                      <svg className="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
-                      AI-Enhanced Template
+                      AI-Generated Sections
                     </div>
-                    <p className="text-xs text-violet-600 mt-1">
-                      This template will automatically include related notes from your knowledge base.
-                    </p>
+                    {selectedTemplate.placeholders
+                      .filter(isAIPlaceholder)
+                      .map(placeholder => (
+                        <div
+                          key={placeholder.key}
+                          className="flex items-center gap-2 p-2 bg-amber-50 rounded-lg border border-amber-100"
+                        >
+                          <svg className="w-4 h-4 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                          </svg>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-sm font-medium text-amber-800">{placeholder.label}</div>
+                            <div className="text-xs text-amber-600 truncate">
+                              {placeholder.type === 'ai-search' ? 'Searches your notes' : 'Generates content'}
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                   </div>
                 )}
 
-                {/* Preview */}
+                {/* Preview section with AI toggle */}
                 <div className="mt-6">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Preview</h4>
-                  <pre className="text-xs text-gray-600 whitespace-pre-wrap font-mono bg-gray-50 p-3 rounded-lg border border-gray-200 max-h-40 overflow-y-auto">
-                    {applyTemplate(selectedTemplate, values).content.slice(0, 500)}
-                    {applyTemplate(selectedTemplate, values).content.length > 500 && '...'}
+                  <div className="flex items-center justify-between mb-2">
+                    <h4 className="text-sm font-medium text-gray-700">Preview</h4>
+                    {selectedTemplate.aiEnhanced && (
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => setAiPreviewMode(false)}
+                          className={`px-2 py-1 text-xs rounded transition-colors ${
+                            !aiPreviewMode
+                              ? 'bg-gray-200 text-gray-700'
+                              : 'text-gray-500 hover:bg-gray-100'
+                          }`}
+                        >
+                          Template
+                        </button>
+                        <button
+                          onClick={handleGenerateAIPreview}
+                          disabled={aiPreviewLoading}
+                          className={`px-2 py-1 text-xs rounded transition-colors flex items-center gap-1 ${
+                            aiPreviewMode
+                              ? 'bg-amber-100 text-amber-700'
+                              : 'text-amber-600 hover:bg-amber-50'
+                          }`}
+                        >
+                          {aiPreviewLoading ? (
+                            <>
+                              <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                              </svg>
+                              Generating...
+                            </>
+                          ) : (
+                            <>
+                              <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                              </svg>
+                              AI Preview
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  <pre className="text-xs text-gray-600 whitespace-pre-wrap font-mono bg-gray-50 p-3 rounded-lg border border-gray-200 max-h-48 overflow-y-auto">
+                    {aiPreviewMode && aiPreviewContent
+                      ? aiPreviewContent.slice(0, 800)
+                      : applyTemplate(selectedTemplate, values).content.slice(0, 500)}
+                    {(aiPreviewMode && aiPreviewContent
+                      ? aiPreviewContent.length > 800
+                      : applyTemplate(selectedTemplate, values).content.length > 500) && '...'}
                   </pre>
+                  {aiPreviewMode && aiPreviewContent && (
+                    <p className="text-xs text-amber-600 mt-2 flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                      AI-generated content preview based on your notes
+                    </p>
+                  )}
                 </div>
               </div>
             ) : (
