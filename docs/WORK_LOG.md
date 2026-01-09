@@ -2,6 +2,103 @@
 
 ## Knowledge Agents: TypeScript Fixes and Verification
 **Completed:** 2026-01-08
+## Template Intelligence - Phase 1: Pattern Detection Enhancement
+**Completed:** 2026-01-08
+---
+
+## Moonshot Phase 4: Session Comparison
+**Completed:** 2026-01-08
+**Files Changed:**
+- `src/services/sessionComparison.ts` — Session comparison service with analysis functions
+- `src/components/SessionComparison.tsx` — Comparison UI with tabs for overview, timeline, topics, insights
+- `src/App.tsx` — Added session comparison command and dialog state
+
+**Implementation Notes:**
+
+- **Session Comparison Service** (`sessionComparison.ts`):
+  - `compareSessions()` generates comprehensive comparison between two sessions
+  - `StatsComparison` tracks note creation, editing, connections, duration changes
+  - `TimelineComparison` with 5-minute segment analysis and activity patterns
+  - `TopicEvolution` tracks abandoned, new, and expanded topics
+  - `FocusComparison` identifies notes with increased/decreased attention
+  - `generateLearningInsights()` with AI-enhanced summaries
+  - `findRelatedSessions()` to suggest sessions for comparison
+  - `areSessionsRelated()` checks tag and note overlap
+
+- **Session Comparison Component** (`SessionComparison.tsx`):
+  - Session selector with related session suggestions
+  - Four tabs: Overview, Timeline, Topics, Insights
+  - Overview: Stats grid with change indicators, note distribution
+  - Timeline: Color-coded activity segments with pattern analysis
+  - Topics: New/abandoned topics, depth changes, connection visualization
+  - Insights: AI-generated summary, key learnings, questions, recommendations
+  - Assessment badges: significant-progress, iterative-refinement, exploratory, revisiting
+
+**Verification:**
+Component integrated with command palette entry "Compare Sessions".
+
+---
+
+## Moonshot Phase 4: Session Templates
+**Completed:** 2026-01-08
+**Files Changed:**
+- `src/types/sessionTemplate.ts` — Session template types (layout, workflow steps, zones)
+- `src/services/sessionTemplates.ts` — Template management with 4 built-in templates
+- `src/components/SessionTemplatePicker.tsx` — Template selection modal with preview
+- `src/components/SessionWorkflowGuide.tsx` — Workflow guide component shown during recording
+- `src/types/session.ts` — Extended ThinkingSession with template reference fields
+- `src/services/sessionRecorder.ts` — Added StartRecordingOptions for template support
+- `src/App.tsx` — Integrated session recording UI, commands, and workflow guide
+
+**Implementation Notes:**
+
+- **Session Template Types** (`sessionTemplate.ts`):
+  - `SessionTemplate` interface with name, description, color, icon
+  - `CanvasLayout` with types: freeform, grid, radial, columns, kanban
+  - `LayoutZone` for defining canvas regions with labels and placeholders
+  - `WorkflowStep` with order, title, description, estimated time, tips
+
+- **Built-in Templates** (`sessionTemplates.ts`):
+  - **Brainstorming**: Radial layout, 4-step workflow (Set Theme, Rapid Capture, Cluster, Identify Winners)
+  - **Problem-solving**: Column layout (Problem, Causes, Solutions, Actions), structured analysis
+  - **Review & Organize**: Kanban layout (To Review, Needs Update, To Connect, Archive, Done)
+  - **Freeform**: Blank canvas for complete freedom
+  - `calculateLayoutPositions()` for initial note arrangement
+  - User templates stored in localStorage with CRUD operations
+
+- **Session Template Picker** (`SessionTemplatePicker.tsx`):
+  - Modal with gradient header and template cards
+  - Quick Start button for immediate recording without template
+  - Template cards show icon, name, description, estimated time, auto-tags
+  - Layout preview SVG visualization for each layout type
+  - Collapsible workflow steps with tips
+  - Optional session title input
+
+- **Session Workflow Guide** (`SessionWorkflowGuide.tsx`):
+  - Fixed position during recording, collapsible to pill
+  - Progress bar and step completion tracking
+  - Auto-advance based on elapsed time estimates
+  - Click step number to mark complete
+  - Expand/collapse step details
+  - Tips shown for current step
+
+- **App Integration**:
+  - Session state: templatePickerOpen, activeTemplate, durationMs, workflowGuideCollapsed
+  - Recording handlers: handleStartSession, handleStopSession, handleWorkflowStepChange
+  - Command palette entries: Start/Stop Recording, Session Library
+  - Recording indicator with duration timer and stop button
+  - Workflow guide shown when recording with template
+
+**Blocked Tasks:**
+- Knowledge Graph Publishing Phase 2 — Requires backend infrastructure
+- Ambient Knowledge Capture — Requires separate Electron/Tauri project
+- Live Session Broadcasting — Requires WebSocket backend
+- Collaborative Annotation — Requires multi-user infrastructure
+
+**Verification:**
+TypeScript compilation passes for new files (pre-existing issues in codebase unrelated to this work).
+
+---
 
 **Files Changed:**
 - `src/agents/archivist.ts` — Fixed imports (getEmbeddingForNote, cosineSimilarity from embeddings); fixed findRelatedNotes signature (note, notes instead of content, notes, limit); removed unused datePatterns variable; updated RelatedNote property access (noteId instead of id)
@@ -141,6 +238,18 @@ Verified that Moonshot Phases 2 and 3 were substantially implemented prior to th
 **Completed:** 2026-01-08
 
 **Files Changed:**
+- `src/services/templateDetection.ts` — Added TitlePattern, StructurePattern, TemplateSuggestion types; added detectTitlePatterns(), detectStructurePatterns(), suggestTemplateFromPatterns() functions
+- `src/services/templateDetection.test.ts` — Added 20 new tests for Phase 1 functions
+
+**Implementation Notes:**
+- TitlePattern detects "Prefix:" (colon), "Prefix -" (dash), and "[Prefix]" (bracket) formats
+- StructurePattern groups notes by structure signature (sections + features + content length)
+- suggestTemplateFromPatterns combines both and returns best template suggestion
+- Confidence calculation: 3-5 notes (0.5-0.6), 6-10 notes (0.7-0.8), 11+ notes (0.9)
+- All patterns require minimum 3 notes
+- Patterns sorted by count descending
+
+**Verification:**
 - `src/services/templateDetection.ts` — Added TitlePattern, StructurePattern, TemplateSuggestion types; added detectTitlePatterns(), detectStructurePatterns(), suggestTemplateFromPatterns() functions
 - `src/services/templateDetection.test.ts` — Added 20 new tests for Phase 1 functions
 
