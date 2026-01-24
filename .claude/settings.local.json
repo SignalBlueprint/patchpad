@@ -45,7 +45,9 @@
       "Bash(git -C \"C:\\\\Users\\\\gbone\\\\patchpad\" commit -m \"$\\(cat <<''EOF''\nfeat: Add AI Research Partner Phases 3-4 \\(Horizon 3.2\\)\n\nImplement Proactive Assistance and Long-term Memory:\n\nPhase 3: Proactive Assistance\n- Add Research Brief generation via Tools menu\n- Add Meeting Preparation brief with participant context\n- Add task extraction from conversation with priority levels\n- Add \"Add as note\" button for extracted tasks\n- AI-powered follow-up suggestions based on conversation\n- Briefs auto-create notes with research-brief tags\n\nPhase 4: Long-term Memory\n- Add AIKnowledgeDashboard showing extracted key facts\n- Facts categorized: person, project, date, decision, theme\n- Facts editable and removable by user\n- Topic overview shows tags with note counts\n- Knowledge stored in localStorage with refresh on demand\n- Command palette entry \"AI Knowledge\"\n\nCompletes all AI Research Partner phases \\(Horizon 3.2\\):\n- Conversational AI with citations\n- Semantic search with embeddings\n- Proactive assistance and briefs\n- Long-term memory and knowledge dashboard\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git -C \"C:\\\\Users\\\\gbone\\\\patchpad\" add docs/stash.md)",
       "Bash(git -C \"C:\\\\Users\\\\gbone\\\\patchpad\" commit -m \"$\\(cat <<''EOF''\ndocs: Stash incomplete features for next cycle\n\nAdd Real-time Collaboration \\(Sync Phase 4\\) to stash.md:\n- Yjs CRDT integration for conflict-free editing\n- Real-time presence with cursors and selections\n- Collaborative editing UI with user attribution\n\nUpdate Notes for Future Implementation:\n- Prioritize Real-time Collaboration as next logical step\n- Add current state summary \\(completed vs stashed features\\)\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
-      "Bash(cmd.exe /c:*)"
+      "Bash(cmd.exe /c:*)",
+      "Bash(wc:*)",
+      "Bash(npm run build:*)"
     ]
   }
 }
