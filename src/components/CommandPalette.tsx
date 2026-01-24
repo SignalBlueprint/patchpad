@@ -5,7 +5,7 @@ export interface Command {
   name: string;
   description?: string;
   shortcut?: string;
-  category: 'note' | 'ai' | 'edit' | 'view' | 'navigate';
+  category: 'note' | 'ai' | 'edit' | 'view' | 'navigate' | 'session';
   icon?: React.ReactNode;
   action: () => void;
   disabled?: boolean;
@@ -23,9 +23,10 @@ const categoryLabels: Record<Command['category'], string> = {
   edit: 'Edit',
   view: 'View',
   navigate: 'Navigate',
+  session: 'Sessions',
 };
 
-const categoryOrder: Command['category'][] = ['note', 'ai', 'edit', 'view', 'navigate'];
+const categoryOrder: Command['category'][] = ['note', 'ai', 'edit', 'view', 'navigate', 'session'];
 
 export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProps) {
   const [query, setQuery] = useState('');
@@ -56,6 +57,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
       edit: [],
       view: [],
       navigate: [],
+      session: [],
     };
 
     filteredCommands.forEach(cmd => {
