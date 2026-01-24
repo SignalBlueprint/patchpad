@@ -13,52 +13,164 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import type { Note } from '../types/note';
 
+// Note row type
+interface NoteRow {
+  id: string;
+  user_id: string;
+  title: string;
+  content: string;
+  tags: string[];
+  folder_id: string | null;
+  parent_id: string | null;
+  favorite: boolean;
+  collapsed: boolean;
+  canvas_position: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  } | null;
+  audio_id: string | null;
+  created_at: string;
+  updated_at: string;
+  version: number;
+  deleted_at: string | null;
+  shared: boolean;
+  share_token: string | null;
+  share_view_count: number;
+}
+
+// Note version row type
+interface NoteVersionRow {
+  id: string;
+  note_id: string;
+  user_id: string;
+  content: string;
+  title: string;
+  char_delta: number;
+  snapshot_type: 'auto' | 'manual' | 'restore';
+  label: string | null;
+  created_at: string;
+}
+
+// Sync queue row type
+interface SyncQueueRow {
+  id: string;
+  user_id: string;
+  note_id: string;
+  operation: 'create' | 'update' | 'delete';
+  payload: Record<string, unknown>;
+  created_at: string;
+  synced_at: string | null;
+}
+
+// Published graphs row type
+interface PublishedGraphRow {
+  id: string;
+  user_id: string;
+  slug: string;
+  title: string;
+  description: string;
+  html_content: string;
+  thumbnail_data_url: string | null;
+  is_public: boolean;
+  custom_domain: string | null;
+  view_count: number;
+  node_count: number;
+  edge_count: number;
+  tags: string[];
+  created_at: string;
+  updated_at: string;
+  published_at: string;
+}
+
+// Graph analytics row type
+interface GraphAnalyticsRow {
+  id: string;
+  graph_id: string;
+  viewer_id: string | null;
+  referrer: string | null;
+  visitor_id: string | null;
+  clicked_node_id: string | null;
+  clicked_node_title: string | null;
+  viewed_at: string;
+}
+
+// Session annotation row type
+interface SessionAnnotationRow {
+  id: string;
+  user_id: string;
+  session_id: string;
+  timestamp: number;
+  content: string;
+  event_index: number | null;
+  tags: string[];
+  created_at: string;
+  updated_at: string;
+}
+
+// Annotation reply row type
+interface AnnotationReplyRow {
+  id: string;
+  annotation_id: string;
+  user_id: string;
+  content: string;
+  created_at: string;
+}
+
+// Comment row type
+interface CommentRow {
+  id: string;
+  user_id: string;
+  note_id: string;
+  content: string;
+  created_at: string;
+  updated_at: string;
+}
+
 // Database types for Supabase
 export interface Database {
   public: {
     Tables: {
       notes: {
-        Row: {
-          id: string;
-          user_id: string;
-          title: string;
-          content: string;
-          tags: string[];
-          folder_id: string | null;
-          parent_id: string | null;
-          favorite: boolean;
-          collapsed: boolean;
-          canvas_position: {
-            x: number;
-            y: number;
-            width: number;
-            height: number;
-          } | null;
-          audio_id: string | null;
-          created_at: string;
-          updated_at: string;
-          version: number;
-          deleted_at: string | null;
-          // Sharing fields
-          shared: boolean;
-          share_token: string | null;
-          share_view_count: number;
-        };
-        Insert: Omit<Database['public']['Tables']['notes']['Row'], 'version'> & { version?: number };
-        Update: Partial<Database['public']['Tables']['notes']['Insert']>;
+        Row: NoteRow;
+        Insert: Omit<NoteRow, 'version'> & { version?: number };
+        Update: Partial<Omit<NoteRow, 'version'> & { version?: number }>;
+      };
+      note_versions: {
+        Row: NoteVersionRow;
+        Insert: NoteVersionRow;
+        Update: Partial<NoteVersionRow>;
       };
       sync_queue: {
-        Row: {
-          id: string;
-          user_id: string;
-          note_id: string;
-          operation: 'create' | 'update' | 'delete';
-          payload: Record<string, unknown>;
-          created_at: string;
-          synced_at: string | null;
-        };
-        Insert: Omit<Database['public']['Tables']['sync_queue']['Row'], 'id' | 'created_at'>;
-        Update: Partial<Database['public']['Tables']['sync_queue']['Insert']>;
+        Row: SyncQueueRow;
+        Insert: Omit<SyncQueueRow, 'id' | 'created_at'>;
+        Update: Partial<Omit<SyncQueueRow, 'id' | 'created_at'>>;
+      };
+      published_graphs: {
+        Row: PublishedGraphRow;
+        Insert: Omit<PublishedGraphRow, 'id' | 'created_at' | 'updated_at'> & { id?: string; created_at?: string; updated_at?: string };
+        Update: Partial<PublishedGraphRow>;
+      };
+      graph_analytics: {
+        Row: GraphAnalyticsRow;
+        Insert: Omit<GraphAnalyticsRow, 'id' | 'viewed_at'> & { id?: string; viewed_at?: string };
+        Update: Partial<GraphAnalyticsRow>;
+      };
+      session_annotations: {
+        Row: SessionAnnotationRow;
+        Insert: Omit<SessionAnnotationRow, 'id' | 'created_at' | 'updated_at'> & { id?: string; created_at?: string; updated_at?: string };
+        Update: Partial<SessionAnnotationRow>;
+      };
+      annotation_replies: {
+        Row: AnnotationReplyRow;
+        Insert: Omit<AnnotationReplyRow, 'id' | 'created_at'> & { id?: string; created_at?: string };
+        Update: Partial<AnnotationReplyRow>;
+      };
+      comments: {
+        Row: CommentRow;
+        Insert: Omit<CommentRow, 'id' | 'created_at' | 'updated_at'> & { id?: string; created_at?: string; updated_at?: string };
+        Update: Partial<CommentRow>;
       };
     };
   };

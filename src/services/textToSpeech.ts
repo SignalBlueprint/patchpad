@@ -2,7 +2,8 @@
  * Text-to-Speech Service using Web Speech Synthesis API
  */
 
-let currentUtterance: SpeechSynthesisUtterance | null = null;
+// Track current utterance for cleanup (assigned but not read - using speechSynthesis.speaking instead)
+let _currentUtterance: SpeechSynthesisUtterance | null = null;
 
 /**
  * Check if text-to-speech is available
@@ -63,7 +64,7 @@ export function speak(
   stop();
 
   const utterance = new SpeechSynthesisUtterance(text);
-  currentUtterance = utterance;
+  _currentUtterance = utterance;
 
   // Apply options
   utterance.rate = options?.rate ?? 1;
@@ -81,12 +82,12 @@ export function speak(
   };
 
   utterance.onend = () => {
-    currentUtterance = null;
+    _currentUtterance = null;
     options?.onEnd?.();
   };
 
   utterance.onerror = (event) => {
-    currentUtterance = null;
+    _currentUtterance = null;
     options?.onError?.(event.error);
   };
 
@@ -100,7 +101,7 @@ export function speak(
 export function stop(): void {
   if (!isTTSAvailable()) return;
   window.speechSynthesis.cancel();
-  currentUtterance = null;
+  _currentUtterance = null;
 }
 
 /**

@@ -140,7 +140,7 @@ class WebSpeechProvider implements TranscriptionProvider {
            ('SpeechRecognition' in window || 'webkitSpeechRecognition' in window);
   }
 
-  async transcribe(audioBlob: Blob): Promise<TranscriptionResult> {
+  async transcribe(_audioBlob: Blob): Promise<TranscriptionResult> {
     // Web Speech API doesn't support transcribing audio blobs directly
     // It only works with live microphone input
     // We'll return an error suggesting to use real-time transcription instead
@@ -158,8 +158,8 @@ export class RealtimeSpeechRecognition {
   private recognition: SpeechRecognition | null = null;
   private isListening = false;
   private transcript = '';
-  private onResult: ((text: string, isFinal: boolean) => void) | null = null;
-  private onError: ((error: string) => void) | null = null;
+  private onResultCallback: ((text: string, isFinal: boolean) => void) | null = null;
+  private onErrorCallback: ((error: string) => void) | null = null;
 
   constructor() {
     if (typeof window === 'undefined') return;
@@ -172,7 +172,7 @@ export class RealtimeSpeechRecognition {
     this.recognition.interimResults = true;
     this.recognition.lang = getPreferences().language;
 
-    this.recognition.onresult = (event) => {
+    this.recognition.onresult = (event: SpeechRecognitionEvent) => {
       let interimTranscript = '';
       let finalTranscript = '';
 
@@ -187,14 +187,14 @@ export class RealtimeSpeechRecognition {
 
       if (finalTranscript) {
         this.transcript += finalTranscript + ' ';
-        this.onResult?.(this.transcript.trim(), true);
+        this.onResultCallback?.(this.transcript.trim(), true);
       } else if (interimTranscript) {
-        this.onResult?.(this.transcript + interimTranscript, false);
+        this.onResultCallback?.(this.transcript + interimTranscript, false);
       }
     };
 
-    this.recognition.onerror = (event) => {
-      this.onError?.(event.error);
+    this.recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+      this.onErrorCallback?.(event.error);
     };
 
     this.recognition.onend = () => {
@@ -219,8 +219,8 @@ export class RealtimeSpeechRecognition {
     }
 
     this.transcript = '';
-    this.onResult = onResult;
-    this.onError = onError || null;
+    this.onResultCallback = onResult;
+    this.onErrorCallback = onError || null;
     this.isListening = true;
 
     try {
@@ -259,11 +259,9 @@ export function getAvailableProviders(): TranscriptionProvider[] {
  * Get the best available transcription provider
  */
 export function getBestProvider(): TranscriptionProvider | null {
-  const prefs = getPreferences();
-
-  // If user prefers local transcription and Web Speech is available
-  // (but Web Speech doesn't support blob transcription, only real-time)
-  // So we always prefer OpenAI for blob transcription
+  // Note: User preferences for local transcription don't apply here
+  // because Web Speech doesn't support blob transcription, only real-time.
+  // So we always prefer OpenAI for blob transcription.
 
   if (openAIProvider.isAvailable()) {
     return openAIProvider;
@@ -304,9 +302,51 @@ export function isRealtimeSpeechAvailable(): boolean {
 }
 
 // Type declarations for Web Speech API
+interface SpeechRecognitionEvent extends Event {
+  resultIndex: number;
+  results: SpeechRecognitionResultList;
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string;
+}
+
+interface SpeechRecognitionResultList {
+  length: number;
+  item(index: number): SpeechRecognitionResult;
+  [index: number]: SpeechRecognitionResult;
+}
+
+interface SpeechRecognitionResult {
+  isFinal: boolean;
+  length: number;
+  item(index: number): SpeechRecognitionAlternative;
+  [index: number]: SpeechRecognitionAlternative;
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string;
+  confidence: number;
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean;
+  interimResults: boolean;
+  lang: string;
+  onresult: ((event: SpeechRecognitionEvent) => void) | null;
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+}
+
+interface SpeechRecognitionConstructor {
+  new (): SpeechRecognition;
+}
+
 declare global {
   interface Window {
-    SpeechRecognition: typeof SpeechRecognition;
-    webkitSpeechRecognition: typeof SpeechRecognition;
+    SpeechRecognition: SpeechRecognitionConstructor;
+    webkitSpeechRecognition: SpeechRecognitionConstructor;
   }
 }
