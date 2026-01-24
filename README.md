@@ -63,7 +63,7 @@ npm test
 npm run test:run
 
 # Type check
-npx tsc --noEmit
+npm run typecheck
 ```
 <!-- SB:SECTION:HOW_TO_RUN:END -->
 
@@ -79,10 +79,11 @@ npx tsc --noEmit
 | `VITE_ANTHROPIC_MODEL` | No | Anthropic model (default: `claude-3-haiku-20240307`) |
 | `VITE_SUPABASE_URL` | No | Supabase project URL for cloud sync |
 | `VITE_SUPABASE_ANON_KEY` | No | Supabase anonymous key for cloud sync |
+| `VITE_YJS_WEBSOCKET_URL` | No | Yjs WebSocket URL for real-time collaboration (default: `wss://demos.yjs.dev`) |
 | `VITE_ENABLE_AUTO_SUGGESTIONS` | No | Enable auto suggestions (default: `true`) |
 | `VITE_IDLE_TIMEOUT_MS` | No | Idle detection timeout in ms (default: `3000`) |
 
-API keys can also be configured at runtime via Settings dialogs.
+API keys and sync settings can also be configured at runtime via Settings dialogs.
 <!-- SB:SECTION:ENV:END -->
 
 <!-- SB:SECTION:ENTRY_POINTS -->
@@ -92,7 +93,7 @@ API keys can also be configured at runtime via Settings dialogs.
 |-------|------|-------------|
 | Web App | `/` | Main single-page application |
 | Main Component | `src/App.tsx` | Root React component with view routing |
-| Database | `src/db/index.ts` | Dexie/IndexedDB schema (v7) |
+| Database | `src/db/index.ts` | Dexie/IndexedDB schema (v8) |
 | AI Service | `src/services/ai.ts` | AI provider abstraction |
 | Research Partner | `src/services/researchPartner.ts` | Conversational AI with note context |
 | Semantic Search | `src/services/semanticSearch.ts` | Embedding-based search |
@@ -229,6 +230,8 @@ See `docs/VISION.md` for full roadmap and `docs/TASKS.md` for implementation det
 |----------|-------------|
 | `docs/VISION.md` | Product vision and feature roadmap |
 | `docs/TASKS.md` | Detailed task breakdown with file paths |
+| `docs/PROGRESS.md` | Implementation progress tracking |
+| `docs/WORK_LOG.md` | Development activity log |
 | `docs/stash.md` | Deferred features for future cycles |
 
 ## License
