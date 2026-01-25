@@ -5,12 +5,13 @@
 
 ## What's Next
 
-1. [ ] Add "Run Archivist" button to Second Brain Dashboard - Surface connection suggestions with accept/dismiss tracking
+_No remaining tasks._
 
 ## What's Done
 
 _All Horizon 1 (Quick Wins) features complete:_
 - Second Brain Dashboard with Greeting, Brewing Ideas, and Fading Memories sections
+- "Run Archivist" button in Second Brain Dashboard - Surfaces connection suggestions with accept/dismiss tracking
 - Thinking Timeline with session clustering and configurable gap threshold
 - Conversation Insights panel with top questions, topics, knowledge gaps, and activity tracking
 - Knowledge Graph Publishing with interactive HTML export
