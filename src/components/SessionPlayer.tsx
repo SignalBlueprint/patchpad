@@ -14,6 +14,7 @@ import {
   formatDuration,
   getEventDensity,
 } from '../services/sessionPlayback';
+import { CanvasReplayRenderer } from './Canvas/CanvasReplayRenderer';
 
 interface SessionPlayerProps {
   session: ThinkingSession;
@@ -387,6 +388,16 @@ export function SessionPlayer({
 
         {/* Current event display */}
         <div className="px-6 py-4 flex-1 overflow-hidden flex flex-col">
+          {/* Canvas Replay Renderer */}
+          <div className="mb-4">
+            <CanvasReplayRenderer
+              session={session}
+              currentEvent={currentEvent}
+              currentTime={position.currentTime}
+              progress={position.progress}
+            />
+          </div>
+
           {/* Annotation overlay */}
           {annotation && (
             <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-yellow-800">
