@@ -2,11 +2,10 @@
 
 <!-- SB:APP
 name: PatchPad
-slug: patchpad
-type: web
+type: app
 health: green
-owner: Grif
-last_verified: 2026-01-07
+owner: SignalBlueprint
+last_verified: 2026-01-24
 -->
 
 A personal knowledge operating system that transforms scattered thoughts into interconnected intelligence. Capture ideas through voice or keyboard, let AI refine and connect them, then explore relationships through spatial canvases and knowledge graphs.
