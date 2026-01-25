@@ -5,11 +5,10 @@
 
 ## What's Next
 
-1. [ ] Complete Template Intelligence AI placeholder filling - Add real-time preview of AI-generated content in TemplatePicker
-2. [ ] Wire up Live Collaborative Canvases - Connect CollaborationControls UI and remote cursors to canvas view
-3. [ ] Add canvas replay renderer for SessionPlayer - Visualize session playback with note movements and AI interactions
-4. [ ] Implement session comparison feature - Compare two thinking sessions with side-by-side event timelines
-5. [ ] Add "Run Archivist" button to Second Brain Dashboard - Surface connection suggestions with accept/dismiss tracking
+1. [ ] Wire up Live Collaborative Canvases - Connect CollaborationControls UI and remote cursors to canvas view
+2. [ ] Add canvas replay renderer for SessionPlayer - Visualize session playback with note movements and AI interactions
+3. [ ] Implement session comparison feature - Compare two thinking sessions with side-by-side event timelines
+4. [ ] Add "Run Archivist" button to Second Brain Dashboard - Surface connection suggestions with accept/dismiss tracking
 
 ## What's Done
 
@@ -19,6 +18,7 @@ _All Horizon 1 (Quick Wins) features complete:_
 - Conversation Insights panel with top questions, topics, knowledge gaps, and activity tracking
 - Knowledge Graph Publishing with interactive HTML export
 - Template Intelligence with pattern detection and AI placeholder types
+- Template Intelligence AI placeholder filling - Real-time preview of AI-generated content in TemplatePicker
 - Knowledge Agents framework (Archivist, Researcher, Writer) with AgentDashboard
 - Session Recording infrastructure with event capture and localStorage persistence
 - Session Playback with speed controls, timeline scrubber, and event markers

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import type { Note } from '../types/note';
 import type { Template, TemplateValues, Placeholder } from '../types/template';
 import { getTemplates, applyTemplate, getFormattedDate, getTemplateCategories, deleteTemplate, fillAIPlaceholders } from '../services/templates';
@@ -37,6 +37,7 @@ export function TemplatePicker({
   const [aiPreviewMode, setAiPreviewMode] = useState(false);
   const [aiPreviewContent, setAiPreviewContent] = useState<string | null>(null);
   const [aiPreviewLoading, setAiPreviewLoading] = useState(false);
+  const [realtimePreviewEnabled, setRealtimePreviewEnabled] = useState(true);
 
   useEffect(() => {
     if (isOpen) {
@@ -50,8 +51,32 @@ export function TemplatePicker({
       setAiPreviewMode(false);
       setAiPreviewContent(null);
       setAiPreviewLoading(false);
+      setRealtimePreviewEnabled(true);
     }
   }, [isOpen]);
+
+  // Real-time AI preview: Auto-generate when values change
+  useEffect(() => {
+    if (!selectedTemplate || !selectedTemplate.aiEnhanced || !realtimePreviewEnabled) {
+      return;
+    }
+
+    // Only auto-generate if we have some required placeholder values filled
+    const hasRequiredValues = selectedTemplate.placeholders
+      .filter(p => !isAIPlaceholder(p) && p.required)
+      .every(p => values[p.key]?.trim());
+
+    if (!hasRequiredValues) {
+      return;
+    }
+
+    // Debounce: wait 800ms after user stops typing
+    const timeoutId = setTimeout(() => {
+      handleGenerateAIPreview();
+    }, 800);
+
+    return () => clearTimeout(timeoutId);
+  }, [values, selectedTemplate, realtimePreviewEnabled, handleGenerateAIPreview]);
 
   const handleClose = () => {
     setIsClosing(true);
@@ -74,7 +99,7 @@ export function TemplatePicker({
   };
 
   // Generate AI preview
-  const handleGenerateAIPreview = async () => {
+  const handleGenerateAIPreview = useCallback(async () => {
     if (!selectedTemplate) return;
 
     setAiPreviewLoading(true);
@@ -94,7 +119,7 @@ export function TemplatePicker({
     } finally {
       setAiPreviewLoading(false);
     }
-  };
+  }, [selectedTemplate, notes, values]);
 
   const handleValueChange = (key: string, value: string) => {
     setValues(prev => ({ ...prev, [key]: value }));
@@ -397,7 +422,7 @@ export function TemplatePicker({
                             aiPreviewMode
                               ? 'bg-amber-100 text-amber-700'
                               : 'text-amber-600 hover:bg-amber-50'
-                          }`}
+                          } ${aiPreviewLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                           {aiPreviewLoading ? (
                             <>
@@ -416,23 +441,56 @@ export function TemplatePicker({
                             </>
                           )}
                         </button>
+                        <button
+                          onClick={() => setRealtimePreviewEnabled(!realtimePreviewEnabled)}
+                          className={`ml-1 px-2 py-1 text-xs rounded transition-colors flex items-center gap-1 ${
+                            realtimePreviewEnabled
+                              ? 'bg-green-100 text-green-700'
+                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          }`}
+                          title={realtimePreviewEnabled ? 'Disable real-time preview' : 'Enable real-time preview'}
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={realtimePreviewEnabled ? "M13 10V3L4 14h7v7l9-11h-7z" : "M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z"} />
+                          </svg>
+                          {realtimePreviewEnabled ? 'Auto' : 'Manual'}
+                        </button>
                       </div>
                     )}
                   </div>
-                  <pre className="text-xs text-gray-600 whitespace-pre-wrap font-mono bg-gray-50 p-3 rounded-lg border border-gray-200 max-h-48 overflow-y-auto">
-                    {aiPreviewMode && aiPreviewContent
-                      ? aiPreviewContent.slice(0, 800)
-                      : applyTemplate(selectedTemplate, values).content.slice(0, 500)}
-                    {(aiPreviewMode && aiPreviewContent
-                      ? aiPreviewContent.length > 800
-                      : applyTemplate(selectedTemplate, values).content.length > 500) && '...'}
-                  </pre>
+                  <div className="relative">
+                    {aiPreviewLoading && realtimePreviewEnabled && (
+                      <div className="absolute top-2 right-2 flex items-center gap-1 bg-amber-100 text-amber-700 px-2 py-1 rounded text-xs">
+                        <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                        </svg>
+                        Updating...
+                      </div>
+                    )}
+                    <pre className="text-xs text-gray-600 whitespace-pre-wrap font-mono bg-gray-50 p-3 rounded-lg border border-gray-200 max-h-48 overflow-y-auto">
+                      {aiPreviewMode && aiPreviewContent
+                        ? aiPreviewContent.slice(0, 800)
+                        : applyTemplate(selectedTemplate, values).content.slice(0, 500)}
+                      {(aiPreviewMode && aiPreviewContent
+                        ? aiPreviewContent.length > 800
+                        : applyTemplate(selectedTemplate, values).content.length > 500) && '...'}
+                    </pre>
+                  </div>
                   {aiPreviewMode && aiPreviewContent && (
                     <p className="text-xs text-amber-600 mt-2 flex items-center gap-1">
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
-                      AI-generated content preview based on your notes
+                      {realtimePreviewEnabled ? 'Real-time AI preview based on your notes' : 'AI-generated content preview based on your notes'}
+                    </p>
+                  )}
+                  {realtimePreviewEnabled && !aiPreviewMode && selectedTemplate.aiEnhanced && (
+                    <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                      <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                      Fill in required fields to see AI preview
                     </p>
                   )}
                 </div>
