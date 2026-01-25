@@ -113,11 +113,11 @@ Remaining (Future Enhancements):
 
 *From WORK_LOG.md (last 5 entries)*
 
-1. **Knowledge Agents: TypeScript Fixes** — Fixed imports and type errors in all three agent files
-2. **Template Intelligence Phase 1** — Pattern detection for title and structure patterns
-3. **Moonshot Phase 4: Session Comparison** — Compare two sessions with topic evolution
-4. **Moonshot Phase 4: Session Templates** — 4 built-in templates with workflow guides
-5. **Moonshot Phases 2-3: Status Verification** — Confirmed substantial implementation
+1. **Knowledge Agents: Integration with Second Brain Dashboard** — Added "Run Archivist" button to Brewing Ideas section (Jan 2026)
+2. **Knowledge Agents: TypeScript Fixes** — Fixed imports and type errors in all three agent files
+3. **Template Intelligence Phase 1** — Pattern detection for title and structure patterns
+4. **Moonshot Phase 4: Session Comparison** — Compare two sessions with topic evolution
+5. **Moonshot Phase 4: Session Templates** — 4 built-in templates with workflow guides
 
 ---
 
@@ -147,7 +147,7 @@ Marked for later development cycles:
 ## Recommended Next Actions
 
 1. **Template Intelligence Polish** — Clean up duplicate task documentation, verify all UI integrations working
-2. **Knowledge Agents Dashboard** — Test agent execution, add "Run Archivist" to Second Brain Dashboard
+2. [x] **Knowledge Agents Dashboard** — Test agent execution, add "Run Archivist" to Second Brain Dashboard (COMPLETED: Jan 2026)
 3. **Documentation Cleanup** — De-duplicate TASKS.md sections, archive completed horizons
 
 ---

@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import type { Note } from '../../types/note';
 import type { SuggestedLink } from '../../services/dashboardInsights';
 import { suggestConnections } from '../../services/dashboardInsights';
+import { runAgent } from '../../services/agentFramework';
+import { initializeArchivistAgent } from '../../agents/archivist';
 
 interface BrewingIdeasSectionProps {
   unconnectedNotes: Note[];
@@ -19,6 +21,12 @@ export function BrewingIdeasSection({
   const [suggestions, setSuggestions] = useState<SuggestedLink[]>([]);
   const [loading, setLoading] = useState(true);
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
+  const [runningArchivist, setRunningArchivist] = useState(false);
+
+  // Initialize archivist agent on mount
+  useEffect(() => {
+    initializeArchivistAgent();
+  }, []);
 
   useEffect(() => {
     async function loadSuggestions() {
@@ -41,6 +49,25 @@ export function BrewingIdeasSection({
 
     loadSuggestions();
   }, [unconnectedNotes, allNotes]);
+
+  const handleRunArchivist = async () => {
+    setRunningArchivist(true);
+    try {
+      // Run the archivist's suggestConnections capability
+      const result = await runAgent('archivist', 'suggestConnections', { notes: allNotes });
+
+      if (result && result.suggestions) {
+        // Show a notification or update UI with agent suggestions count
+        console.log(`Archivist found ${result.suggestions.length} connection suggestions`);
+        alert(`Archivist found ${result.suggestions.length} new suggestions! Check the Agent Dashboard to review them.`);
+      }
+    } catch (error) {
+      console.error('Failed to run archivist:', error);
+      alert('Failed to run Archivist agent. Please try again.');
+    } finally {
+      setRunningArchivist(false);
+    }
+  };
 
   const handleConnect = (suggestion: SuggestedLink) => {
     onConnectNotes(suggestion.fromNote.id, suggestion.toNote.title);
@@ -103,27 +130,54 @@ export function BrewingIdeasSection({
 
   return (
     <div className="bg-white/80 backdrop-blur-sm rounded-xl p-5 border border-white/50 shadow-lg">
-      <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-        <svg
-          className="w-5 h-5 text-purple-500"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
+      <div className="mb-4 flex items-center justify-between">
+        <h3 className="text-lg font-semibold text-gray-800 flex items-center gap-2">
+          <svg
+            className="w-5 h-5 text-purple-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+            />
+          </svg>
+          Brewing Ideas
+          {visibleSuggestions.length > 0 && (
+            <span className="ml-2 text-xs font-normal text-gray-500">
+              {visibleSuggestions.length} suggestion{visibleSuggestions.length !== 1 ? 's' : ''}
+            </span>
+          )}
+        </h3>
+        <button
+          onClick={handleRunArchivist}
+          disabled={runningArchivist}
+          className={`px-3 py-1.5 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors ${
+            runningArchivist
+              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              : 'bg-purple-500 text-white hover:bg-purple-600'
+          }`}
+          title="Run the Archivist agent to find more connections"
         >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
-          />
-        </svg>
-        Brewing Ideas
-        {visibleSuggestions.length > 0 && (
-          <span className="ml-auto text-xs font-normal text-gray-500">
-            {visibleSuggestions.length} suggestion{visibleSuggestions.length !== 1 ? 's' : ''}
-          </span>
-        )}
-      </h3>
+          {runningArchivist ? (
+            <>
+              <svg className="w-3.5 h-3.5 animate-spin" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+              </svg>
+              Running...
+            </>
+          ) : (
+            <>
+              <span>📚</span>
+              Run Archivist
+            </>
+          )}
+        </button>
+      </div>
 
       {visibleSuggestions.length === 0 ? (
         <div className="text-center py-6 text-gray-500">
