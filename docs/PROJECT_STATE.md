@@ -5,8 +5,7 @@
 
 ## What's Next
 
-1. [ ] Implement session comparison feature - Compare two thinking sessions with side-by-side event timelines
-2. [ ] Add "Run Archivist" button to Second Brain Dashboard - Surface connection suggestions with accept/dismiss tracking
+1. [ ] Add "Run Archivist" button to Second Brain Dashboard - Surface connection suggestions with accept/dismiss tracking
 
 ## What's Done
 
@@ -24,6 +23,7 @@ _All Horizon 1 (Quick Wins) features complete:_
 - Session Insights with activity analysis, breakthrough detection, and AI-generated summaries
 - Live Collaborative Canvases - CollaborationControls UI and remote cursors connected to canvas view with Yjs CRDT sync
 - Canvas Replay Renderer - Visualize session playback with note movements and AI interactions in SessionPlayer
+- Session Comparison - Compare two thinking sessions with side-by-side event timelines, topic evolution, and learning insights
 
 ## Blocked
 
