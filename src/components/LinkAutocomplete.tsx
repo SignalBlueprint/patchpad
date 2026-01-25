@@ -136,14 +136,14 @@ export function LinkAutocomplete({
   return (
     <div
       ref={containerRef}
-      className="bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden min-w-[280px] max-w-[400px] animate-fade-in"
+      className="bg-white rounded-lg shadow-xl border border-neutral-200 overflow-hidden min-w-[280px] max-w-[400px] animate-fade-in"
       style={style}
     >
       {/* Search input display */}
-      <div className="px-3 py-2 bg-gray-50 border-b border-gray-200">
+      <div className="px-3 py-2 bg-neutral-50 border-b border-neutral-200">
         <div className="flex items-center gap-2 text-sm">
-          <span className="text-gray-400">[[</span>
-          <span className="text-gray-900 font-medium">{query || 'Type to search...'}</span>
+          <span className="text-neutral-400">[[</span>
+          <span className="text-neutral-900 font-medium">{query || 'Type to search...'}</span>
         </div>
       </div>
 
@@ -157,15 +157,15 @@ export function LinkAutocomplete({
               className={`w-full px-3 py-2 text-left flex items-center gap-2 transition-colors ${
                 index === selectedIndex
                   ? 'bg-blue-50 text-blue-900'
-                  : 'hover:bg-gray-50 text-gray-700'
+                  : 'hover:bg-neutral-50 text-neutral-700'
               }`}
             >
-              <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded bg-gray-100 text-gray-500 text-xs">
+              <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded bg-neutral-100 text-neutral-500 text-xs">
                 📄
               </span>
               <span className="flex-1 truncate text-sm">{note.title}</span>
               {note.folder && (
-                <span className="text-xs text-gray-400 truncate max-w-[100px]">
+                <span className="text-xs text-neutral-400 truncate max-w-[100px]">
                   {note.folder}
                 </span>
               )}
@@ -182,10 +182,10 @@ export function LinkAutocomplete({
               className={`w-full px-3 py-2 text-left flex items-center gap-2 transition-colors border-t border-gray-100 ${
                 selectedIndex === results.length
                   ? 'bg-green-50 text-green-900'
-                  : 'hover:bg-gray-50 text-gray-600'
+                  : 'hover:bg-neutral-50 text-neutral-600'
               }`}
             >
-              <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded bg-green-100 text-green-600 text-xs">
+              <span className="flex-shrink-0 w-5 h-5 flex items-center justify-center rounded bg-green-100 text-success-600 text-xs">
                 +
               </span>
               <span className="flex-1 text-sm">
@@ -197,14 +197,14 @@ export function LinkAutocomplete({
 
         {/* Empty state */}
         {results.length === 0 && !query.trim() && (
-          <li className="px-3 py-4 text-sm text-gray-500 text-center">
+          <li className="px-3 py-4 text-sm text-neutral-500 text-center">
             Type to search notes...
           </li>
         )}
       </ul>
 
       {/* Footer hints */}
-      <div className="px-3 py-1.5 bg-gray-50 border-t border-gray-200 flex items-center gap-3 text-[10px] text-gray-400">
+      <div className="px-3 py-1.5 bg-neutral-50 border-t border-neutral-200 flex items-center gap-3 text-[10px] text-neutral-400">
         <span>↑↓ Navigate</span>
         <span>↵ Select</span>
         <span>Esc Cancel</span>

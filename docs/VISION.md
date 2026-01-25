@@ -154,6 +154,128 @@ The architecture supports both, but the product direction is ambiguous. Solo foc
 
 ---
 
+## Design System: "Neural Moss"
+
+### Philosophy
+
+PatchPad's design system reflects its nature as a **personal knowledge operating system** where ideas grow and connect organically. The "Neural Moss" palette embodies:
+
+- **Thoughtful & Calm** - A neutral base that doesn't overwhelm, creating space for thinking
+- **Intelligent & Precise** - Accent colors that guide attention without distraction
+- **Organic & Connected** - Natural tones inspired by how knowledge grows like moss connecting trees
+- **Personal & Trustworthy** - Warm undertones that feel local-first and human
+
+### Color Palette
+
+**Primary: Neural Moss (Teal-Green)**
+- Main brand color: `#2a9d8f` - Represents connections, growth, and knowledge networks
+- Used for: Primary actions, wiki links, connection lines, active states
+- Range: 50-900 scale for light to dark variations
+
+**Accent: Amber Light**
+- Main accent: `#e8a24e` - Warm highlights for AI activity and insights
+- Used for: AI processing indicators, highlights, favorites, important markers
+- Conveys warmth and intelligence without being intrusive
+
+**Secondary: Deep Plum**
+- Secondary brand: `#7d4e8e` - Rich, sophisticated tone for advanced features
+- Used for: Knowledge agents, collaboration features, premium functionality
+- Adds depth and distinction to power-user features
+
+**Semantic Colors:**
+- Success: `#1db65d` (vibrant green) - Confirmations, completed actions
+- Warning: `#f77a15` (warm orange) - Alerts, caution states
+- Error: `#f54444` (coral red) - Errors, destructive actions
+- Info: `#1da3b8` (calm teal) - Informational messages
+
+**Neutral: Warm Stone**
+- Base grays with subtle warm undertones (`#1a1816` to `#f9f8f7`)
+- Creates an organic, paper-like feel rather than cold digital
+- Used for: Text, backgrounds, borders, structural elements
+
+### Typography
+
+- **Base Font**: System font stack prioritizing native rendering
+  - macOS: San Francisco
+  - Windows: Segoe UI
+  - Fallback: Inter, Roboto, system defaults
+- **Monospace**: SF Mono, Cascadia Code, Consolas (for code/technical content)
+- **Scale**: 12px to 36px (t-shirt sizing: xs, sm, base, lg, xl, 2xl, 3xl, 4xl)
+- **Weights**: Normal (400), Medium (500), Semibold (600), Bold (700)
+
+### Spacing System
+
+4px base grid with t-shirt sizing:
+- xs: 4px
+- sm: 8px
+- md: 16px (default)
+- lg: 24px
+- xl: 32px
+- 2xl: 48px
+- 3xl: 64px
+
+### Border Radius
+
+- sm: 6px (inputs, badges)
+- md: 8px (buttons, cards)
+- lg: 12px (modals, panels)
+- xl: 16px (hero sections)
+- full: 9999px (circular)
+
+### Shadows
+
+Progressive elevation system with warm undertones:
+- xs: Minimal lift (1px)
+- sm: Subtle elevation (2-4px)
+- md: Standard cards (4-8px)
+- lg: Modals and overlays (10-20px)
+- xl: Dramatic emphasis (20-40px)
+
+### Animations
+
+- **Fast**: 100ms - Micro-interactions
+- **Base**: 200ms - Standard transitions
+- **Slow**: 300ms - Panel reveals
+- **Spring**: 400ms - Playful emphasis (cubic-bezier spring)
+
+### Component Patterns
+
+**Glass Morphism:**
+- Frosted glass effects with `backdrop-filter: blur(20px)` and 88% opacity
+- Used for: Modals, overlays, floating panels
+- Maintains context while focusing attention
+
+**AI Effects:**
+- Breathing glow (2s infinite) - Amber/primary gradient for AI processing
+- Animated gradient border - Multi-color flow for active AI operations
+- Concept pulse - Subtle highlight when concepts detected
+
+**Interactive States:**
+- Hover: Lift effect with shadow transition
+- Focus: 2px ring in primary color with offset
+- Active: Slight scale and brightness shift
+- Disabled: 50% opacity with cursor change
+
+### Implementation
+
+All design tokens are defined as CSS custom properties in `src/index.css` and mapped to Tailwind utilities in `tailwind.config.js`. This allows:
+- Easy theme switching (future dark mode)
+- Consistent usage across components
+- Single source of truth for design decisions
+- Build-time optimizations via Tailwind
+
+### Usage Guidelines
+
+1. **Primary actions** use `primary-600` with hover state `primary-700`
+2. **Secondary/cancel actions** use neutral borders with subtle hover states
+3. **AI features** incorporate `accent-500` highlights and glow effects
+4. **Knowledge connections** (wiki links, graph lines) use `primary-500`
+5. **Status indicators** strictly use semantic colors (success/warning/error/info)
+6. **Text hierarchy**: 900 for headings, 700-800 for body, 500-600 for secondary, 400 for tertiary
+7. **Backgrounds progress** from 50 (lightest) to 100 for subtle elevation changes
+
+---
+
 ## Quick Reference
 
 | Horizon | Idea | Effort | Impact |

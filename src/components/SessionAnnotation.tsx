@@ -151,16 +151,16 @@ export function SessionAnnotation({
   const highlightColors = [
     { name: 'yellow', class: 'bg-yellow-400', border: 'border-yellow-500' },
     { name: 'green', class: 'bg-green-400', border: 'border-green-500' },
-    { name: 'blue', class: 'bg-blue-400', border: 'border-blue-500' },
+    { name: 'blue', class: 'bg-blue-400', border: 'border-primary-500' },
     { name: 'pink', class: 'bg-pink-400', border: 'border-pink-500' },
   ] as const;
 
   // Collapsed state - show quick action buttons
   if (mode === 'collapsed') {
     return (
-      <div className="bg-white/90 backdrop-blur rounded-xl shadow-lg border border-gray-200 p-3">
+      <div className="bg-white/90 backdrop-blur rounded-xl shadow-lg border border-neutral-200 p-3">
         <div className="flex items-center gap-2">
-          <span className="text-sm text-gray-500 mr-2">{formatTime(currentTime)}</span>
+          <span className="text-sm text-neutral-500 mr-2">{formatTime(currentTime)}</span>
 
           {/* Add Note button */}
           <button
@@ -200,7 +200,7 @@ export function SessionAnnotation({
 
           {/* Annotation count badge */}
           {annotations.length > 0 && (
-            <span className="ml-auto px-2 py-0.5 text-xs bg-gray-100 text-gray-600 rounded-full">
+            <span className="ml-auto px-2 py-0.5 text-xs bg-neutral-100 text-neutral-600 rounded-full">
               {annotations.length} annotation{annotations.length !== 1 ? 's' : ''}
             </span>
           )}
@@ -214,27 +214,27 @@ export function SessionAnnotation({
     return (
       <div className="bg-white/95 backdrop-blur rounded-xl shadow-lg border border-blue-200 p-4 w-80">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2">
-            <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <h3 className="text-sm font-medium text-neutral-900 flex items-center gap-2">
+            <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
             Add Note
           </h3>
-          <span className="text-xs text-gray-400">{formatTime(currentTime)}</span>
+          <span className="text-xs text-neutral-400">{formatTime(currentTime)}</span>
         </div>
 
         <textarea
           value={noteText}
           onChange={(e) => setNoteText(e.target.value)}
           placeholder="What are you thinking at this moment?"
-          className="w-full h-24 px-3 py-2 text-sm border border-gray-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-200"
+          className="w-full h-24 px-3 py-2 text-sm border border-neutral-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-200"
           autoFocus
         />
 
         <div className="flex items-center justify-end gap-2 mt-3">
           <button
             onClick={handleCollapse}
-            className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800"
+            className="px-3 py-1.5 text-sm text-neutral-600 hover:text-gray-800"
           >
             Cancel
           </button>
@@ -243,8 +243,8 @@ export function SessionAnnotation({
             disabled={!noteText.trim()}
             className={`px-4 py-1.5 text-sm rounded-lg ${
               noteText.trim()
-                ? 'bg-blue-500 text-white hover:bg-blue-600'
-                : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+                ? 'bg-primary-500 text-white hover:bg-primary-600'
+                : 'bg-gray-200 text-neutral-400 cursor-not-allowed'
             }`}
           >
             Add Note
@@ -259,18 +259,18 @@ export function SessionAnnotation({
     return (
       <div className="bg-white/95 backdrop-blur rounded-xl shadow-lg border border-yellow-200 p-4 w-72">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2">
-            <svg className="w-4 h-4 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+          <h3 className="text-sm font-medium text-neutral-900 flex items-center gap-2">
+            <svg className="w-4 h-4 text-accent-500" fill="currentColor" viewBox="0 0 24 24">
               <path d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
             </svg>
             Mark Moment
           </h3>
-          <span className="text-xs text-gray-400">{formatTime(currentTime)}</span>
+          <span className="text-xs text-neutral-400">{formatTime(currentTime)}</span>
         </div>
 
         {/* Color selector */}
         <div className="flex items-center gap-2 mb-3">
-          <span className="text-xs text-gray-500">Color:</span>
+          <span className="text-xs text-neutral-500">Color:</span>
           {highlightColors.map((color) => (
             <button
               key={color.name}
@@ -286,7 +286,7 @@ export function SessionAnnotation({
         <input
           type="text"
           placeholder="Add a comment (optional)"
-          className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-200"
+          className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-yellow-200"
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               handleAddHighlight((e.target as HTMLInputElement).value);
@@ -297,13 +297,13 @@ export function SessionAnnotation({
         <div className="flex items-center justify-end gap-2 mt-3">
           <button
             onClick={handleCollapse}
-            className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800"
+            className="px-3 py-1.5 text-sm text-neutral-600 hover:text-gray-800"
           >
             Cancel
           </button>
           <button
             onClick={() => handleAddHighlight()}
-            className="px-4 py-1.5 text-sm bg-yellow-500 text-white rounded-lg hover:bg-yellow-600"
+            className="px-4 py-1.5 text-sm bg-accent-500 text-white rounded-lg hover:bg-yellow-600"
           >
             Mark
           </button>
@@ -317,13 +317,13 @@ export function SessionAnnotation({
     return (
       <div className="bg-white/95 backdrop-blur rounded-xl shadow-lg border border-purple-200 p-4 w-80">
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-sm font-medium text-gray-900 flex items-center gap-2">
+          <h3 className="text-sm font-medium text-neutral-900 flex items-center gap-2">
             <svg className="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
             </svg>
             Voice Memo
           </h3>
-          <span className="text-xs text-gray-400">{formatTime(currentTime)}</span>
+          <span className="text-xs text-neutral-400">{formatTime(currentTime)}</span>
         </div>
 
         {/* Recording indicator */}
@@ -346,8 +346,8 @@ export function SessionAnnotation({
 
         {/* Transcript preview */}
         {voiceTranscript && (
-          <div className="mt-3 p-2 bg-gray-50 rounded-lg">
-            <p className="text-sm text-gray-700">{voiceTranscript}</p>
+          <div className="mt-3 p-2 bg-neutral-50 rounded-lg">
+            <p className="text-sm text-neutral-700">{voiceTranscript}</p>
           </div>
         )}
 
@@ -357,14 +357,14 @@ export function SessionAnnotation({
               if (isRecordingVoice) stopVoiceRecording();
               handleCollapse();
             }}
-            className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-800"
+            className="px-3 py-1.5 text-sm text-neutral-600 hover:text-gray-800"
           >
             Cancel
           </button>
           {isRecordingVoice && (
             <button
               onClick={handleSaveVoiceAnnotation}
-              className="px-4 py-1.5 text-sm bg-purple-500 text-white rounded-lg hover:bg-purple-600"
+              className="px-4 py-1.5 text-sm bg-purple-500 text-white rounded-lg hover:bg-secondary-600"
             >
               Save Memo
             </button>
@@ -428,7 +428,7 @@ export function AnnotationList({
 
   if (annotations.length === 0) {
     return (
-      <div className="text-center py-8 text-gray-400">
+      <div className="text-center py-8 text-neutral-400">
         <svg className="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 8h10M7 12h4m1 8l-4-4H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-3l-4 4z" />
         </svg>
@@ -449,21 +449,21 @@ export function AnnotationList({
               key={annotation.id}
               onClick={() => onSeekTo(annotation.timestamp)}
               className={`p-3 rounded-lg border cursor-pointer transition-all ${getAnnotationColor(annotation.type)} ${
-                isActive ? 'ring-2 ring-offset-1 ring-blue-400' : 'hover:border-gray-300'
+                isActive ? 'ring-2 ring-offset-1 ring-blue-400' : 'hover:border-neutral-300'
               }`}
             >
               <div className="flex items-start gap-2">
                 <span className="text-lg">{getAnnotationIcon(annotation.type)}</span>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500">{formatTime(annotation.timestamp)}</span>
+                    <span className="text-xs text-neutral-500">{formatTime(annotation.timestamp)}</span>
                     {onDeleteAnnotation && (
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
                           onDeleteAnnotation(annotation.id);
                         }}
-                        className="p-1 text-gray-400 hover:text-red-500 rounded"
+                        className="p-1 text-neutral-400 hover:text-red-500 rounded"
                       >
                         <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -471,7 +471,7 @@ export function AnnotationList({
                       </button>
                     )}
                   </div>
-                  <p className="text-sm text-gray-700 mt-1 line-clamp-2">{annotation.content}</p>
+                  <p className="text-sm text-neutral-700 mt-1 line-clamp-2">{annotation.content}</p>
                 </div>
               </div>
             </div>

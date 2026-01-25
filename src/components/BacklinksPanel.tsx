@@ -22,11 +22,11 @@ export function BacklinksPanel({ note, allNotes, onNavigate }: BacklinksPanelPro
   }
 
   return (
-    <div className="border-t border-gray-200 bg-gray-50">
+    <div className="border-t border-neutral-200 bg-neutral-50">
       {/* Header toggle */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full px-4 py-2 flex items-center justify-between text-sm text-gray-600 hover:bg-gray-100 transition-colors"
+        className="w-full px-4 py-2 flex items-center justify-between text-sm text-neutral-600 hover:bg-neutral-100 transition-colors"
       >
         <div className="flex items-center gap-2">
           <svg
@@ -93,19 +93,19 @@ function BacklinkItem({ backlink, onClick }: BacklinkItemProps) {
   return (
     <button
       onClick={onClick}
-      className="w-full text-left p-2 rounded-lg hover:bg-white border border-transparent hover:border-gray-200 transition-all group"
+      className="w-full text-left p-2 rounded-lg hover:bg-white border border-transparent hover:border-neutral-200 transition-all group"
     >
       <div className="flex items-center gap-2 mb-1">
-        <span className="text-gray-400 text-xs">📄</span>
-        <span className="text-sm font-medium text-gray-800 group-hover:text-blue-600 transition-colors">
+        <span className="text-neutral-400 text-xs">📄</span>
+        <span className="text-sm font-medium text-gray-800 group-hover:text-primary-600 transition-colors">
           {backlink.sourceTitle}
         </span>
       </div>
-      <p className="text-xs text-gray-500 leading-relaxed">
+      <p className="text-xs text-neutral-500 leading-relaxed">
         {highlightedContext.map((part, i) => (
           <span
             key={i}
-            className={part.isLink ? 'text-blue-600 font-medium' : ''}
+            className={part.isLink ? 'text-primary-600 font-medium' : ''}
           >
             {part.text}
           </span>

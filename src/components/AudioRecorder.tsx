@@ -149,7 +149,7 @@ export function AudioRecorder({ onTranscriptionComplete, onClose, quickCapture =
             className={`w-1.5 rounded-full transition-all duration-75 ${
               i < activeCount
                 ? i < bars * 0.3 ? 'bg-green-500'
-                : i < bars * 0.7 ? 'bg-yellow-500'
+                : i < bars * 0.7 ? 'bg-accent-500'
                 : 'bg-red-500'
                 : 'bg-gray-200'
             }`}
@@ -167,7 +167,7 @@ export function AudioRecorder({ onTranscriptionComplete, onClose, quickCapture =
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md p-6">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg font-semibold text-gray-900">
+          <h2 className="text-lg font-semibold text-neutral-900">
             {step === 'idle' && 'Voice Recording'}
             {step === 'recording' && 'Recording...'}
             {step === 'processing' && 'Processing...'}
@@ -175,7 +175,7 @@ export function AudioRecorder({ onTranscriptionComplete, onClose, quickCapture =
           </h2>
           <button
             onClick={onClose}
-            className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-1 text-neutral-400 hover:text-neutral-600 transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -185,7 +185,7 @@ export function AudioRecorder({ onTranscriptionComplete, onClose, quickCapture =
 
         {/* Error message */}
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-error-600">
             {error}
           </div>
         )}
@@ -205,12 +205,12 @@ export function AudioRecorder({ onTranscriptionComplete, onClose, quickCapture =
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
               </svg>
             </div>
-            <p className="text-gray-600 mb-6">
+            <p className="text-neutral-600 mb-6">
               Click the button below to start recording. Your audio will be transcribed automatically.
             </p>
             <button
               onClick={handleStartRecording}
-              className="px-6 py-3 bg-red-500 text-white rounded-full font-medium hover:bg-red-600 transition-colors shadow-lg hover:shadow-xl"
+              className="px-6 py-3 bg-red-500 text-white rounded-full font-medium hover:bg-error-600 transition-colors shadow-lg hover:shadow-xl"
             >
               Start Recording
             </button>
@@ -230,7 +230,7 @@ export function AudioRecorder({ onTranscriptionComplete, onClose, quickCapture =
             </div>
 
             {/* Duration */}
-            <div className="text-3xl font-mono font-bold text-gray-900 mb-2">
+            <div className="text-3xl font-mono font-bold text-neutral-900 mb-2">
               {formatDuration(recordingState.duration)}
             </div>
 
@@ -240,7 +240,7 @@ export function AudioRecorder({ onTranscriptionComplete, onClose, quickCapture =
             </div>
 
             {/* Status */}
-            <p className="text-sm text-gray-500 mb-6">
+            <p className="text-sm text-neutral-500 mb-6">
               {recordingState.isPaused ? 'Paused' : 'Recording in progress...'}
             </p>
 
@@ -248,7 +248,7 @@ export function AudioRecorder({ onTranscriptionComplete, onClose, quickCapture =
             <div className="flex items-center justify-center gap-4">
               <button
                 onClick={handleCancelRecording}
-                className="p-3 text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-3 text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 rounded-full transition-colors"
                 title="Cancel"
               >
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -258,7 +258,7 @@ export function AudioRecorder({ onTranscriptionComplete, onClose, quickCapture =
 
               <button
                 onClick={handlePauseResume}
-                className="p-4 bg-yellow-500 text-white rounded-full hover:bg-yellow-600 transition-colors shadow-lg"
+                className="p-4 bg-accent-500 text-white rounded-full hover:bg-yellow-600 transition-colors shadow-lg"
                 title={recordingState.isPaused ? 'Resume' : 'Pause'}
               >
                 {recordingState.isPaused ? (
@@ -274,7 +274,7 @@ export function AudioRecorder({ onTranscriptionComplete, onClose, quickCapture =
 
               <button
                 onClick={handleStopRecording}
-                className="p-4 bg-green-500 text-white rounded-full hover:bg-green-600 transition-colors shadow-lg"
+                className="p-4 bg-green-500 text-white rounded-full hover:bg-success-600 transition-colors shadow-lg"
                 title="Stop and transcribe"
               >
                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
@@ -288,20 +288,20 @@ export function AudioRecorder({ onTranscriptionComplete, onClose, quickCapture =
         {step === 'processing' && (
           <div className="text-center py-12">
             <div className="w-16 h-16 mx-auto mb-4">
-              <svg className="w-full h-full text-blue-500 animate-spin" fill="none" viewBox="0 0 24 24">
+              <svg className="w-full h-full text-primary-500 animate-spin" fill="none" viewBox="0 0 24 24">
                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
               </svg>
             </div>
-            <p className="text-gray-600">Transcribing your audio...</p>
-            <p className="text-sm text-gray-400 mt-2">This may take a moment</p>
+            <p className="text-neutral-600">Transcribing your audio...</p>
+            <p className="text-sm text-neutral-400 mt-2">This may take a moment</p>
           </div>
         )}
 
         {step === 'review' && transcription && (
           <div>
             {/* Transcription info */}
-            <div className="flex items-center gap-4 mb-4 text-sm text-gray-500">
+            <div className="flex items-center gap-4 mb-4 text-sm text-neutral-500">
               <span className="flex items-center gap-1">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -319,12 +319,12 @@ export function AudioRecorder({ onTranscriptionComplete, onClose, quickCapture =
             </div>
 
             {/* Transcribed text */}
-            <div className="bg-gray-50 rounded-lg p-4 mb-6 max-h-64 overflow-y-auto">
+            <div className="bg-neutral-50 rounded-lg p-4 mb-6 max-h-64 overflow-y-auto">
               <p className="text-gray-800 whitespace-pre-wrap">{transcription.text}</p>
             </div>
 
             {/* Word count */}
-            <p className="text-sm text-gray-500 mb-6">
+            <p className="text-sm text-neutral-500 mb-6">
               {transcription.text.split(/\s+/).filter(Boolean).length} words transcribed
             </p>
 
@@ -332,13 +332,13 @@ export function AudioRecorder({ onTranscriptionComplete, onClose, quickCapture =
             <div className="flex items-center gap-3">
               <button
                 onClick={handleRetry}
-                className="flex-1 px-4 py-2.5 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                className="flex-1 px-4 py-2.5 border border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 transition-colors font-medium"
               >
                 Record Again
               </button>
               <button
                 onClick={handleAcceptTranscription}
-                className="flex-1 px-4 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
+                className="flex-1 px-4 py-2.5 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors font-medium"
               >
                 Add to Note
               </button>

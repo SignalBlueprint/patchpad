@@ -110,7 +110,7 @@ export function SelectionToolbar({ selection, editorElement, onAction, onHighlig
 
           {/* Color picker and annotation dropdown */}
           {showHighlightColors && (
-            <div className="absolute top-full left-0 mt-1 p-2 bg-white rounded-lg shadow-xl border border-gray-200 min-w-[200px]">
+            <div className="absolute top-full left-0 mt-1 p-2 bg-white rounded-lg shadow-xl border border-neutral-200 min-w-[200px]">
               {/* Color options */}
               <div className="flex gap-1 mb-2">
                 {highlightColors.map(({ color, bg, label }) => (
@@ -134,7 +134,7 @@ export function SelectionToolbar({ selection, editorElement, onAction, onHighlig
                     value={annotation}
                     onChange={(e) => setAnnotation(e.target.value)}
                     placeholder="Add a note (optional)"
-                    className="w-full px-2 py-1.5 text-xs border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="w-full px-2 py-1.5 text-xs border border-neutral-300 rounded focus:outline-none focus:ring-2 focus:ring-primary-500"
                     onKeyDown={(e) => {
                       if (e.key === 'Enter') {
                         onHighlight(selectedColor, annotation || undefined);
@@ -156,7 +156,7 @@ export function SelectionToolbar({ selection, editorElement, onAction, onHighlig
                         setSelectedColor(null);
                         setAnnotation('');
                       }}
-                      className="flex-1 px-2 py-1 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700 transition-colors"
+                      className="flex-1 px-2 py-1 text-xs font-medium text-white bg-primary-600 rounded hover:bg-primary-700 transition-colors"
                     >
                       Apply
                     </button>
@@ -166,7 +166,7 @@ export function SelectionToolbar({ selection, editorElement, onAction, onHighlig
                         setSelectedColor(null);
                         setAnnotation('');
                       }}
-                      className="px-2 py-1 text-xs font-medium text-gray-600 bg-gray-100 rounded hover:bg-gray-200 transition-colors"
+                      className="px-2 py-1 text-xs font-medium text-neutral-600 bg-neutral-100 rounded hover:bg-gray-200 transition-colors"
                     >
                       Cancel
                     </button>
@@ -176,7 +176,7 @@ export function SelectionToolbar({ selection, editorElement, onAction, onHighlig
 
               {/* Quick apply hint when no color selected */}
               {!selectedColor && (
-                <p className="text-[10px] text-gray-400 text-center">
+                <p className="text-[10px] text-neutral-400 text-center">
                   Click a color to add a note
                 </p>
               )}
@@ -198,7 +198,7 @@ export function SelectionToolbar({ selection, editorElement, onAction, onHighlig
             disabled={disabled}
             className={`flex items-center gap-1.5 px-2 py-1 text-xs font-medium rounded transition-colors ${
               disabled
-                ? 'text-gray-500 cursor-not-allowed'
+                ? 'text-neutral-500 cursor-not-allowed'
                 : 'text-gray-200 hover:bg-gray-700'
             }`}
             title={disabled ? 'AI required' : action.label}

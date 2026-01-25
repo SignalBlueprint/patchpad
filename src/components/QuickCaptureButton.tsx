@@ -150,14 +150,14 @@ export function QuickCaptureButton({ onCapture, onError }: QuickCaptureButtonPro
     <div className="fixed bottom-20 right-6 z-40 flex flex-col items-center gap-2">
       {/* Duration display when recording */}
       {state === 'recording' && (
-        <div className="px-3 py-1.5 bg-red-600 text-white text-sm font-mono rounded-full shadow-lg animate-pulse">
+        <div className="px-3 py-1.5 bg-error-600 text-white text-sm font-mono rounded-full shadow-lg animate-pulse">
           {formatDuration(recordingState.duration)}
         </div>
       )}
 
       {/* Processing indicator */}
       {state === 'processing' && (
-        <div className="px-3 py-1.5 bg-blue-600 text-white text-sm rounded-full shadow-lg flex items-center gap-2">
+        <div className="px-3 py-1.5 bg-primary-600 text-white text-sm rounded-full shadow-lg flex items-center gap-2">
           <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
@@ -175,10 +175,10 @@ export function QuickCaptureButton({ onCapture, onError }: QuickCaptureButtonPro
         disabled={state === 'processing'}
         className={`relative w-14 h-14 rounded-full shadow-lg transition-all duration-200 ${
           state === 'recording'
-            ? 'bg-red-600 hover:bg-red-700 scale-110'
+            ? 'bg-error-600 hover:bg-error-700 scale-110'
             : state === 'processing'
-            ? 'bg-blue-600 cursor-wait'
-            : 'bg-indigo-600 hover:bg-indigo-700 hover:scale-105'
+            ? 'bg-primary-600 cursor-wait'
+            : 'bg-secondary-600 hover:bg-secondary-700 hover:scale-105'
         }`}
         title={
           state === 'idle'
@@ -213,12 +213,12 @@ export function QuickCaptureButton({ onCapture, onError }: QuickCaptureButtonPro
 
       {/* Hint text */}
       {state === 'idle' && (
-        <span className="text-xs text-gray-500 bg-white/80 px-2 py-0.5 rounded-full shadow-sm">
+        <span className="text-xs text-neutral-500 bg-white/80 px-2 py-0.5 rounded-full shadow-sm">
           Voice capture
         </span>
       )}
       {state === 'recording' && (
-        <span className="text-xs text-red-600 bg-white/80 px-2 py-0.5 rounded-full shadow-sm">
+        <span className="text-xs text-error-600 bg-white/80 px-2 py-0.5 rounded-full shadow-sm">
           Hold to cancel
         </span>
       )}

@@ -112,21 +112,21 @@ export function LoginModal({ isOpen, onClose, onContinueOffline }: LoginModalPro
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
           {/* Error message */}
           {displayError && (
-            <div className="p-3 text-sm text-red-600 bg-red-50 border border-red-200 rounded-lg">
+            <div className="p-3 text-sm text-error-600 bg-red-50 border border-red-200 rounded-lg">
               {displayError}
             </div>
           )}
 
           {/* Success message */}
           {successMessage && (
-            <div className="p-3 text-sm text-green-600 bg-green-50 border border-green-200 rounded-lg">
+            <div className="p-3 text-sm text-success-600 bg-green-50 border border-green-200 rounded-lg">
               {successMessage}
             </div>
           )}
 
           {/* Email field */}
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1">
               Email
             </label>
             <input
@@ -135,7 +135,7 @@ export function LoginModal({ isOpen, onClose, onContinueOffline }: LoginModalPro
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
               placeholder="you@example.com"
             />
           </div>
@@ -143,7 +143,7 @@ export function LoginModal({ isOpen, onClose, onContinueOffline }: LoginModalPro
           {/* Password field (not shown for reset) */}
           {mode !== 'reset' && (
             <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-1">
                 Password
               </label>
               <input
@@ -153,7 +153,7 @@ export function LoginModal({ isOpen, onClose, onContinueOffline }: LoginModalPro
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 placeholder="••••••••"
               />
             </div>
@@ -162,7 +162,7 @@ export function LoginModal({ isOpen, onClose, onContinueOffline }: LoginModalPro
           {/* Confirm password (signup only) */}
           {mode === 'signup' && (
             <div>
-              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 mb-1">
                 Confirm Password
               </label>
               <input
@@ -172,7 +172,7 @@ export function LoginModal({ isOpen, onClose, onContinueOffline }: LoginModalPro
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
                 placeholder="••••••••"
               />
             </div>
@@ -182,7 +182,7 @@ export function LoginModal({ isOpen, onClose, onContinueOffline }: LoginModalPro
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-2.5 px-4 text-white font-medium bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="w-full py-2.5 px-4 text-white font-medium bg-secondary-600 rounded-lg hover:bg-secondary-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? (
               <span className="flex items-center justify-center gap-2">
@@ -208,16 +208,16 @@ export function LoginModal({ isOpen, onClose, onContinueOffline }: LoginModalPro
                 <button
                   type="button"
                   onClick={() => { setMode('reset'); setLocalError(null); setSuccessMessage(null); }}
-                  className="text-indigo-600 hover:text-indigo-700"
+                  className="text-secondary-600 hover:text-indigo-700"
                 >
                   Forgot your password?
                 </button>
-                <div className="text-gray-500">
+                <div className="text-neutral-500">
                   Don't have an account?{' '}
                   <button
                     type="button"
                     onClick={() => { setMode('signup'); setLocalError(null); setSuccessMessage(null); }}
-                    className="text-indigo-600 hover:text-indigo-700 font-medium"
+                    className="text-secondary-600 hover:text-indigo-700 font-medium"
                   >
                     Sign up
                   </button>
@@ -225,12 +225,12 @@ export function LoginModal({ isOpen, onClose, onContinueOffline }: LoginModalPro
               </>
             )}
             {mode === 'signup' && (
-              <div className="text-gray-500">
+              <div className="text-neutral-500">
                 Already have an account?{' '}
                 <button
                   type="button"
                   onClick={() => { setMode('login'); setLocalError(null); setSuccessMessage(null); }}
-                  className="text-indigo-600 hover:text-indigo-700 font-medium"
+                  className="text-secondary-600 hover:text-indigo-700 font-medium"
                 >
                   Sign in
                 </button>
@@ -240,7 +240,7 @@ export function LoginModal({ isOpen, onClose, onContinueOffline }: LoginModalPro
               <button
                 type="button"
                 onClick={() => { setMode('login'); setLocalError(null); setSuccessMessage(null); }}
-                className="text-indigo-600 hover:text-indigo-700"
+                className="text-secondary-600 hover:text-indigo-700"
               >
                 Back to sign in
               </button>
@@ -252,10 +252,10 @@ export function LoginModal({ isOpen, onClose, onContinueOffline }: LoginModalPro
             <>
               <div className="relative my-4">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200" />
+                  <div className="w-full border-t border-neutral-200" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">Or continue with</span>
+                  <span className="px-2 bg-white text-neutral-500">Or continue with</span>
                 </div>
               </div>
 
@@ -265,7 +265,7 @@ export function LoginModal({ isOpen, onClose, onContinueOffline }: LoginModalPro
                   type="button"
                   onClick={() => handleOAuth('google')}
                   disabled={loading}
-                  className="flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                  className="flex items-center justify-center gap-2 py-2 px-4 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors disabled:opacity-50"
                 >
                   <svg className="w-5 h-5" viewBox="0 0 24 24">
                     <path
@@ -291,7 +291,7 @@ export function LoginModal({ isOpen, onClose, onContinueOffline }: LoginModalPro
                   type="button"
                   onClick={() => handleOAuth('github')}
                   disabled={loading}
-                  className="flex items-center justify-center gap-2 py-2 px-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
+                  className="flex items-center justify-center gap-2 py-2 px-4 border border-neutral-300 rounded-lg hover:bg-neutral-50 transition-colors disabled:opacity-50"
                 >
                   <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
@@ -304,11 +304,11 @@ export function LoginModal({ isOpen, onClose, onContinueOffline }: LoginModalPro
 
           {/* Continue offline option */}
           {onContinueOffline && (
-            <div className="pt-4 border-t border-gray-200 mt-4">
+            <div className="pt-4 border-t border-neutral-200 mt-4">
               <button
                 type="button"
                 onClick={handleContinueOffline}
-                className="w-full py-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                className="w-full py-2 text-sm text-neutral-600 hover:text-gray-800 transition-colors"
               >
                 Continue without account (offline only)
               </button>

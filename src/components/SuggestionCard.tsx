@@ -20,14 +20,14 @@ const priorityStyles: Record<Suggestion['priority'], { bg: string; border: strin
     badge: 'bg-blue-100 text-blue-700',
   },
   medium: {
-    bg: 'bg-gray-50',
-    border: 'border-gray-200',
-    badge: 'bg-gray-100 text-gray-600',
+    bg: 'bg-neutral-50',
+    border: 'border-neutral-200',
+    badge: 'bg-neutral-100 text-neutral-600',
   },
   low: {
-    bg: 'bg-gray-50',
+    bg: 'bg-neutral-50',
     border: 'border-gray-100',
-    badge: 'bg-gray-100 text-gray-500',
+    badge: 'bg-neutral-100 text-neutral-500',
   },
 };
 
@@ -42,7 +42,7 @@ export function SuggestionCard({ suggestion, onApply, onDismiss }: SuggestionCar
         </span>
         <button
           onClick={onDismiss}
-          className="text-gray-400 hover:text-gray-600 focus:outline-none"
+          className="text-neutral-400 hover:text-neutral-600 focus:outline-none"
           title="Dismiss suggestion"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -51,11 +51,11 @@ export function SuggestionCard({ suggestion, onApply, onDismiss }: SuggestionCar
         </button>
       </div>
 
-      <p className="text-sm text-gray-700 mb-3">{suggestion.rationale}</p>
+      <p className="text-sm text-neutral-700 mb-3">{suggestion.rationale}</p>
 
       <button
         onClick={onApply}
-        className="w-full px-3 py-1.5 text-xs font-medium text-white bg-blue-600 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        className="w-full px-3 py-1.5 text-xs font-medium text-white bg-primary-600 rounded hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500"
       >
         Apply
       </button>

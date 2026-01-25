@@ -13,7 +13,7 @@ export function FadingMemoriesSection({
     <div className="bg-white/80 backdrop-blur-sm rounded-xl p-5 border border-white/50 shadow-lg">
       <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
         <svg
-          className="w-5 h-5 text-amber-500"
+          className="w-5 h-5 text-accent-500"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -27,14 +27,14 @@ export function FadingMemoriesSection({
         </svg>
         Fading Memories
         {fadingMemories.length > 0 && (
-          <span className="ml-auto text-xs font-normal text-gray-500">
+          <span className="ml-auto text-xs font-normal text-neutral-500">
             {fadingMemories.length} note{fadingMemories.length !== 1 ? 's' : ''}
           </span>
         )}
       </h3>
 
       {fadingMemories.length === 0 ? (
-        <div className="text-center py-6 text-gray-500">
+        <div className="text-center py-6 text-neutral-500">
           <svg
             className="w-12 h-12 mx-auto mb-3 text-gray-300"
             fill="none"
@@ -49,7 +49,7 @@ export function FadingMemoriesSection({
             />
           </svg>
           <p className="text-sm">No fading memories found</p>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-neutral-400 mt-1">
             Notes older than 90 days relevant to recent work will appear here.
           </p>
         </div>
@@ -98,7 +98,7 @@ function MemoryCard({ memory, onNavigate }: MemoryCardProps) {
           </button>
 
           {/* Age indicator */}
-          <p className="text-xs text-gray-400 mt-0.5">
+          <p className="text-xs text-neutral-400 mt-0.5">
             Last updated {formatAge(daysSinceUpdate)}
           </p>
 
@@ -119,7 +119,7 @@ function MemoryCard({ memory, onNavigate }: MemoryCardProps) {
                 </span>
               ))}
               {matchingConcepts.length > 3 && (
-                <span className="text-xs text-gray-400">
+                <span className="text-xs text-neutral-400">
                   +{matchingConcepts.length - 3} more
                 </span>
               )}
@@ -130,7 +130,7 @@ function MemoryCard({ memory, onNavigate }: MemoryCardProps) {
         {/* Revisit button */}
         <button
           onClick={onNavigate}
-          className="p-2 rounded-md bg-amber-500 text-white hover:bg-amber-600 transition-colors flex-shrink-0"
+          className="p-2 rounded-md bg-accent-500 text-white hover:bg-amber-600 transition-colors flex-shrink-0"
           title="Revisit this note"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

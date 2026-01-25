@@ -123,18 +123,18 @@ export function DocumentExportDialog({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl shadow-2xl w-[900px] max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-neutral-900">
               Export Document
             </h2>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-neutral-500">
               Compile notes into a formatted document
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+            className="p-2 text-neutral-400 hover:text-neutral-600 rounded-lg hover:bg-neutral-100"
           >
             <svg
               className="w-5 h-5"
@@ -158,12 +158,12 @@ export function DocumentExportDialog({
           <div className="w-64 border-r border-gray-100 overflow-y-auto">
             <div className="p-4">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-sm font-medium text-gray-700">
+                <h3 className="text-sm font-medium text-neutral-700">
                   Select Notes ({selectedIds.size})
                 </h3>
                 <button
                   onClick={handleSelectAll}
-                  className="text-xs text-blue-600 hover:text-blue-700"
+                  className="text-xs text-primary-600 hover:text-blue-700"
                 >
                   {selectedIds.size === notes.length ? 'Deselect All' : 'Select All'}
                 </button>
@@ -175,20 +175,20 @@ export function DocumentExportDialog({
                     className={`flex items-start gap-2 p-2 rounded cursor-pointer transition-colors ${
                       selectedIds.has(note.id)
                         ? 'bg-blue-50'
-                        : 'hover:bg-gray-50'
+                        : 'hover:bg-neutral-50'
                     }`}
                   >
                     <input
                       type="checkbox"
                       checked={selectedIds.has(note.id)}
                       onChange={() => handleToggleNote(note.id)}
-                      className="mt-1 rounded border-gray-300 text-blue-500 focus:ring-blue-200"
+                      className="mt-1 rounded border-neutral-300 text-primary-500 focus:ring-blue-200"
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-gray-900 truncate">
+                      <p className="text-sm font-medium text-neutral-900 truncate">
                         {note.title}
                       </p>
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-neutral-500">
                         {note.content.slice(0, 50)}...
                       </p>
                     </div>
@@ -205,20 +205,20 @@ export function DocumentExportDialog({
               <div className="grid grid-cols-2 gap-4">
                 {/* Title */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-700 mb-1">
                     Document Title
                   </label>
                   <input
                     type="text"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
                   />
                 </div>
 
                 {/* Author */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-700 mb-1">
                     Author (optional)
                   </label>
                   <input
@@ -226,7 +226,7 @@ export function DocumentExportDialog({
                     value={author}
                     onChange={(e) => setAuthor(e.target.value)}
                     placeholder="Your name"
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
                   />
                 </div>
               </div>
@@ -234,13 +234,13 @@ export function DocumentExportDialog({
               <div className="grid grid-cols-3 gap-4">
                 {/* Format */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-700 mb-1">
                     Export Format
                   </label>
                   <select
                     value={format}
                     onChange={(e) => setFormat(e.target.value as ExportFormat)}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
                   >
                     <option value="markdown">Markdown (.md)</option>
                     <option value="html">HTML (.html)</option>
@@ -250,13 +250,13 @@ export function DocumentExportDialog({
 
                 {/* Organization */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block text-sm font-medium text-neutral-700 mb-1">
                     Section Order
                   </label>
                   <select
                     value={organization}
                     onChange={(e) => setOrganization(e.target.value as OrganizationMethod)}
-                    className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
+                    className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
                   >
                     <option value="chronological">Chronological</option>
                     <option value="alphabetical">Alphabetical</option>
@@ -266,13 +266,13 @@ export function DocumentExportDialog({
                 {/* Theme (for HTML/PDF) */}
                 {format !== 'markdown' && (
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-neutral-700 mb-1">
                       Theme
                     </label>
                     <select
                       value={theme}
                       onChange={(e) => setTheme(e.target.value as 'light' | 'dark')}
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
+                      className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
                     >
                       <option value="light">Light</option>
                       <option value="dark">Dark</option>
@@ -288,38 +288,38 @@ export function DocumentExportDialog({
                     type="checkbox"
                     checked={includeTableOfContents}
                     onChange={(e) => setIncludeTableOfContents(e.target.checked)}
-                    className="rounded border-gray-300 text-blue-500 focus:ring-blue-200"
+                    className="rounded border-neutral-300 text-primary-500 focus:ring-blue-200"
                   />
-                  <span className="text-sm text-gray-700">Table of Contents</span>
+                  <span className="text-sm text-neutral-700">Table of Contents</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={includeFrontmatter}
                     onChange={(e) => setIncludeFrontmatter(e.target.checked)}
-                    className="rounded border-gray-300 text-blue-500 focus:ring-blue-200"
+                    className="rounded border-neutral-300 text-primary-500 focus:ring-blue-200"
                   />
-                  <span className="text-sm text-gray-700">Frontmatter/Metadata</span>
+                  <span className="text-sm text-neutral-700">Frontmatter/Metadata</span>
                 </label>
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={includeFooter}
                     onChange={(e) => setIncludeFooter(e.target.checked)}
-                    className="rounded border-gray-300 text-blue-500 focus:ring-blue-200"
+                    className="rounded border-neutral-300 text-primary-500 focus:ring-blue-200"
                   />
-                  <span className="text-sm text-gray-700">Footer</span>
+                  <span className="text-sm text-neutral-700">Footer</span>
                 </label>
               </div>
             </div>
 
             {/* Preview toggle */}
-            <div className="px-4 py-2 bg-gray-50 border-b border-gray-100 flex items-center justify-between">
+            <div className="px-4 py-2 bg-neutral-50 border-b border-gray-100 flex items-center justify-between">
               <div className="flex items-center gap-4">
                 <button
                   onClick={() => setShowPreview(false)}
                   className={`text-sm font-medium ${
-                    !showPreview ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
+                    !showPreview ? 'text-primary-600' : 'text-neutral-500 hover:text-neutral-700'
                   }`}
                 >
                   Summary
@@ -327,14 +327,14 @@ export function DocumentExportDialog({
                 <button
                   onClick={() => setShowPreview(true)}
                   className={`text-sm font-medium ${
-                    showPreview ? 'text-blue-600' : 'text-gray-500 hover:text-gray-700'
+                    showPreview ? 'text-primary-600' : 'text-neutral-500 hover:text-neutral-700'
                   }`}
                 >
                   Preview
                 </button>
               </div>
               {compiledDoc && (
-                <span className="text-xs text-gray-500">
+                <span className="text-xs text-neutral-500">
                   {compiledDoc.metadata.noteCount} notes • {compiledDoc.metadata.wordCount.toLocaleString()} words
                 </span>
               )}
@@ -343,7 +343,7 @@ export function DocumentExportDialog({
             {/* Preview area */}
             <div className="flex-1 overflow-auto p-4">
               {selectedIds.size === 0 ? (
-                <div className="flex items-center justify-center h-full text-gray-400">
+                <div className="flex items-center justify-center h-full text-neutral-400">
                   <div className="text-center">
                     <svg
                       className="w-12 h-12 mx-auto mb-2 opacity-50"
@@ -362,17 +362,17 @@ export function DocumentExportDialog({
                   </div>
                 </div>
               ) : showPreview ? (
-                <pre className="text-sm font-mono whitespace-pre-wrap text-gray-700 bg-gray-50 p-4 rounded-lg">
+                <pre className="text-sm font-mono whitespace-pre-wrap text-neutral-700 bg-neutral-50 p-4 rounded-lg">
                   {preview.slice(0, 3000)}
                   {preview.length > 3000 && '\n\n... (preview truncated)'}
                 </pre>
               ) : (
                 <div className="space-y-4">
-                  <h3 className="font-semibold text-gray-900">{title}</h3>
+                  <h3 className="font-semibold text-neutral-900">{title}</h3>
                   {author && (
-                    <p className="text-sm text-gray-600">By {author}</p>
+                    <p className="text-sm text-neutral-600">By {author}</p>
                   )}
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-neutral-600">
                     <p>
                       <strong>Sections:</strong> {selectedIds.size}
                     </p>
@@ -386,8 +386,8 @@ export function DocumentExportDialog({
                     ) : null}
                   </div>
                   <div className="border-t border-gray-100 pt-4">
-                    <p className="text-sm font-medium text-gray-700 mb-2">Sections:</p>
-                    <ol className="list-decimal list-inside space-y-1 text-sm text-gray-600">
+                    <p className="text-sm font-medium text-neutral-700 mb-2">Sections:</p>
+                    <ol className="list-decimal list-inside space-y-1 text-sm text-neutral-600">
                       {compiledDoc?.sections.map((s, i) => (
                         <li key={i}>{s.heading}</li>
                       ))}
@@ -400,8 +400,8 @@ export function DocumentExportDialog({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50 rounded-b-xl flex items-center justify-between">
-          <p className="text-sm text-gray-500">
+        <div className="px-6 py-4 border-t border-gray-100 bg-neutral-50 rounded-b-xl flex items-center justify-between">
+          <p className="text-sm text-neutral-500">
             {format === 'pdf'
               ? 'Opens print dialog for PDF export'
               : `Export as ${format.toUpperCase()} file`}
@@ -409,7 +409,7 @@ export function DocumentExportDialog({
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:text-gray-800"
+              className="px-4 py-2 text-neutral-600 hover:text-gray-800"
             >
               Cancel
             </button>
@@ -418,8 +418,8 @@ export function DocumentExportDialog({
               disabled={selectedIds.size === 0 || isExporting}
               className={`px-4 py-2 rounded-lg flex items-center gap-2 ${
                 selectedIds.size === 0 || isExporting
-                  ? 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                  : 'bg-blue-500 text-white hover:bg-blue-600'
+                  ? 'bg-gray-200 text-neutral-500 cursor-not-allowed'
+                  : 'bg-primary-500 text-white hover:bg-primary-600'
               }`}
             >
               {isExporting ? (

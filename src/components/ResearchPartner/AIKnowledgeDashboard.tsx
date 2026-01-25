@@ -128,12 +128,12 @@ export function AIKnowledgeDashboard({ isOpen, onClose, notes, onSelectNote }: A
 
   const getCategoryColor = (category: string) => {
     switch (category) {
-      case 'person': return 'text-blue-600 bg-blue-50';
-      case 'project': return 'text-purple-600 bg-purple-50';
+      case 'person': return 'text-primary-600 bg-blue-50';
+      case 'project': return 'text-secondary-600 bg-purple-50';
       case 'date': return 'text-orange-600 bg-orange-50';
-      case 'decision': return 'text-green-600 bg-green-50';
-      case 'theme': return 'text-indigo-600 bg-indigo-50';
-      default: return 'text-gray-600 bg-gray-50';
+      case 'decision': return 'text-success-600 bg-green-50';
+      case 'theme': return 'text-secondary-600 bg-indigo-50';
+      default: return 'text-neutral-600 bg-neutral-50';
     }
   };
 
@@ -151,7 +151,7 @@ export function AIKnowledgeDashboard({ isOpen, onClose, notes, onSelectNote }: A
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
       <div className="w-full max-w-4xl bg-white rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4 max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex-shrink-0 px-6 py-4 border-b border-gray-200 bg-gradient-to-r from-indigo-50 to-purple-50">
+        <div className="flex-shrink-0 px-6 py-4 border-b border-neutral-200 bg-gradient-to-r from-indigo-50 to-purple-50">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center">
@@ -160,8 +160,8 @@ export function AIKnowledgeDashboard({ isOpen, onClose, notes, onSelectNote }: A
                 </svg>
               </div>
               <div>
-                <h2 className="text-lg font-semibold text-gray-900">AI Knowledge</h2>
-                <p className="text-sm text-gray-500">
+                <h2 className="text-lg font-semibold text-neutral-900">AI Knowledge</h2>
+                <p className="text-sm text-neutral-500">
                   {knowledge ? `${knowledge.facts.length} facts extracted from ${notes.length} notes` : 'What the AI knows about your notes'}
                 </p>
               </div>
@@ -170,7 +170,7 @@ export function AIKnowledgeDashboard({ isOpen, onClose, notes, onSelectNote }: A
               <button
                 onClick={handleRefresh}
                 disabled={loading || !isAvailable}
-                className="px-3 py-1.5 text-sm font-medium text-indigo-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
+                className="px-3 py-1.5 text-sm font-medium text-secondary-600 bg-white border border-indigo-200 rounded-lg hover:bg-indigo-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
               >
                 {loading ? (
                   <>
@@ -191,7 +191,7 @@ export function AIKnowledgeDashboard({ isOpen, onClose, notes, onSelectNote }: A
               </button>
               <button
                 onClick={onClose}
-                className="p-2 text-gray-400 hover:text-gray-600 rounded transition-colors"
+                className="p-2 text-neutral-400 hover:text-neutral-600 rounded transition-colors"
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -218,7 +218,7 @@ export function AIKnowledgeDashboard({ isOpen, onClose, notes, onSelectNote }: A
 
         {/* Error message */}
         {error && (
-          <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+          <div className="mx-6 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-error-600">
             {error}
           </div>
         )}
@@ -227,13 +227,13 @@ export function AIKnowledgeDashboard({ isOpen, onClose, notes, onSelectNote }: A
         <div className="flex-1 overflow-y-auto p-6">
           {!knowledge ? (
             <div className="text-center py-12">
-              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center">
-                <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-neutral-100 flex items-center justify-center">
+                <svg className="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
               </div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-2">No knowledge extracted yet</h3>
-              <p className="text-sm text-gray-500 mb-4">
+              <h3 className="text-lg font-semibold text-neutral-900 mb-2">No knowledge extracted yet</h3>
+              <p className="text-sm text-neutral-500 mb-4">
                 Click "Refresh" to analyze your notes and extract key facts.
               </p>
             </div>
@@ -242,15 +242,15 @@ export function AIKnowledgeDashboard({ isOpen, onClose, notes, onSelectNote }: A
               {/* Topics overview */}
               {knowledge.topics.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-700 mb-3">Topics in your notes</h3>
+                  <h3 className="text-sm font-medium text-neutral-700 mb-3">Topics in your notes</h3>
                   <div className="flex flex-wrap gap-2">
                     {knowledge.topics.map(topic => (
                       <span
                         key={topic.name}
-                        className="px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-full flex items-center gap-1.5"
+                        className="px-3 py-1.5 text-sm bg-neutral-100 text-neutral-700 rounded-full flex items-center gap-1.5"
                       >
                         {topic.name}
-                        <span className="text-xs text-gray-500">({topic.noteCount})</span>
+                        <span className="text-xs text-neutral-500">({topic.noteCount})</span>
                       </span>
                     ))}
                   </div>
@@ -260,14 +260,14 @@ export function AIKnowledgeDashboard({ isOpen, onClose, notes, onSelectNote }: A
               {/* Category filter */}
               {categories.length > 1 && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-700 mb-3">Filter by category</h3>
+                  <h3 className="text-sm font-medium text-neutral-700 mb-3">Filter by category</h3>
                   <div className="flex flex-wrap gap-2">
                     <button
                       onClick={() => setSelectedCategory(null)}
                       className={`px-3 py-1.5 text-sm rounded-lg transition-colors ${
                         !selectedCategory
                           ? 'bg-indigo-100 text-indigo-700'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          : 'bg-neutral-100 text-neutral-600 hover:bg-gray-200'
                       }`}
                     >
                       All ({knowledge.facts.length})
@@ -279,7 +279,7 @@ export function AIKnowledgeDashboard({ isOpen, onClose, notes, onSelectNote }: A
                         className={`px-3 py-1.5 text-sm rounded-lg transition-colors flex items-center gap-1.5 ${
                           selectedCategory === cat
                             ? getCategoryColor(cat)
-                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                            : 'bg-neutral-100 text-neutral-600 hover:bg-gray-200'
                         }`}
                       >
                         {getCategoryIcon(cat)}
@@ -292,17 +292,17 @@ export function AIKnowledgeDashboard({ isOpen, onClose, notes, onSelectNote }: A
 
               {/* Facts list */}
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-3">
+                <h3 className="text-sm font-medium text-neutral-700 mb-3">
                   Key facts {selectedCategory && `(${selectedCategory})`}
                 </h3>
                 <div className="space-y-2">
                   {filteredFacts.length === 0 ? (
-                    <p className="text-sm text-gray-500 py-4 text-center">No facts in this category</p>
+                    <p className="text-sm text-neutral-500 py-4 text-center">No facts in this category</p>
                   ) : (
                     filteredFacts.map(fact => (
                       <div
                         key={fact.id}
-                        className="group p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                        className="group p-3 bg-neutral-50 rounded-lg hover:bg-neutral-100 transition-colors"
                       >
                         {editingFact === fact.id ? (
                           <div className="flex gap-2">
@@ -310,18 +310,18 @@ export function AIKnowledgeDashboard({ isOpen, onClose, notes, onSelectNote }: A
                               type="text"
                               value={editValue}
                               onChange={(e) => setEditValue(e.target.value)}
-                              className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                              className="flex-1 px-3 py-1.5 text-sm border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                               autoFocus
                             />
                             <button
                               onClick={handleSaveEdit}
-                              className="px-3 py-1.5 text-sm text-white bg-indigo-600 rounded-lg hover:bg-indigo-700"
+                              className="px-3 py-1.5 text-sm text-white bg-secondary-600 rounded-lg hover:bg-secondary-700"
                             >
                               Save
                             </button>
                             <button
                               onClick={() => setEditingFact(null)}
-                              className="px-3 py-1.5 text-sm text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+                              className="px-3 py-1.5 text-sm text-neutral-600 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50"
                             >
                               Cancel
                             </button>
@@ -332,13 +332,13 @@ export function AIKnowledgeDashboard({ isOpen, onClose, notes, onSelectNote }: A
                               {getCategoryIcon(fact.category)}
                             </div>
                             <div className="flex-1 min-w-0">
-                              <p className="text-sm text-gray-900">{fact.fact}</p>
+                              <p className="text-sm text-neutral-900">{fact.fact}</p>
                               <div className="flex items-center gap-2 mt-1">
-                                <span className="text-xs text-gray-500">
+                                <span className="text-xs text-neutral-500">
                                   Confidence: {Math.round(fact.confidence * 100)}%
                                 </span>
                                 {fact.sourceNoteIds.length > 0 && (
-                                  <span className="text-xs text-gray-500">
+                                  <span className="text-xs text-neutral-500">
                                     • {fact.sourceNoteIds.length} source{fact.sourceNoteIds.length > 1 ? 's' : ''}
                                   </span>
                                 )}
@@ -347,7 +347,7 @@ export function AIKnowledgeDashboard({ isOpen, onClose, notes, onSelectNote }: A
                             <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
                               <button
                                 onClick={() => handleEditFact(fact)}
-                                className="p-1.5 text-gray-400 hover:text-gray-600 rounded transition-colors"
+                                className="p-1.5 text-neutral-400 hover:text-neutral-600 rounded transition-colors"
                                 title="Edit fact"
                               >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -356,7 +356,7 @@ export function AIKnowledgeDashboard({ isOpen, onClose, notes, onSelectNote }: A
                               </button>
                               <button
                                 onClick={() => handleRemoveFact(fact.id)}
-                                className="p-1.5 text-gray-400 hover:text-red-500 rounded transition-colors"
+                                className="p-1.5 text-neutral-400 hover:text-red-500 rounded transition-colors"
                                 title="Remove fact"
                               >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -373,8 +373,8 @@ export function AIKnowledgeDashboard({ isOpen, onClose, notes, onSelectNote }: A
               </div>
 
               {/* Last updated */}
-              <div className="pt-4 border-t border-gray-200 text-center">
-                <p className="text-xs text-gray-500">
+              <div className="pt-4 border-t border-neutral-200 text-center">
+                <p className="text-xs text-neutral-500">
                   Last updated: {knowledge.lastUpdated.toLocaleString()}
                 </p>
               </div>

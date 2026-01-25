@@ -102,7 +102,7 @@ export function BrewingIdeasSection({
           </svg>
           Brewing Ideas
         </h3>
-        <div className="flex items-center justify-center py-8 text-gray-500">
+        <div className="flex items-center justify-center py-8 text-neutral-500">
           <svg
             className="w-6 h-6 animate-spin mr-2"
             fill="none"
@@ -147,7 +147,7 @@ export function BrewingIdeasSection({
           </svg>
           Brewing Ideas
           {visibleSuggestions.length > 0 && (
-            <span className="ml-2 text-xs font-normal text-gray-500">
+            <span className="ml-2 text-xs font-normal text-neutral-500">
               {visibleSuggestions.length} suggestion{visibleSuggestions.length !== 1 ? 's' : ''}
             </span>
           )}
@@ -157,8 +157,8 @@ export function BrewingIdeasSection({
           disabled={runningArchivist}
           className={`px-3 py-1.5 text-xs font-medium rounded-lg flex items-center gap-1.5 transition-colors ${
             runningArchivist
-              ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
-              : 'bg-purple-500 text-white hover:bg-purple-600'
+              ? 'bg-neutral-100 text-neutral-400 cursor-not-allowed'
+              : 'bg-purple-500 text-white hover:bg-secondary-600'
           }`}
           title="Run the Archivist agent to find more connections"
         >
@@ -180,7 +180,7 @@ export function BrewingIdeasSection({
       </div>
 
       {visibleSuggestions.length === 0 ? (
-        <div className="text-center py-6 text-gray-500">
+        <div className="text-center py-6 text-neutral-500">
           <svg
             className="w-12 h-12 mx-auto mb-3 text-gray-300"
             fill="none"
@@ -195,7 +195,7 @@ export function BrewingIdeasSection({
             />
           </svg>
           <p className="text-sm">Your notes are well connected!</p>
-          <p className="text-xs text-gray-400 mt-1">
+          <p className="text-xs text-neutral-400 mt-1">
             Keep adding wiki links to build your knowledge graph.
           </p>
         </div>
@@ -238,7 +238,7 @@ function SuggestionCard({
           {/* From note */}
           <button
             onClick={() => onNavigateToNote(suggestion.fromNote.id)}
-            className="text-sm font-medium text-gray-800 hover:text-purple-600 transition-colors truncate block max-w-full text-left"
+            className="text-sm font-medium text-gray-800 hover:text-secondary-600 transition-colors truncate block max-w-full text-left"
             title={suggestion.fromNote.title}
           >
             {suggestion.fromNote.title}
@@ -261,19 +261,19 @@ function SuggestionCard({
             </svg>
             <button
               onClick={() => onNavigateToNote(suggestion.toNote.id)}
-              className="text-sm text-purple-600 hover:text-purple-700 font-medium truncate"
+              className="text-sm text-secondary-600 hover:text-purple-700 font-medium truncate"
               title={suggestion.toNote.title}
             >
               [[{suggestion.toNote.title}]]
             </button>
-            <span className="text-xs text-gray-400 flex-shrink-0">
+            <span className="text-xs text-neutral-400 flex-shrink-0">
               {confidencePercent}% match
             </span>
           </div>
 
           {/* Reason */}
           {suggestion.reason && (
-            <p className="text-xs text-gray-500 mt-1 line-clamp-2">
+            <p className="text-xs text-neutral-500 mt-1 line-clamp-2">
               {suggestion.reason}
             </p>
           )}
@@ -283,7 +283,7 @@ function SuggestionCard({
         <div className="flex flex-col gap-1">
           <button
             onClick={onConnect}
-            className="p-1.5 rounded-md bg-purple-500 text-white hover:bg-purple-600 transition-colors"
+            className="p-1.5 rounded-md bg-purple-500 text-white hover:bg-secondary-600 transition-colors"
             title="Add this link"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -292,7 +292,7 @@ function SuggestionCard({
           </button>
           <button
             onClick={onDismiss}
-            className="p-1.5 rounded-md bg-gray-200 text-gray-500 hover:bg-gray-300 transition-colors"
+            className="p-1.5 rounded-md bg-gray-200 text-neutral-500 hover:bg-gray-300 transition-colors"
             title="Dismiss"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

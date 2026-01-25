@@ -70,7 +70,7 @@ export function CommentThread({
     <div
       className={`border rounded-lg overflow-hidden transition-all ${
         comment.resolved
-          ? 'border-gray-200 bg-gray-50 opacity-75'
+          ? 'border-neutral-200 bg-neutral-50 opacity-75'
           : 'border-amber-200 bg-white shadow-sm'
       }`}
     >
@@ -83,7 +83,7 @@ export function CommentThread({
           <span className="text-xs text-amber-600 font-medium">Selected text</span>
           <div className="flex items-center gap-2">
             {comment.resolved && (
-              <span className="text-xs text-green-600 flex items-center gap-1">
+              <span className="text-xs text-success-600 flex items-center gap-1">
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
@@ -95,7 +95,7 @@ export function CommentThread({
                 e.stopPropagation();
                 setIsExpanded(!isExpanded);
               }}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-neutral-400 hover:text-neutral-600"
             >
               <svg
                 className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
@@ -108,7 +108,7 @@ export function CommentThread({
             </button>
           </div>
         </div>
-        <p className="text-sm text-gray-700 italic line-clamp-2 mt-1">
+        <p className="text-sm text-neutral-700 italic line-clamp-2 mt-1">
           "{comment.selectedText}"
         </p>
       </div>
@@ -137,7 +137,7 @@ export function CommentThread({
               className={`text-xs px-2 py-1 rounded transition-colors ${
                 comment.resolved
                   ? 'text-amber-600 hover:bg-amber-50'
-                  : 'text-green-600 hover:bg-green-50'
+                  : 'text-success-600 hover:bg-green-50'
               }`}
             >
               {comment.resolved ? 'Reopen' : 'Resolve'}
@@ -173,7 +173,7 @@ export function CommentThread({
                 value={replyContent}
                 onChange={(e) => setReplyContent(e.target.value)}
                 placeholder="Write a reply..."
-                className="flex-1 px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-200"
+                className="flex-1 px-3 py-1.5 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-200"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
                     e.preventDefault();
@@ -184,7 +184,7 @@ export function CommentThread({
               <button
                 onClick={handleReply}
                 disabled={!replyContent.trim()}
-                className="px-3 py-1.5 bg-amber-500 text-white text-sm rounded-lg hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-3 py-1.5 bg-accent-500 text-white text-sm rounded-lg hover:bg-amber-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 Reply
               </button>
@@ -195,7 +195,7 @@ export function CommentThread({
 
       {/* Collapsed summary */}
       {!isExpanded && totalReplies > 0 && (
-        <div className="px-3 py-2 text-xs text-gray-500">
+        <div className="px-3 py-2 text-xs text-neutral-500">
           {totalReplies} {totalReplies === 1 ? 'reply' : 'replies'}
         </div>
       )}
@@ -238,10 +238,10 @@ function CommentItem({
         >
           {comment.userName.charAt(0).toUpperCase()}
         </div>
-        <span className="text-sm font-medium text-gray-700">{comment.userName}</span>
-        <span className="text-xs text-gray-400">{formatDate(comment.createdAt)}</span>
+        <span className="text-sm font-medium text-neutral-700">{comment.userName}</span>
+        <span className="text-xs text-neutral-400">{formatDate(comment.createdAt)}</span>
         {comment.updatedAt.getTime() !== comment.createdAt.getTime() && (
-          <span className="text-xs text-gray-400">(edited)</span>
+          <span className="text-xs text-neutral-400">(edited)</span>
         )}
       </div>
 
@@ -251,20 +251,20 @@ function CommentItem({
           <textarea
             value={editContent}
             onChange={(e) => onEditContentChange(e.target.value)}
-            className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-200 resize-none"
+            className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-200 resize-none"
             rows={2}
             autoFocus
           />
           <div className="flex gap-2">
             <button
               onClick={onSaveEdit}
-              className="px-2 py-1 text-xs bg-amber-500 text-white rounded hover:bg-amber-600"
+              className="px-2 py-1 text-xs bg-accent-500 text-white rounded hover:bg-amber-600"
             >
               Save
             </button>
             <button
               onClick={onCancelEdit}
-              className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800"
+              className="px-2 py-1 text-xs text-neutral-600 hover:text-gray-800"
             >
               Cancel
             </button>
@@ -272,12 +272,12 @@ function CommentItem({
         </div>
       ) : (
         <div className="ml-8 flex items-start justify-between">
-          <p className="text-sm text-gray-600">{comment.content}</p>
+          <p className="text-sm text-neutral-600">{comment.content}</p>
           {isOwner && (
             <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
               <button
                 onClick={onStartEdit}
-                className="p-1 text-gray-400 hover:text-gray-600"
+                className="p-1 text-neutral-400 hover:text-neutral-600"
                 title="Edit"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -286,7 +286,7 @@ function CommentItem({
               </button>
               <button
                 onClick={onDelete}
-                className="p-1 text-gray-400 hover:text-red-500"
+                className="p-1 text-neutral-400 hover:text-red-500"
                 title="Delete"
               >
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -335,19 +335,19 @@ export function CommentsSidebar({
   const activeCount = threads.length - resolvedCount;
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col bg-neutral-50">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-gray-200 bg-white">
+      <div className="px-4 py-3 border-b border-neutral-200 bg-white">
         <div className="flex items-center justify-between">
-          <h3 className="font-semibold text-gray-900">Comments</h3>
-          <span className="text-xs text-gray-500">
+          <h3 className="font-semibold text-neutral-900">Comments</h3>
+          <span className="text-xs text-neutral-500">
             {activeCount} active{resolvedCount > 0 && `, ${resolvedCount} resolved`}
           </span>
         </div>
         {resolvedCount > 0 && onToggleShowResolved && (
           <button
             onClick={onToggleShowResolved}
-            className="mt-2 text-xs text-gray-500 hover:text-gray-700"
+            className="mt-2 text-xs text-neutral-500 hover:text-neutral-700"
           >
             {showResolved ? 'Hide resolved' : 'Show resolved'}
           </button>
@@ -357,7 +357,7 @@ export function CommentsSidebar({
       {/* Threads list */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {filteredThreads.length === 0 ? (
-          <div className="text-center py-8 text-gray-400">
+          <div className="text-center py-8 text-neutral-400">
             <svg
               className="w-12 h-12 mx-auto mb-2 opacity-50"
               fill="none"

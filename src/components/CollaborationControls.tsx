@@ -155,19 +155,19 @@ export function CollaborationControls({
             // Active collaboration state
             <div className="space-y-6">
               {/* Connection status */}
-              <div className="flex items-center gap-3 p-4 bg-gray-50 rounded-lg">
-                <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-yellow-500'} animate-pulse`} />
+              <div className="flex items-center gap-3 p-4 bg-neutral-50 rounded-lg">
+                <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-accent-500'} animate-pulse`} />
                 <div>
                   <p className="font-medium text-gray-800">
                     {isConnected ? 'Connected' : 'Connecting...'}
                   </p>
-                  <p className="text-sm text-gray-500">Room: {currentRoomId}</p>
+                  <p className="text-sm text-neutral-500">Room: {currentRoomId}</p>
                 </div>
               </div>
 
               {/* Share link */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-neutral-700 mb-2">
                   Share this link with collaborators
                 </label>
                 <div className="flex gap-2">
@@ -175,23 +175,23 @@ export function CollaborationControls({
                     type="text"
                     readOnly
                     value={`${window.location.origin}/collab/${currentRoomId}`}
-                    className="flex-1 px-3 py-2 text-sm bg-gray-100 border border-gray-200 rounded-lg text-gray-600"
+                    className="flex-1 px-3 py-2 text-sm bg-neutral-100 border border-neutral-200 rounded-lg text-neutral-600"
                   />
                   <button
                     onClick={handleCopyLink}
-                    className="px-3 py-2 bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition-colors text-sm font-medium"
+                    className="px-3 py-2 bg-indigo-500 text-white rounded-lg hover:bg-secondary-600 transition-colors text-sm font-medium"
                   >
                     {copied ? 'Copied!' : 'Copy'}
                   </button>
                 </div>
-                <p className="mt-2 text-xs text-gray-500">
-                  Or share the room ID: <button onClick={handleCopyRoomId} className="font-mono text-indigo-600 hover:underline">{currentRoomId}</button>
+                <p className="mt-2 text-xs text-neutral-500">
+                  Or share the room ID: <button onClick={handleCopyRoomId} className="font-mono text-secondary-600 hover:underline">{currentRoomId}</button>
                 </p>
               </div>
 
               {/* Peers */}
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">
+                <h3 className="text-sm font-medium text-neutral-700 mb-2">
                   Collaborators ({peers.length + 1})
                 </h3>
                 <div className="space-y-2">
@@ -204,25 +204,25 @@ export function CollaborationControls({
                       {(userName || 'You').charAt(0).toUpperCase()}
                     </div>
                     <span className="text-sm font-medium text-gray-800">
-                      {userName || 'You'} <span className="text-gray-400">(you)</span>
+                      {userName || 'You'} <span className="text-neutral-400">(you)</span>
                     </span>
                   </div>
 
                   {/* Other peers */}
                   {peers.map(peer => (
-                    <div key={peer.id} className="flex items-center gap-3 p-2 bg-gray-50 rounded-lg">
+                    <div key={peer.id} className="flex items-center gap-3 p-2 bg-neutral-50 rounded-lg">
                       <div
                         className="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-medium"
                         style={{ backgroundColor: peer.color }}
                       >
                         {peer.name.charAt(0).toUpperCase()}
                       </div>
-                      <span className="text-sm text-gray-700">{peer.name}</span>
+                      <span className="text-sm text-neutral-700">{peer.name}</span>
                     </div>
                   ))}
 
                   {peers.length === 0 && (
-                    <p className="text-sm text-gray-500 italic">
+                    <p className="text-sm text-neutral-500 italic">
                       Waiting for others to join...
                     </p>
                   )}
@@ -232,7 +232,7 @@ export function CollaborationControls({
               {/* End collaboration button */}
               <button
                 onClick={handleEndCollaboration}
-                className="w-full py-2.5 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors font-medium"
+                className="w-full py-2.5 bg-red-500 text-white rounded-lg hover:bg-error-600 transition-colors font-medium"
               >
                 End Collaboration
               </button>
@@ -242,7 +242,7 @@ export function CollaborationControls({
             <div className="space-y-6">
               {/* Start new collaboration */}
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Start New Session</h3>
+                <h3 className="text-sm font-medium text-neutral-700 mb-3">Start New Session</h3>
                 <button
                   onClick={handleStartCollaboration}
                   className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg hover:from-indigo-600 hover:to-purple-600 transition-all font-medium flex items-center justify-center gap-2"
@@ -252,23 +252,23 @@ export function CollaborationControls({
                   </svg>
                   Start Collaboration
                 </button>
-                <p className="mt-2 text-xs text-gray-500">
+                <p className="mt-2 text-xs text-neutral-500">
                   Create a new room and invite others to join.
                 </p>
               </div>
 
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-gray-200" />
+                  <div className="w-full border-t border-neutral-200" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white text-gray-500">or</span>
+                  <span className="px-2 bg-white text-neutral-500">or</span>
                 </div>
               </div>
 
               {/* Join existing room */}
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Join Existing Room</h3>
+                <h3 className="text-sm font-medium text-neutral-700 mb-3">Join Existing Room</h3>
                 <div className="flex gap-2">
                   <input
                     type="text"
@@ -276,7 +276,7 @@ export function CollaborationControls({
                     onChange={(e) => setJoinRoomId(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleJoinCollaboration()}
                     placeholder="Enter room ID..."
-                    className="flex-1 px-3 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
+                    className="flex-1 px-3 py-2.5 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 text-sm"
                   />
                   <button
                     onClick={handleJoinCollaboration}
@@ -286,7 +286,7 @@ export function CollaborationControls({
                     Join
                   </button>
                 </div>
-                <p className="mt-2 text-xs text-gray-500">
+                <p className="mt-2 text-xs text-neutral-500">
                   Enter the room ID shared by the host.
                 </p>
               </div>

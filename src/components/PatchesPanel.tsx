@@ -77,18 +77,18 @@ export function PatchesPanel({
 
   if (!noteId) {
     return (
-      <div className="h-full bg-gray-50 border-l border-gray-200 flex items-center justify-center">
-        <p className="text-sm text-gray-400">Select a note to use AI patches</p>
+      <div className="h-full bg-neutral-50 border-l border-neutral-200 flex items-center justify-center">
+        <p className="text-sm text-neutral-400">Select a note to use AI patches</p>
       </div>
     );
   }
 
   return (
-    <div className="h-full bg-gray-50 border-l border-gray-200 flex flex-col">
+    <div className="h-full bg-neutral-50 border-l border-neutral-200 flex flex-col">
       {/* Header with badge */}
-      <div className="p-3 border-b border-gray-200">
+      <div className="p-3 border-b border-neutral-200">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-sm font-semibold text-gray-700">AI Patches</h2>
+          <h2 className="text-sm font-semibold text-neutral-700">AI Patches</h2>
           <AIStatusBadge />
         </div>
         {suggestions.length > 0 && (
@@ -105,8 +105,8 @@ export function PatchesPanel({
             onClick={() => setActiveTab('suggestions')}
             className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-colors ${
               activeTab === 'suggestions'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-primary-600 text-white'
+                : 'bg-neutral-100 text-neutral-600 hover:bg-gray-200'
             }`}
           >
             Smart
@@ -120,8 +120,8 @@ export function PatchesPanel({
             onClick={() => setActiveTab('history')}
             className={`flex-1 px-2 py-1.5 text-xs font-medium rounded-md transition-colors ${
               activeTab === 'history'
-                ? 'bg-blue-600 text-white'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                ? 'bg-primary-600 text-white'
+                : 'bg-neutral-100 text-neutral-600 hover:bg-gray-200'
             }`}
           >
             Manual
@@ -143,10 +143,10 @@ export function PatchesPanel({
                   key={type}
                   onClick={() => handleAction(type)}
                   disabled={loading !== null}
-                  className={`px-2 py-2 text-xs font-medium rounded-md border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+                  className={`px-2 py-2 text-xs font-medium rounded-md border focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors ${
                     loading === type
                       ? 'bg-blue-100 border-blue-300 text-blue-700'
-                      : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                      : 'bg-white border-neutral-300 text-neutral-700 hover:bg-neutral-50'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   <span className="mr-1">{icon}</span>
@@ -163,10 +163,10 @@ export function PatchesPanel({
                   onClick={() => handleAction(type)}
                   disabled={loading !== null}
                   title={label}
-                  className={`p-1.5 text-xs font-medium rounded-md border focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors ${
+                  className={`p-1.5 text-xs font-medium rounded-md border focus:outline-none focus:ring-2 focus:ring-primary-500 transition-colors ${
                     loading === type
                       ? 'bg-blue-100 border-blue-300 text-blue-700'
-                      : 'bg-gray-50 border-gray-200 text-gray-600 hover:bg-gray-100'
+                      : 'bg-neutral-50 border-neutral-200 text-neutral-600 hover:bg-neutral-100'
                   } disabled:opacity-50 disabled:cursor-not-allowed`}
                 >
                   {loading === type ? '...' : icon}
@@ -183,7 +183,7 @@ export function PatchesPanel({
           suggestions.length === 0 ? (
             <div className="text-center mt-8">
               <div className="text-2xl mb-2">✨</div>
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-neutral-400">
                 Keep writing! Suggestions will appear when we detect opportunities to help.
               </p>
             </div>
@@ -208,7 +208,7 @@ export function PatchesPanel({
           <>
             {pendingPatches.length > 0 && (
               <div className="mb-4">
-                <p className="text-xs font-medium text-gray-500 mb-2">Pending</p>
+                <p className="text-xs font-medium text-neutral-500 mb-2">Pending</p>
                 <div className="space-y-3">
                   {pendingPatches.map((patch) => (
                     <PatchCard
@@ -224,7 +224,7 @@ export function PatchesPanel({
 
             {historyPatches.length > 0 && (
               <div>
-                <p className="text-xs font-medium text-gray-500 mb-2">History</p>
+                <p className="text-xs font-medium text-neutral-500 mb-2">History</p>
                 <div className="space-y-3">
                   {historyPatches.map((patch) => (
                     <PatchCard
@@ -239,7 +239,7 @@ export function PatchesPanel({
             )}
 
             {patches.length === 0 && (
-              <p className="text-xs text-gray-400 text-center mt-4">
+              <p className="text-xs text-neutral-400 text-center mt-4">
                 Use the buttons above to generate patches manually.
               </p>
             )}

@@ -153,7 +153,7 @@ export function StickyNote({
     <div
       ref={noteRef}
       className={`absolute rounded-lg shadow-lg cursor-move transition-shadow ${
-        isSelected ? 'ring-2 ring-blue-500 shadow-xl' : ''
+        isSelected ? 'ring-2 ring-primary-500 shadow-xl' : ''
       } ${isDragging ? 'shadow-2xl z-50' : ''}`}
       style={{
         left: note.x,
@@ -168,11 +168,11 @@ export function StickyNote({
     >
       {/* Header */}
       <div className="px-3 py-2 border-b border-black/10">
-        <h3 className="font-medium text-gray-900 text-sm truncate">{note.title}</h3>
+        <h3 className="font-medium text-neutral-900 text-sm truncate">{note.title}</h3>
       </div>
 
       {/* Content */}
-      <div className="px-3 py-2 text-xs text-gray-600 overflow-hidden" style={{ height: note.height - 70 }}>
+      <div className="px-3 py-2 text-xs text-neutral-600 overflow-hidden" style={{ height: note.height - 70 }}>
         <p className="line-clamp-5">{note.content}</p>
       </div>
 
@@ -182,13 +182,13 @@ export function StickyNote({
           {note.tags.slice(0, 3).map((tag, i) => (
             <span
               key={i}
-              className="px-1.5 py-0.5 text-[10px] bg-black/10 text-gray-700 rounded truncate max-w-[60px]"
+              className="px-1.5 py-0.5 text-[10px] bg-black/10 text-neutral-700 rounded truncate max-w-[60px]"
             >
               {tag}
             </span>
           ))}
           {note.tags.length > 3 && (
-            <span className="text-[10px] text-gray-500">+{note.tags.length - 3}</span>
+            <span className="text-[10px] text-neutral-500">+{note.tags.length - 3}</span>
           )}
         </div>
       )}
@@ -215,7 +215,7 @@ export function StickyNote({
         onMouseDown={handleResizeStart}
       >
         <svg
-          className="w-3 h-3 text-gray-400 group-hover:text-gray-600 absolute bottom-0.5 right-0.5"
+          className="w-3 h-3 text-neutral-400 group-hover:text-neutral-600 absolute bottom-0.5 right-0.5"
           viewBox="0 0 24 24"
           fill="currentColor"
         >

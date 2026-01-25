@@ -141,7 +141,7 @@ export function CollaborativeAnnotations({
       <div className="px-4 py-3 border-b border-gray-700 flex items-center justify-between">
         <div className="flex items-center gap-2">
           <h3 className="text-sm font-semibold text-white">Annotations</h3>
-          <span className="text-xs text-gray-400">({stats.total})</span>
+          <span className="text-xs text-neutral-400">({stats.total})</span>
         </div>
         <div className="flex items-center gap-2">
           {/* Filter buttons */}
@@ -150,7 +150,7 @@ export function CollaborativeAnnotations({
             className={`px-2 py-1 text-xs rounded transition-colors ${
               filter.resolved === false
                 ? 'bg-orange-600 text-white'
-                : 'bg-gray-700 text-gray-400 hover:text-white'
+                : 'bg-gray-700 text-neutral-400 hover:text-white'
             }`}
           >
             Unresolved ({stats.unresolved})
@@ -158,7 +158,7 @@ export function CollaborativeAnnotations({
           {onToggleExpand && (
             <button
               onClick={onToggleExpand}
-              className="p-1 text-gray-400 hover:text-white transition-colors"
+              className="p-1 text-neutral-400 hover:text-white transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -175,7 +175,7 @@ export function CollaborativeAnnotations({
             <div className="w-6 h-6 border-2 border-gray-600 border-t-white rounded-full animate-spin" />
           </div>
         ) : annotations.length === 0 ? (
-          <div className="text-center py-8 text-gray-500 text-sm">
+          <div className="text-center py-8 text-neutral-500 text-sm">
             No annotations yet. Add one below!
           </div>
         ) : (
@@ -203,14 +203,14 @@ export function CollaborativeAnnotations({
                   </span>
                   <button
                     onClick={() => onSeekToTimestamp?.(annotation.timestamp)}
-                    className="text-xs text-gray-500 hover:text-indigo-400 transition-colors"
+                    className="text-xs text-neutral-500 hover:text-indigo-400 transition-colors"
                   >
                     @{formatTimestamp(annotation.timestamp)}
                   </button>
                 </div>
                 <div className="flex items-center gap-1">
                   {annotation.type === 'highlight' && (
-                    <span className="px-1.5 py-0.5 bg-yellow-500/20 text-yellow-400 text-xs rounded">
+                    <span className="px-1.5 py-0.5 bg-accent-500/20 text-yellow-400 text-xs rounded">
                       highlight
                     </span>
                   )}
@@ -219,7 +219,7 @@ export function CollaborativeAnnotations({
                     className={`p-1 rounded transition-colors ${
                       annotation.isResolved
                         ? 'text-green-400 hover:text-green-300'
-                        : 'text-gray-500 hover:text-green-400'
+                        : 'text-neutral-500 hover:text-green-400'
                     }`}
                     title={annotation.isResolved ? 'Mark unresolved' : 'Mark resolved'}
                   >
@@ -230,7 +230,7 @@ export function CollaborativeAnnotations({
                   {annotation.authorId === currentAuthor.id && (
                     <button
                       onClick={() => handleDelete(annotation.id)}
-                      className="p-1 text-gray-500 hover:text-red-400 transition-colors"
+                      className="p-1 text-neutral-500 hover:text-red-400 transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -254,7 +254,7 @@ export function CollaborativeAnnotations({
                       >
                         {reply.authorName}
                       </span>
-                      <span className="text-gray-400 ml-2">{reply.content}</span>
+                      <span className="text-neutral-400 ml-2">{reply.content}</span>
                     </div>
                   ))}
                 </div>
@@ -275,13 +275,13 @@ export function CollaborativeAnnotations({
                   <button
                     onClick={() => handleAddReply(annotation.id)}
                     disabled={!replyText.trim()}
-                    className="px-2 py-1 bg-indigo-600 text-white text-xs rounded hover:bg-indigo-700 transition-colors disabled:opacity-50"
+                    className="px-2 py-1 bg-secondary-600 text-white text-xs rounded hover:bg-secondary-700 transition-colors disabled:opacity-50"
                   >
                     Reply
                   </button>
                   <button
                     onClick={() => setSelectedAnnotation(null)}
-                    className="px-2 py-1 bg-gray-600 text-gray-300 text-xs rounded hover:bg-gray-500 transition-colors"
+                    className="px-2 py-1 bg-gray-600 text-gray-300 text-xs rounded hover:bg-neutral-500 transition-colors"
                   >
                     Cancel
                   </button>
@@ -289,7 +289,7 @@ export function CollaborativeAnnotations({
               ) : (
                 <button
                   onClick={() => setSelectedAnnotation(annotation.id)}
-                  className="mt-2 text-xs text-gray-500 hover:text-indigo-400 transition-colors"
+                  className="mt-2 text-xs text-neutral-500 hover:text-indigo-400 transition-colors"
                 >
                   Reply
                 </button>
@@ -306,8 +306,8 @@ export function CollaborativeAnnotations({
             onClick={() => setAnnotationType('note')}
             className={`px-2 py-1 text-xs rounded transition-colors ${
               annotationType === 'note'
-                ? 'bg-indigo-600 text-white'
-                : 'bg-gray-700 text-gray-400 hover:text-white'
+                ? 'bg-secondary-600 text-white'
+                : 'bg-gray-700 text-neutral-400 hover:text-white'
             }`}
           >
             Note
@@ -317,12 +317,12 @@ export function CollaborativeAnnotations({
             className={`px-2 py-1 text-xs rounded transition-colors ${
               annotationType === 'highlight'
                 ? 'bg-yellow-600 text-white'
-                : 'bg-gray-700 text-gray-400 hover:text-white'
+                : 'bg-gray-700 text-neutral-400 hover:text-white'
             }`}
           >
             Highlight
           </button>
-          <span className="text-xs text-gray-500 ml-auto">
+          <span className="text-xs text-neutral-500 ml-auto">
             @{formatTimestamp(currentTimestamp)}
           </span>
         </div>
@@ -338,7 +338,7 @@ export function CollaborativeAnnotations({
           <button
             onClick={handleAddAnnotation}
             disabled={!newAnnotation.trim()}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 bg-secondary-600 text-white rounded-lg hover:bg-secondary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -350,7 +350,7 @@ export function CollaborativeAnnotations({
             className="w-3 h-3 rounded-full"
             style={{ backgroundColor: currentAuthor.color }}
           />
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-neutral-400">
             Annotating as <span style={{ color: currentAuthor.color }}>{currentAuthor.name}</span>
           </span>
         </div>

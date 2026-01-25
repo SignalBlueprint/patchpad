@@ -462,12 +462,12 @@ export function KnowledgeGraph({
   // Legend component
   const legend = useMemo(() => (
     <div className="absolute bottom-2 left-2 bg-white/90 rounded-lg p-2 text-xs shadow-sm">
-      <div className="font-medium text-gray-700 mb-1">Concept Types</div>
+      <div className="font-medium text-neutral-700 mb-1">Concept Types</div>
       <div className="grid grid-cols-2 gap-x-3 gap-y-0.5">
         {Object.entries(TYPE_COLORS).slice(0, 8).map(([type, color]) => (
           <div key={type} className="flex items-center gap-1">
             <div className="w-2.5 h-2.5 rounded-full" style={{ backgroundColor: color }} />
-            <span className="text-gray-600 capitalize">{type}</span>
+            <span className="text-neutral-600 capitalize">{type}</span>
           </div>
         ))}
       </div>
@@ -478,15 +478,15 @@ export function KnowledgeGraph({
   const hoveredInfo = hoveredNode && (
     <div className="absolute top-2 left-2 bg-white/95 rounded-lg p-3 shadow-lg max-w-xs">
       <div className="flex items-center gap-2">
-        <div className="font-medium text-gray-900">{hoveredNode.concept.name}</div>
+        <div className="font-medium text-neutral-900">{hoveredNode.concept.name}</div>
         {hoveredNode.pinned && (
-          <span className="px-1.5 py-0.5 text-[10px] font-medium bg-red-100 text-red-600 rounded">
+          <span className="px-1.5 py-0.5 text-[10px] font-medium bg-red-100 text-error-600 rounded">
             Pinned
           </span>
         )}
       </div>
-      <div className="text-xs text-gray-500 capitalize mt-0.5">{hoveredNode.concept.type}</div>
-      <div className="text-xs text-gray-600 mt-2">
+      <div className="text-xs text-neutral-500 capitalize mt-0.5">{hoveredNode.concept.type}</div>
+      <div className="text-xs text-neutral-600 mt-2">
         Mentioned in {hoveredNode.concept.mentions.length} note{hoveredNode.concept.mentions.length !== 1 ? 's' : ''}
       </div>
       {hoveredNode.concept.mentions.length > 0 && (
@@ -495,19 +495,19 @@ export function KnowledgeGraph({
             <button
               key={i}
               onClick={() => onNoteClick?.(mention.noteId)}
-              className="block text-xs text-blue-600 hover:underline truncate w-full text-left"
+              className="block text-xs text-primary-600 hover:underline truncate w-full text-left"
             >
               {mention.noteTitle}
             </button>
           ))}
           {hoveredNode.concept.mentions.length > 3 && (
-            <div className="text-xs text-gray-400">
+            <div className="text-xs text-neutral-400">
               +{hoveredNode.concept.mentions.length - 3} more
             </div>
           )}
         </div>
       )}
-      <div className="text-[10px] text-gray-400 mt-2 pt-2 border-t border-gray-100">
+      <div className="text-[10px] text-neutral-400 mt-2 pt-2 border-t border-gray-100">
         Double-click to {hoveredNode.pinned ? 'unpin' : 'pin'}
       </div>
     </div>
@@ -515,20 +515,20 @@ export function KnowledgeGraph({
 
   if (graph.concepts.length === 0) {
     return (
-      <div className="h-full flex items-center justify-center text-gray-500">
+      <div className="h-full flex items-center justify-center text-neutral-500">
         <div className="text-center">
           <svg className="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 10V3L4 14h7v7l9-11h-7z" />
           </svg>
           <p className="text-sm">No concepts extracted yet</p>
-          <p className="text-xs text-gray-400 mt-1">Add more notes to build your knowledge graph</p>
+          <p className="text-xs text-neutral-400 mt-1">Add more notes to build your knowledge graph</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div ref={containerRef} className="relative h-full bg-gray-50 rounded-lg overflow-hidden">
+    <div ref={containerRef} className="relative h-full bg-neutral-50 rounded-lg overflow-hidden">
       <canvas
         ref={canvasRef}
         width={dimensions.width}
@@ -551,19 +551,19 @@ export function KnowledgeGraph({
       <div className="absolute top-2 right-2 flex flex-col gap-1">
         <button
           onClick={() => setZoom(z => Math.min(3, z * 1.2))}
-          className="p-1.5 bg-white rounded shadow hover:bg-gray-50"
+          className="p-1.5 bg-white rounded shadow hover:bg-neutral-50"
           title="Zoom in"
         >
-          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
         </button>
         <button
           onClick={() => setZoom(z => Math.max(0.5, z / 1.2))}
-          className="p-1.5 bg-white rounded shadow hover:bg-gray-50"
+          className="p-1.5 bg-white rounded shadow hover:bg-neutral-50"
           title="Zoom out"
         >
-          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
           </svg>
         </button>
@@ -572,17 +572,17 @@ export function KnowledgeGraph({
             setZoom(1);
             setPan({ x: 0, y: 0 });
           }}
-          className="p-1.5 bg-white rounded shadow hover:bg-gray-50"
+          className="p-1.5 bg-white rounded shadow hover:bg-neutral-50"
           title="Reset view"
         >
-          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
           </svg>
         </button>
       </div>
 
       {/* Stats */}
-      <div className="absolute bottom-2 right-2 text-xs text-gray-500 bg-white/80 px-2 py-1 rounded">
+      <div className="absolute bottom-2 right-2 text-xs text-neutral-500 bg-white/80 px-2 py-1 rounded">
         {graph.concepts.length} concepts, {graph.relationships.length} connections
       </div>
     </div>

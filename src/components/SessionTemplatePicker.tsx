@@ -232,18 +232,18 @@ export function SessionTemplatePicker({ onSelectTemplate, onClose }: SessionTemp
           <div className="mb-6">
             <button
               onClick={handleQuickStart}
-              className="w-full p-4 border-2 border-dashed border-gray-200 hover:border-gray-300 rounded-xl text-left transition-colors group"
+              className="w-full p-4 border-2 border-dashed border-neutral-200 hover:border-neutral-300 rounded-xl text-left transition-colors group"
             >
               <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 group-hover:bg-gray-200 transition-colors">
+                <div className="w-12 h-12 rounded-lg bg-neutral-100 flex items-center justify-center text-neutral-400 group-hover:bg-gray-200 transition-colors">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
                 </div>
                 <div>
-                  <h3 className="font-medium text-gray-900">Quick Start</h3>
-                  <p className="text-sm text-gray-500">Start recording immediately without a template</p>
+                  <h3 className="font-medium text-neutral-900">Quick Start</h3>
+                  <p className="text-sm text-neutral-500">Start recording immediately without a template</p>
                 </div>
               </div>
             </button>
@@ -251,7 +251,7 @@ export function SessionTemplatePicker({ onSelectTemplate, onClose }: SessionTemp
 
           {/* Templates section */}
           <div className="mb-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Session Templates</h3>
+            <h3 className="text-sm font-medium text-neutral-700 mb-3">Session Templates</h3>
             <div className="grid grid-cols-2 gap-4">
               {builtInTemplates.map((template) => {
                 const isSelected = selectedTemplate?.id === template.id;
@@ -265,7 +265,7 @@ export function SessionTemplatePicker({ onSelectTemplate, onClose }: SessionTemp
                     className={`p-4 rounded-xl border-2 text-left transition-all ${
                       isSelected
                         ? 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-200'
-                        : 'border-gray-200 hover:border-gray-300 hover:shadow-sm'
+                        : 'border-neutral-200 hover:border-neutral-300 hover:shadow-sm'
                     }`}
                   >
                     <div className="flex gap-4">
@@ -277,12 +277,12 @@ export function SessionTemplatePicker({ onSelectTemplate, onClose }: SessionTemp
                       {/* Info */}
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <h4 className="font-medium text-gray-900">{template.name}</h4>
+                          <h4 className="font-medium text-neutral-900">{template.name}</h4>
                           {estimatedTime > 0 && (
-                            <span className="text-xs text-gray-400">~{estimatedTime} min</span>
+                            <span className="text-xs text-neutral-400">~{estimatedTime} min</span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-500 mt-0.5 line-clamp-2">
+                        <p className="text-sm text-neutral-500 mt-0.5 line-clamp-2">
                           {template.description}
                         </p>
                         {template.autoTags.length > 0 && (
@@ -290,7 +290,7 @@ export function SessionTemplatePicker({ onSelectTemplate, onClose }: SessionTemp
                             {template.autoTags.map((tag) => (
                               <span
                                 key={tag}
-                                className="px-1.5 py-0.5 text-xs bg-gray-100 text-gray-600 rounded"
+                                className="px-1.5 py-0.5 text-xs bg-neutral-100 text-neutral-600 rounded"
                               >
                                 {tag}
                               </span>
@@ -313,7 +313,7 @@ export function SessionTemplatePicker({ onSelectTemplate, onClose }: SessionTemp
           {/* User templates */}
           {userTemplates.length > 0 && (
             <div className="mb-4">
-              <h3 className="text-sm font-medium text-gray-700 mb-3">My Templates</h3>
+              <h3 className="text-sm font-medium text-neutral-700 mb-3">My Templates</h3>
               <div className="grid grid-cols-2 gap-4">
                 {userTemplates.map((template) => {
                   const isSelected = selectedTemplate?.id === template.id;
@@ -326,7 +326,7 @@ export function SessionTemplatePicker({ onSelectTemplate, onClose }: SessionTemp
                       className={`p-4 rounded-xl border-2 text-left transition-all ${
                         isSelected
                           ? 'border-indigo-500 bg-indigo-50 ring-2 ring-indigo-200'
-                          : 'border-gray-200 hover:border-gray-300'
+                          : 'border-neutral-200 hover:border-neutral-300'
                       }`}
                     >
                       <div className="flex gap-3">
@@ -334,8 +334,8 @@ export function SessionTemplatePicker({ onSelectTemplate, onClose }: SessionTemp
                           <TemplateIcon icon={template.icon} className="w-5 h-5" />
                         </div>
                         <div className="flex-1 min-w-0">
-                          <h4 className="font-medium text-gray-900">{template.name}</h4>
-                          <p className="text-sm text-gray-500 line-clamp-1">{template.description}</p>
+                          <h4 className="font-medium text-neutral-900">{template.name}</h4>
+                          <p className="text-sm text-neutral-500 line-clamp-1">{template.description}</p>
                         </div>
                       </div>
                     </button>
@@ -347,14 +347,14 @@ export function SessionTemplatePicker({ onSelectTemplate, onClose }: SessionTemp
 
           {/* Selected template details */}
           {selectedTemplate && (
-            <div className="mt-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
+            <div className="mt-6 p-4 bg-neutral-50 rounded-xl border border-neutral-200">
               <div className="flex items-center justify-between mb-3">
-                <h4 className="font-medium text-gray-900">
+                <h4 className="font-medium text-neutral-900">
                   {selectedTemplate.name} Workflow
                 </h4>
                 <button
                   onClick={() => setShowWorkflow(!showWorkflow)}
-                  className="text-sm text-indigo-600 hover:text-indigo-700"
+                  className="text-sm text-secondary-600 hover:text-indigo-700"
                 >
                   {showWorkflow ? 'Hide steps' : 'Show steps'}
                 </button>
@@ -375,16 +375,16 @@ export function SessionTemplatePicker({ onSelectTemplate, onClose }: SessionTemp
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center justify-between">
-                          <h5 className="font-medium text-gray-900 text-sm">{step.title}</h5>
+                          <h5 className="font-medium text-neutral-900 text-sm">{step.title}</h5>
                           {step.estimatedMinutes && (
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-neutral-400">
                               {step.estimatedMinutes} min
                             </span>
                           )}
                         </div>
-                        <p className="text-sm text-gray-500 mt-0.5">{step.description}</p>
+                        <p className="text-sm text-neutral-500 mt-0.5">{step.description}</p>
                         {step.tips && step.tips.length > 0 && (
-                          <ul className="mt-2 text-xs text-gray-400">
+                          <ul className="mt-2 text-xs text-neutral-400">
                             {step.tips.map((tip, i) => (
                               <li key={i} className="flex items-start gap-1">
                                 <span className="text-indigo-400">•</span>
@@ -401,7 +401,7 @@ export function SessionTemplatePicker({ onSelectTemplate, onClose }: SessionTemp
 
               {/* Session title input */}
               <div className="mt-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 mb-1">
                   Session Title (optional)
                 </label>
                 <input
@@ -409,7 +409,7 @@ export function SessionTemplatePicker({ onSelectTemplate, onClose }: SessionTemp
                   value={sessionTitle}
                   onChange={(e) => setSessionTitle(e.target.value)}
                   placeholder={`${selectedTemplate.name} Session`}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500"
+                  className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500"
                 />
               </div>
             </div>
@@ -417,10 +417,10 @@ export function SessionTemplatePicker({ onSelectTemplate, onClose }: SessionTemp
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-3 bg-gray-50">
+        <div className="px-6 py-4 border-t border-gray-100 flex items-center justify-end gap-3 bg-neutral-50">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
+            className="px-4 py-2 text-sm text-neutral-600 hover:text-gray-800 hover:bg-neutral-100 rounded-lg transition-colors"
           >
             Cancel
           </button>
@@ -429,8 +429,8 @@ export function SessionTemplatePicker({ onSelectTemplate, onClose }: SessionTemp
             disabled={!selectedTemplate}
             className={`px-6 py-2 text-sm font-medium rounded-lg flex items-center gap-2 transition-colors ${
               selectedTemplate
-                ? 'bg-indigo-500 text-white hover:bg-indigo-600'
-                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                ? 'bg-indigo-500 text-white hover:bg-secondary-600'
+                : 'bg-neutral-100 text-neutral-400 cursor-not-allowed'
             }`}
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

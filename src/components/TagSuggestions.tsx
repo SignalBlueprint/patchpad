@@ -54,7 +54,7 @@ export function TagSuggestions({ content, currentTags, onAddTag }: TagSuggestion
 
   return (
     <div className="flex items-center gap-2 py-2">
-      <span className="text-xs text-gray-500">
+      <span className="text-xs text-neutral-500">
         {loading ? (
           <span className="flex items-center gap-1">
             <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
@@ -75,7 +75,7 @@ export function TagSuggestions({ content, currentTags, onAddTag }: TagSuggestion
               onAddTag(tag);
               setSuggestions(prev => prev.filter(t => t !== tag));
             }}
-            className="text-xs px-2 py-0.5 bg-blue-50 text-blue-600 rounded-full hover:bg-blue-100 transition-colors flex items-center gap-1"
+            className="text-xs px-2 py-0.5 bg-blue-50 text-primary-600 rounded-full hover:bg-blue-100 transition-colors flex items-center gap-1"
           >
             <span>#{tag}</span>
             <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -116,7 +116,7 @@ export function AudioPlaybackButton({ noteId }: AudioPlaybackButtonProps) {
       {/* Play/Pause button */}
       <button
         onClick={handleTogglePlayback}
-        className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-indigo-500 text-white rounded-full hover:bg-indigo-600 transition-colors"
+        className="flex-shrink-0 w-8 h-8 flex items-center justify-center bg-indigo-500 text-white rounded-full hover:bg-secondary-600 transition-colors"
         title={isPlaying ? 'Pause' : 'Play'}
       >
         {isPlaying ? (
@@ -132,7 +132,7 @@ export function AudioPlaybackButton({ noteId }: AudioPlaybackButtonProps) {
 
       {/* Progress bar */}
       <div className="flex-1 flex items-center gap-2">
-        <span className="text-xs text-indigo-600 font-mono w-10">
+        <span className="text-xs text-secondary-600 font-mono w-10">
           {formatDuration(Math.floor(currentTime))}
         </span>
         <input
@@ -146,7 +146,7 @@ export function AudioPlaybackButton({ noteId }: AudioPlaybackButtonProps) {
             background: `linear-gradient(to right, rgb(99 102 241) ${progress}%, rgb(199 210 254) ${progress}%)`
           }}
         />
-        <span className="text-xs text-indigo-600 font-mono w-10 text-right">
+        <span className="text-xs text-secondary-600 font-mono w-10 text-right">
           {formatDuration(Math.floor(duration))}
         </span>
       </div>

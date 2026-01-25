@@ -143,7 +143,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
         <div className="h-1 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
 
         {/* Search input */}
-        <div className="flex items-center px-4 border-b border-gray-200/50">
+        <div className="flex items-center px-4 border-b border-neutral-200/50">
           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -155,9 +155,9 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
             value={query}
             onChange={e => setQuery(e.target.value)}
             placeholder="Type a command or search..."
-            className="flex-1 px-4 py-4 text-sm bg-transparent outline-none placeholder:text-gray-400"
+            className="flex-1 px-4 py-4 text-sm bg-transparent outline-none placeholder:text-neutral-400"
           />
-          <kbd className="px-2.5 py-1 text-xs font-medium text-gray-500 bg-gray-100/80 rounded-lg border border-gray-200/50">
+          <kbd className="px-2.5 py-1 text-xs font-medium text-neutral-500 bg-neutral-100/80 rounded-lg border border-neutral-200/50">
             esc
           </kbd>
         </div>
@@ -165,7 +165,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
         {/* Commands list */}
         <div ref={listRef} className="max-h-[400px] overflow-y-auto p-2">
           {flatCommands.length === 0 ? (
-            <div className="py-8 text-center text-gray-500">
+            <div className="py-8 text-center text-neutral-500">
               <p className="text-sm">No commands found</p>
               <p className="text-xs mt-1">Try a different search term</p>
             </div>
@@ -176,7 +176,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
 
               return (
                 <div key={category} className="mb-2">
-                  <div className="px-2 py-1.5 text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  <div className="px-2 py-1.5 text-xs font-medium text-neutral-500 uppercase tracking-wider">
                     {categoryLabels[category]}
                   </div>
                   {cmds.map(cmd => {
@@ -194,14 +194,14 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
                         className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 ${
                           isSelected
                             ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-900 shadow-sm border border-indigo-100'
-                            : 'hover:bg-gray-50/80 text-gray-700 border border-transparent'
+                            : 'hover:bg-neutral-50/80 text-neutral-700 border border-transparent'
                         }`}
                       >
                         {cmd.icon && (
                           <span className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
                             isSelected
                               ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-md shadow-indigo-500/25'
-                              : 'bg-gray-100 text-gray-500'
+                              : 'bg-neutral-100 text-neutral-500'
                           }`}>
                             {cmd.icon}
                           </span>
@@ -209,14 +209,14 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
                         <div className="flex-1 min-w-0">
                           <div className="text-sm font-medium truncate">{cmd.name}</div>
                           {cmd.description && (
-                            <div className={`text-xs truncate ${isSelected ? 'text-indigo-600' : 'text-gray-500'}`}>
+                            <div className={`text-xs truncate ${isSelected ? 'text-secondary-600' : 'text-neutral-500'}`}>
                               {cmd.description}
                             </div>
                           )}
                         </div>
                         {cmd.shortcut && (
                           <kbd className={`flex-shrink-0 px-2 py-0.5 text-xs font-medium rounded-lg transition-colors ${
-                            isSelected ? 'bg-indigo-100 text-indigo-700' : 'bg-gray-100 text-gray-500'
+                            isSelected ? 'bg-indigo-100 text-indigo-700' : 'bg-neutral-100 text-neutral-500'
                           }`}>
                             {cmd.shortcut}
                           </kbd>
@@ -231,15 +231,15 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
         </div>
 
         {/* Footer hint */}
-        <div className="px-4 py-3 border-t border-gray-200/50 bg-gray-50/50 flex items-center justify-between text-xs text-gray-500">
+        <div className="px-4 py-3 border-t border-neutral-200/50 bg-neutral-50/50 flex items-center justify-between text-xs text-neutral-500">
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-white/80 border border-gray-200/50 rounded-md text-[10px] shadow-sm">↑</kbd>
-              <kbd className="px-1.5 py-0.5 bg-white/80 border border-gray-200/50 rounded-md text-[10px] shadow-sm">↓</kbd>
+              <kbd className="px-1.5 py-0.5 bg-white/80 border border-neutral-200/50 rounded-md text-[10px] shadow-sm">↑</kbd>
+              <kbd className="px-1.5 py-0.5 bg-white/80 border border-neutral-200/50 rounded-md text-[10px] shadow-sm">↓</kbd>
               <span className="ml-1">Navigate</span>
             </span>
             <span className="flex items-center gap-1">
-              <kbd className="px-1.5 py-0.5 bg-white/80 border border-gray-200/50 rounded-md text-[10px] shadow-sm">↵</kbd>
+              <kbd className="px-1.5 py-0.5 bg-white/80 border border-neutral-200/50 rounded-md text-[10px] shadow-sm">↵</kbd>
               <span className="ml-1">Select</span>
             </span>
           </div>

@@ -155,7 +155,7 @@ export function CollaborationChat({
   const onlineCount = peers.length + 1; // +1 for self
 
   return (
-    <div className="fixed right-4 bottom-4 w-80 h-[500px] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden z-50 border border-gray-200">
+    <div className="fixed right-4 bottom-4 w-80 h-[500px] bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden z-50 border border-neutral-200">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-gray-100 bg-gradient-to-r from-indigo-500 to-purple-500">
         <div className="flex items-center gap-2">
@@ -178,9 +178,9 @@ export function CollaborationChat({
       </div>
 
       {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-gray-50">
+      <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-neutral-50">
         {messages.length === 0 ? (
-          <div className="flex flex-col items-center justify-center h-full text-gray-400">
+          <div className="flex flex-col items-center justify-center h-full text-neutral-400">
             <svg className="w-12 h-12 mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
             </svg>
@@ -218,7 +218,7 @@ export function CollaborationChat({
                   {/* Timestamp */}
                   <div
                     className={`px-3 pb-2 text-[10px] ${
-                      isOwnMessage ? 'text-indigo-200' : 'text-gray-400'
+                      isOwnMessage ? 'text-indigo-200' : 'text-neutral-400'
                     }`}
                   >
                     {formatTime(msg.timestamp)}
@@ -241,12 +241,12 @@ export function CollaborationChat({
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Type a message..."
-            className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+            className="flex-1 px-3 py-2 text-sm border border-neutral-200 rounded-full focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
           />
           <button
             onClick={handleSendMessage}
             disabled={!inputValue.trim()}
-            className="p-2 bg-indigo-500 text-white rounded-full hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="p-2 bg-indigo-500 text-white rounded-full hover:bg-secondary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />

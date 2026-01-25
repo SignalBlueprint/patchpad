@@ -57,7 +57,7 @@ export function CanvasGroup({
   return (
     <div
       className={`absolute rounded-lg border-2 border-dashed transition-all ${
-        isSelected ? 'border-blue-500 bg-blue-50/30' : 'border-gray-300 bg-gray-50/20'
+        isSelected ? 'border-primary-500 bg-blue-50/30' : 'border-neutral-300 bg-neutral-50/20'
       } ${group.collapsed ? 'opacity-75' : ''}`}
       style={{
         left: group.x,
@@ -90,7 +90,7 @@ export function CanvasGroup({
             title={group.collapsed ? 'Expand' : 'Collapse'}
           >
             <svg
-              className={`w-3 h-3 text-gray-600 transition-transform ${group.collapsed ? '' : 'rotate-90'}`}
+              className={`w-3 h-3 text-neutral-600 transition-transform ${group.collapsed ? '' : 'rotate-90'}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -108,12 +108,12 @@ export function CanvasGroup({
               onBlur={handleNameSubmit}
               onKeyDown={handleKeyDown}
               autoFocus
-              className="flex-1 px-1 py-0.5 text-xs font-medium bg-white border border-gray-300 rounded outline-none focus:border-blue-500"
+              className="flex-1 px-1 py-0.5 text-xs font-medium bg-white border border-neutral-300 rounded outline-none focus:border-primary-500"
               onClick={(e) => e.stopPropagation()}
             />
           ) : (
             <span
-              className="text-xs font-medium text-gray-700 truncate cursor-pointer"
+              className="text-xs font-medium text-neutral-700 truncate cursor-pointer"
               onDoubleClick={handleDoubleClick}
               title="Double-click to rename"
             >
@@ -122,7 +122,7 @@ export function CanvasGroup({
           )}
 
           {/* Note count badge */}
-          <span className="px-1.5 py-0.5 text-[10px] font-medium bg-white/80 text-gray-500 rounded">
+          <span className="px-1.5 py-0.5 text-[10px] font-medium bg-white/80 text-neutral-500 rounded">
             {group.noteIds.length}
           </span>
         </div>
@@ -133,7 +133,7 @@ export function CanvasGroup({
             e.stopPropagation();
             onDelete();
           }}
-          className="p-0.5 hover:bg-red-100 rounded text-gray-400 hover:text-red-500"
+          className="p-0.5 hover:bg-red-100 rounded text-neutral-400 hover:text-red-500"
           title="Delete group"
         >
           <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -145,7 +145,7 @@ export function CanvasGroup({
       {/* Collapsed indicator */}
       {group.collapsed && (
         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <span className="text-[10px] text-gray-500">
+          <span className="text-[10px] text-neutral-500">
             {group.noteIds.length} notes
           </span>
         </div>

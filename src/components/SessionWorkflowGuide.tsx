@@ -92,20 +92,20 @@ export function SessionWorkflowGuide({
     return (
       <button
         onClick={onToggleCollapse}
-        className="fixed bottom-24 right-4 z-40 px-4 py-2 bg-white shadow-lg rounded-full border border-gray-200 flex items-center gap-2 hover:shadow-xl transition-shadow"
+        className="fixed bottom-24 right-4 z-40 px-4 py-2 bg-white shadow-lg rounded-full border border-neutral-200 flex items-center gap-2 hover:shadow-xl transition-shadow"
         style={{ borderColor: template.color }}
       >
         <div
           className="w-3 h-3 rounded-full"
           style={{ backgroundColor: template.color }}
         />
-        <span className="text-sm font-medium text-gray-700">
+        <span className="text-sm font-medium text-neutral-700">
           Step {currentStep + 1}/{totalSteps}
         </span>
-        <span className="text-sm text-gray-500">
+        <span className="text-sm text-neutral-500">
           {workflow[currentStep]?.title}
         </span>
-        <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg className="w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
         </svg>
       </button>
@@ -124,17 +124,17 @@ export function SessionWorkflowGuide({
             className="w-2 h-2 rounded-full"
             style={{ backgroundColor: template.color }}
           />
-          <span className="text-sm font-medium text-gray-900">
+          <span className="text-sm font-medium text-neutral-900">
             {template.name} Workflow
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-neutral-400">
             {completedCount}/{totalSteps} done
           </span>
           <button
             onClick={onToggleCollapse}
-            className="p-1 text-gray-400 hover:text-gray-600 rounded"
+            className="p-1 text-neutral-400 hover:text-neutral-600 rounded"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -144,7 +144,7 @@ export function SessionWorkflowGuide({
       </div>
 
       {/* Progress bar */}
-      <div className="h-1 bg-gray-100">
+      <div className="h-1 bg-neutral-100">
         <div
           className="h-full transition-all duration-500"
           style={{
@@ -165,12 +165,12 @@ export function SessionWorkflowGuide({
             <div
               key={step.order}
               className={`border-b border-gray-50 last:border-0 ${
-                isActive ? 'bg-gray-50' : ''
+                isActive ? 'bg-neutral-50' : ''
               }`}
             >
               <button
                 onClick={() => handleStepClick(index)}
-                className="w-full px-4 py-2.5 flex items-start gap-3 text-left hover:bg-gray-50 transition-colors"
+                className="w-full px-4 py-2.5 flex items-start gap-3 text-left hover:bg-neutral-50 transition-colors"
               >
                 {/* Step indicator */}
                 <div
@@ -183,7 +183,7 @@ export function SessionWorkflowGuide({
                       ? 'bg-green-500 text-white'
                       : isActive
                       ? 'text-white'
-                      : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                      : 'bg-neutral-100 text-neutral-500 hover:bg-gray-200'
                   }`}
                   style={{
                     backgroundColor: isCompleted
@@ -208,16 +208,16 @@ export function SessionWorkflowGuide({
                     <span
                       className={`text-sm font-medium ${
                         isCompleted
-                          ? 'text-gray-400 line-through'
+                          ? 'text-neutral-400 line-through'
                           : isActive
-                          ? 'text-gray-900'
-                          : 'text-gray-600'
+                          ? 'text-neutral-900'
+                          : 'text-neutral-600'
                       }`}
                     >
                       {step.title}
                     </span>
                     {step.estimatedMinutes && (
-                      <span className="text-xs text-gray-400 ml-2">
+                      <span className="text-xs text-neutral-400 ml-2">
                         {formatTime(step.estimatedMinutes)}
                       </span>
                     )}
@@ -226,13 +226,13 @@ export function SessionWorkflowGuide({
                   {/* Expanded details */}
                   {isExpanded && (
                     <div className="mt-1.5">
-                      <p className="text-xs text-gray-500">{step.description}</p>
+                      <p className="text-xs text-neutral-500">{step.description}</p>
                       {step.tips && step.tips.length > 0 && (
                         <ul className="mt-2 space-y-1">
                           {step.tips.map((tip, i) => (
                             <li
                               key={i}
-                              className="text-xs text-gray-400 flex items-start gap-1.5"
+                              className="text-xs text-neutral-400 flex items-start gap-1.5"
                             >
                               <span style={{ color: template.color }}>•</span>
                               {tip}
@@ -263,8 +263,8 @@ export function SessionWorkflowGuide({
 
       {/* Footer tip */}
       {currentStep < totalSteps && !completedSteps.has(currentStep) && (
-        <div className="px-4 py-2 bg-gray-50 border-t border-gray-100">
-          <p className="text-xs text-gray-500">
+        <div className="px-4 py-2 bg-neutral-50 border-t border-gray-100">
+          <p className="text-xs text-neutral-500">
             <span className="font-medium">Tip:</span> Click the step number to mark it complete
           </p>
         </div>

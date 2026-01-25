@@ -179,12 +179,12 @@ export function SecondBrainDashboard({
             {/* Footer */}
             <div className="mt-8 flex items-center justify-between">
               {/* Show on startup toggle */}
-              <label className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-neutral-600 cursor-pointer">
                 <input
                   type="checkbox"
                   checked={showOnStartup}
                   onChange={(e) => handleShowOnStartupChange(e.target.checked)}
-                  className="w-4 h-4 rounded border-gray-300 text-purple-600 focus:ring-purple-500"
+                  className="w-4 h-4 rounded border-neutral-300 text-secondary-600 focus:ring-purple-500"
                 />
                 Show on startup
               </label>

@@ -184,7 +184,7 @@ export function TemplateDialog({
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeTab === 'detected'
                 ? 'bg-emerald-100 text-emerald-700'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                : 'bg-neutral-100 text-neutral-600 hover:bg-gray-200'
             }`}
           >
             Detected Patterns ({patterns.length})
@@ -194,7 +194,7 @@ export function TemplateDialog({
             className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
               activeTab === 'custom'
                 ? 'bg-emerald-100 text-emerald-700'
-                : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                : 'bg-neutral-100 text-neutral-600 hover:bg-gray-200'
             }`}
           >
             Custom Template
@@ -206,7 +206,7 @@ export function TemplateDialog({
           {activeTab === 'detected' ? (
             <div className="space-y-4">
               {patterns.length === 0 ? (
-                <div className="text-center py-8 text-gray-500">
+                <div className="text-center py-8 text-neutral-500">
                   <p>No patterns detected yet.</p>
                   <p className="text-sm mt-2">Create more notes with similar structures to see patterns.</p>
                 </div>
@@ -221,11 +221,11 @@ export function TemplateDialog({
                         className={`p-3 rounded-lg border text-left transition-all ${
                           selectedPattern === pattern.name
                             ? 'border-emerald-500 bg-emerald-50 ring-2 ring-emerald-200'
-                            : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                            : 'border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50'
                         }`}
                       >
-                        <div className="font-medium text-gray-900">{pattern.name}</div>
-                        <div className="text-sm text-gray-500 mt-1">
+                        <div className="font-medium text-neutral-900">{pattern.name}</div>
+                        <div className="text-sm text-neutral-500 mt-1">
                           {pattern.frequency} notes
                         </div>
                         {pattern.commonTags && pattern.commonTags.length > 0 && (
@@ -233,7 +233,7 @@ export function TemplateDialog({
                             {pattern.commonTags.map(tag => (
                               <span
                                 key={tag}
-                                className="px-2 py-0.5 bg-gray-100 rounded text-xs text-gray-600"
+                                className="px-2 py-0.5 bg-neutral-100 rounded text-xs text-neutral-600"
                               >
                                 #{tag}
                               </span>
@@ -246,12 +246,12 @@ export function TemplateDialog({
 
                   {/* Preview */}
                   {selectedPatternData && (
-                    <div className="mt-4 p-4 bg-gray-50 rounded-lg">
-                      <h3 className="font-medium text-gray-700 mb-2">Template Preview</h3>
-                      <pre className="text-sm text-gray-600 whitespace-pre-wrap font-mono bg-white p-3 rounded border border-gray-200 max-h-48 overflow-y-auto">
+                    <div className="mt-4 p-4 bg-neutral-50 rounded-lg">
+                      <h3 className="font-medium text-neutral-700 mb-2">Template Preview</h3>
+                      <pre className="text-sm text-neutral-600 whitespace-pre-wrap font-mono bg-white p-3 rounded border border-neutral-200 max-h-48 overflow-y-auto">
                         {generateTemplateFromPattern(selectedPatternData)}
                       </pre>
-                      <div className="mt-3 text-sm text-gray-500">
+                      <div className="mt-3 text-sm text-neutral-500">
                         <strong>Features detected:</strong>{' '}
                         {selectedPatternData.structure.hasBulletLists && 'bullet lists, '}
                         {selectedPatternData.structure.hasCheckboxes && 'checkboxes, '}
@@ -263,7 +263,7 @@ export function TemplateDialog({
 
                   {/* Category input */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                    <label className="block text-sm font-medium text-neutral-700 mb-1">
                       Category (optional)
                     </label>
                     <input
@@ -271,7 +271,7 @@ export function TemplateDialog({
                       value={category}
                       onChange={(e) => setCategory(e.target.value)}
                       placeholder="e.g., work, personal, learning"
-                      className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                      className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-200"
                     />
                   </div>
                 </>
@@ -281,7 +281,7 @@ export function TemplateDialog({
             <div className="space-y-4">
               {/* Name */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 mb-1">
                   Template Name *
                 </label>
                 <input
@@ -289,13 +289,13 @@ export function TemplateDialog({
                   value={name}
                   onChange={(e) => setName(e.target.value)}
                   placeholder="e.g., Weekly Review"
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                  className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-200"
                 />
               </div>
 
               {/* Description */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 mb-1">
                   Description
                 </label>
                 <input
@@ -303,13 +303,13 @@ export function TemplateDialog({
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
                   placeholder="Brief description of this template"
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                  className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-200"
                 />
               </div>
 
               {/* Structure */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 mb-1">
                   Template Structure *
                 </label>
                 <textarea
@@ -317,16 +317,16 @@ export function TemplateDialog({
                   onChange={(e) => setStructure(e.target.value)}
                   placeholder="# {{title}}\n\n## Section\n\n- Item"
                   rows={8}
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-200 font-mono text-sm"
+                  className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-200 font-mono text-sm"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-neutral-500 mt-1">
                   Use {'{{placeholder}}'} for fillable fields. Special placeholders: {'{{title}}'}, {'{{date}}'}, {'{{ai:related_notes}}'}
                 </p>
               </div>
 
               {/* Title prefix */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 mb-1">
                   Title Prefix (optional)
                 </label>
                 <input
@@ -334,13 +334,13 @@ export function TemplateDialog({
                   value={titlePrefix}
                   onChange={(e) => setTitlePrefix(e.target.value)}
                   placeholder="e.g., Meeting:"
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                  className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-200"
                 />
               </div>
 
               {/* Tags */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 mb-1">
                   Auto-apply Tags (comma-separated)
                 </label>
                 <input
@@ -348,13 +348,13 @@ export function TemplateDialog({
                   value={tags}
                   onChange={(e) => setTags(e.target.value)}
                   placeholder="work, weekly, review"
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                  className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-200"
                 />
               </div>
 
               {/* Category */}
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="block text-sm font-medium text-neutral-700 mb-1">
                   Category (optional)
                 </label>
                 <input
@@ -362,7 +362,7 @@ export function TemplateDialog({
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
                   placeholder="e.g., work, personal"
-                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-200"
+                  className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-200"
                 />
               </div>
             </div>
@@ -370,10 +370,10 @@ export function TemplateDialog({
         </div>
 
         {/* Footer */}
-        <div className="relative px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+        <div className="relative px-6 py-4 bg-neutral-50 border-t border-gray-100 flex justify-end gap-3">
           <button
             onClick={handleClose}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+            className="px-4 py-2 text-neutral-600 hover:text-gray-800 transition-colors"
           >
             Cancel
           </button>
@@ -384,7 +384,7 @@ export function TemplateDialog({
                 ? !selectedPattern
                 : !name.trim() || !structure.trim()
             }
-            className="px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 bg-success-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Save Template
           </button>

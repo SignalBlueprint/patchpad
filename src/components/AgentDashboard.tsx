@@ -184,19 +184,19 @@ export function AgentDashboard({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl shadow-2xl w-[900px] max-h-[85vh] flex flex-col">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-neutral-900">
               Knowledge Agents
             </h2>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-neutral-500">
               {pendingSuggestions.length} pending suggestions •{' '}
               {config.dailyBudget - config.dailyUsed} API calls remaining today
             </p>
           </div>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+            className="p-2 text-neutral-400 hover:text-neutral-600 rounded-lg hover:bg-neutral-100"
           >
             <svg
               className="w-5 h-5"
@@ -223,8 +223,8 @@ export function AgentDashboard({
                 onClick={() => setActiveTab(tab)}
                 className={`py-3 px-1 text-sm font-medium border-b-2 transition-colors ${
                   activeTab === tab
-                    ? 'border-blue-500 text-blue-600'
-                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                    ? 'border-primary-500 text-primary-600'
+                    : 'border-transparent text-neutral-500 hover:text-neutral-700'
                 }`}
               >
                 {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -243,7 +243,7 @@ export function AgentDashboard({
           {activeTab === 'suggestions' && (
             <div className="space-y-4">
               {pendingSuggestions.length === 0 ? (
-                <div className="text-center py-12 text-gray-400">
+                <div className="text-center py-12 text-neutral-400">
                   <span className="text-4xl mb-4 block">💭</span>
                   <p>No pending suggestions</p>
                   <p className="text-sm mt-1">
@@ -254,7 +254,7 @@ export function AgentDashboard({
                 pendingSuggestions.map((suggestion) => (
                   <div
                     key={suggestion.id}
-                    className="p-4 rounded-lg border border-gray-200 hover:border-gray-300 transition-colors"
+                    className="p-4 rounded-lg border border-neutral-200 hover:border-neutral-300 transition-colors"
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-start gap-3">
@@ -262,19 +262,19 @@ export function AgentDashboard({
                           {getSuggestionIcon(suggestion.type)}
                         </span>
                         <div>
-                          <h4 className="font-medium text-gray-900">
+                          <h4 className="font-medium text-neutral-900">
                             {suggestion.title}
                           </h4>
-                          <p className="text-sm text-gray-600 mt-1">
+                          <p className="text-sm text-neutral-600 mt-1">
                             {suggestion.description}
                           </p>
                           <div className="flex items-center gap-2 mt-2">
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-neutral-400">
                               from {getAgentIcon(suggestion.agentId)}{' '}
                               {suggestion.agentId}
                             </span>
-                            <span className="text-xs text-gray-400">•</span>
-                            <span className="text-xs text-gray-400">
+                            <span className="text-xs text-neutral-400">•</span>
+                            <span className="text-xs text-neutral-400">
                               priority {suggestion.priority}
                             </span>
                           </div>
@@ -283,13 +283,13 @@ export function AgentDashboard({
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => handleApplySuggestion(suggestion)}
-                          className="px-3 py-1.5 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600"
+                          className="px-3 py-1.5 bg-primary-500 text-white text-sm rounded-lg hover:bg-primary-600"
                         >
                           Apply
                         </button>
                         <button
                           onClick={() => handleDismissSuggestion(suggestion.id)}
-                          className="px-3 py-1.5 text-gray-600 text-sm hover:bg-gray-100 rounded-lg"
+                          className="px-3 py-1.5 text-neutral-600 text-sm hover:bg-neutral-100 rounded-lg"
                         >
                           Dismiss
                         </button>
@@ -308,18 +308,18 @@ export function AgentDashboard({
                   key={agent.id}
                   className={`p-4 rounded-lg border transition-colors ${
                     agent.enabled
-                      ? 'border-gray-200 bg-white'
-                      : 'border-gray-100 bg-gray-50'
+                      ? 'border-neutral-200 bg-white'
+                      : 'border-gray-100 bg-neutral-50'
                   }`}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div className="flex items-center gap-3">
                       <span className="text-3xl">{getAgentIcon(agent.id)}</span>
                       <div>
-                        <h3 className="font-semibold text-gray-900">
+                        <h3 className="font-semibold text-neutral-900">
                           {agent.name}
                         </h3>
-                        <p className="text-sm text-gray-500">
+                        <p className="text-sm text-neutral-500">
                           {agent.description}
                         </p>
                       </div>
@@ -330,8 +330,8 @@ export function AgentDashboard({
                         disabled={!agent.enabled || runningTasks.has(agent.id)}
                         className={`px-3 py-1.5 text-sm rounded-lg flex items-center gap-1 ${
                           agent.enabled && !runningTasks.has(agent.id)
-                            ? 'bg-blue-500 text-white hover:bg-blue-600'
-                            : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                            ? 'bg-primary-500 text-white hover:bg-primary-600'
+                            : 'bg-gray-200 text-neutral-500 cursor-not-allowed'
                         }`}
                       >
                         {runningTasks.get(agent.id) === 'running' ? (
@@ -381,7 +381,7 @@ export function AgentDashboard({
                           onChange={() => handleToggleAgent(agent.id)}
                           className="sr-only peer"
                         />
-                        <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-500"></div>
+                        <div className="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-primary-500"></div>
                       </label>
                     </div>
                   </div>
@@ -389,20 +389,20 @@ export function AgentDashboard({
                   {/* Capabilities */}
                   {selectedAgent === agent.id && (
                     <div className="mt-4 pt-4 border-t border-gray-100">
-                      <h4 className="text-sm font-medium text-gray-700 mb-3">
+                      <h4 className="text-sm font-medium text-neutral-700 mb-3">
                         Capabilities
                       </h4>
                       <div className="space-y-2">
                         {agent.capabilities.map((cap) => (
                           <div
                             key={cap.id}
-                            className="flex items-center justify-between p-2 rounded hover:bg-gray-50"
+                            className="flex items-center justify-between p-2 rounded hover:bg-neutral-50"
                           >
                             <div>
-                              <p className="text-sm font-medium text-gray-900">
+                              <p className="text-sm font-medium text-neutral-900">
                                 {cap.name}
                               </p>
-                              <p className="text-xs text-gray-500">
+                              <p className="text-xs text-neutral-500">
                                 {cap.description}
                               </p>
                             </div>
@@ -416,7 +416,7 @@ export function AgentDashboard({
                                 disabled={!agent.enabled}
                                 className="sr-only peer"
                               />
-                              <div className="w-8 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-blue-500 peer-disabled:opacity-50"></div>
+                              <div className="w-8 h-4 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[1px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-3 after:w-3 after:transition-all peer-checked:bg-primary-500 peer-disabled:opacity-50"></div>
                             </label>
                           </div>
                         ))}
@@ -430,7 +430,7 @@ export function AgentDashboard({
                         selectedAgent === agent.id ? null : agent.id
                       )
                     }
-                    className="mt-3 text-sm text-blue-600 hover:text-blue-700"
+                    className="mt-3 text-sm text-primary-600 hover:text-blue-700"
                   >
                     {selectedAgent === agent.id
                       ? 'Hide capabilities'
@@ -452,13 +452,13 @@ export function AgentDashboard({
                     className={`p-3 rounded-lg border ${
                       suggestion.applied
                         ? 'border-green-200 bg-green-50'
-                        : 'border-gray-200 bg-gray-50'
+                        : 'border-neutral-200 bg-neutral-50'
                     }`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <span>{getSuggestionIcon(suggestion.type)}</span>
-                        <span className="text-sm font-medium text-gray-900">
+                        <span className="text-sm font-medium text-neutral-900">
                           {suggestion.title}
                         </span>
                       </div>
@@ -466,20 +466,20 @@ export function AgentDashboard({
                         className={`text-xs px-2 py-0.5 rounded ${
                           suggestion.applied
                             ? 'bg-green-100 text-green-700'
-                            : 'bg-gray-200 text-gray-600'
+                            : 'bg-gray-200 text-neutral-600'
                         }`}
                       >
                         {suggestion.applied ? 'applied' : 'dismissed'}
                       </span>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">
+                    <p className="text-xs text-neutral-500 mt-1">
                       {new Date(suggestion.createdAt).toLocaleString()}
                     </p>
                   </div>
                 ))}
               {suggestions.filter((s) => s.reviewed || s.dismissed).length ===
                 0 && (
-                <div className="text-center py-12 text-gray-400">
+                <div className="text-center py-12 text-neutral-400">
                   <p>No suggestion history yet</p>
                 </div>
               )}
@@ -488,8 +488,8 @@ export function AgentDashboard({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-3 border-t border-gray-100 bg-gray-50 rounded-b-xl flex items-center justify-between">
-          <p className="text-sm text-gray-500">
+        <div className="px-6 py-3 border-t border-gray-100 bg-neutral-50 rounded-b-xl flex items-center justify-between">
+          <p className="text-sm text-neutral-500">
             Agents help organize, research, and write in your second brain
           </p>
           <button

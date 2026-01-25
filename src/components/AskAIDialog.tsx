@@ -54,18 +54,18 @@ export function AskAIDialog({ isOpen, onClose, onSubmit, selection }: AskAIDialo
 
       {/* Dialog */}
       <div className="relative w-full max-w-lg bg-white rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Ask AI</h2>
-          <p className="text-sm text-gray-500 mt-1">
+        <div className="px-6 py-4 border-b border-neutral-200">
+          <h2 className="text-lg font-semibold text-neutral-900">Ask AI</h2>
+          <p className="text-sm text-neutral-500 mt-1">
             Ask a question about your note or selected text
           </p>
         </div>
 
         <div className="p-6">
           {selection && (
-            <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
-              <div className="text-xs font-medium text-gray-500 mb-1">Selected text:</div>
-              <div className="text-sm text-gray-700 line-clamp-3">{selection}</div>
+            <div className="mb-4 p-3 bg-neutral-50 rounded-lg border border-neutral-200">
+              <div className="text-xs font-medium text-neutral-500 mb-1">Selected text:</div>
+              <div className="text-sm text-neutral-700 line-clamp-3">{selection}</div>
             </div>
           )}
 
@@ -74,25 +74,25 @@ export function AskAIDialog({ isOpen, onClose, onSubmit, selection }: AskAIDialo
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             placeholder="e.g., Summarize the key points, What are the action items?, Explain this concept..."
-            className="w-full h-32 px-4 py-3 text-sm border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full h-32 px-4 py-3 text-sm border border-neutral-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent"
           />
 
-          <div className="mt-2 text-xs text-gray-400">
-            Press <kbd className="px-1.5 py-0.5 bg-gray-100 rounded">Ctrl+Enter</kbd> to submit
+          <div className="mt-2 text-xs text-neutral-400">
+            Press <kbd className="px-1.5 py-0.5 bg-neutral-100 rounded">Ctrl+Enter</kbd> to submit
           </div>
         </div>
 
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
+        <div className="px-6 py-4 bg-neutral-50 border-t border-neutral-200 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-primary-500"
           >
             Cancel
           </button>
           <button
             onClick={handleSubmit}
             disabled={!prompt.trim()}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Ask AI
           </button>

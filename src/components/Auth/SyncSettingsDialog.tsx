@@ -63,12 +63,12 @@ export function SyncSettingsDialog({ isOpen, onClose, onOpenLogin }: SyncSetting
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex-shrink-0 px-6 py-4 border-b border-gray-200">
+        <div className="flex-shrink-0 px-6 py-4 border-b border-neutral-200">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Sync Settings</h2>
+            <h2 className="text-lg font-semibold text-neutral-900">Sync Settings</h2>
             <button
               onClick={onClose}
-              className="p-1 text-gray-400 hover:text-gray-600 rounded transition-colors"
+              className="p-1 text-neutral-400 hover:text-neutral-600 rounded transition-colors"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -80,18 +80,18 @@ export function SyncSettingsDialog({ isOpen, onClose, onOpenLogin }: SyncSetting
         {/* Content */}
         <div className="flex-1 overflow-y-auto p-6 space-y-6">
           {/* Current status */}
-          <div className="p-4 bg-gray-50 rounded-lg">
-            <h3 className="text-sm font-medium text-gray-700 mb-2">Status</h3>
+          <div className="p-4 bg-neutral-50 rounded-lg">
+            <h3 className="text-sm font-medium text-neutral-700 mb-2">Status</h3>
             <div className="space-y-2 text-sm">
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Supabase configured:</span>
-                <span className={isConfigured ? 'text-green-600 font-medium' : 'text-gray-400'}>
+                <span className="text-neutral-600">Supabase configured:</span>
+                <span className={isConfigured ? 'text-success-600 font-medium' : 'text-neutral-400'}>
                   {isConfigured ? 'Yes' : 'No'}
                 </span>
               </div>
               <div className="flex items-center justify-between">
-                <span className="text-gray-600">Signed in as:</span>
-                <span className={user ? 'text-green-600 font-medium' : 'text-gray-400'}>
+                <span className="text-neutral-600">Signed in as:</span>
+                <span className={user ? 'text-success-600 font-medium' : 'text-neutral-400'}>
                   {user ? user.email : 'Not signed in'}
                 </span>
               </div>
@@ -102,14 +102,14 @@ export function SyncSettingsDialog({ isOpen, onClose, onOpenLogin }: SyncSetting
               {user ? (
                 <button
                   onClick={handleSignOut}
-                  className="px-3 py-1.5 text-sm text-red-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
+                  className="px-3 py-1.5 text-sm text-error-600 border border-red-200 rounded-lg hover:bg-red-50 transition-colors"
                 >
                   Sign Out
                 </button>
               ) : isConfigured ? (
                 <button
                   onClick={() => { onClose(); onOpenLogin(); }}
-                  className="px-3 py-1.5 text-sm text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
+                  className="px-3 py-1.5 text-sm text-white bg-secondary-600 rounded-lg hover:bg-secondary-700 transition-colors"
                 >
                   Sign In
                 </button>
@@ -118,7 +118,7 @@ export function SyncSettingsDialog({ isOpen, onClose, onOpenLogin }: SyncSetting
               {isConfigured && (
                 <button
                   onClick={handleClearConfig}
-                  className="px-3 py-1.5 text-sm text-gray-600 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors"
+                  className="px-3 py-1.5 text-sm text-neutral-600 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors"
                 >
                   Clear Configuration
                 </button>
@@ -130,27 +130,27 @@ export function SyncSettingsDialog({ isOpen, onClose, onOpenLogin }: SyncSetting
           {!isConfigured && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">Configure Supabase</h3>
-                <p className="text-sm text-gray-500 mb-4">
+                <h3 className="text-sm font-medium text-neutral-700 mb-2">Configure Supabase</h3>
+                <p className="text-sm text-neutral-500 mb-4">
                   To enable cloud sync, you need a Supabase project.{' '}
                   <a
                     href="https://supabase.com"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-indigo-600 hover:text-indigo-700"
+                    className="text-secondary-600 hover:text-indigo-700"
                   >
                     Create one for free
                   </a>
                 </p>
 
                 {configSaved ? (
-                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-sm text-green-600">
+                  <div className="p-4 bg-green-50 border border-green-200 rounded-lg text-sm text-success-600">
                     Configuration saved! Reloading...
                   </div>
                 ) : (
                   <form onSubmit={handleSaveConfig} className="space-y-3">
                     <div>
-                      <label htmlFor="supabaseUrl" className="block text-sm text-gray-600 mb-1">
+                      <label htmlFor="supabaseUrl" className="block text-sm text-neutral-600 mb-1">
                         Supabase URL
                       </label>
                       <input
@@ -160,11 +160,11 @@ export function SyncSettingsDialog({ isOpen, onClose, onOpenLogin }: SyncSetting
                         onChange={(e) => setSupabaseUrl(e.target.value)}
                         placeholder="https://your-project.supabase.co"
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full px-3 py-2 text-sm border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       />
                     </div>
                     <div>
-                      <label htmlFor="supabaseKey" className="block text-sm text-gray-600 mb-1">
+                      <label htmlFor="supabaseKey" className="block text-sm text-neutral-600 mb-1">
                         Anon Key
                       </label>
                       <input
@@ -174,15 +174,15 @@ export function SyncSettingsDialog({ isOpen, onClose, onOpenLogin }: SyncSetting
                         onChange={(e) => setSupabaseKey(e.target.value)}
                         placeholder="eyJ..."
                         required
-                        className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        className="w-full px-3 py-2 text-sm border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                       />
-                      <p className="mt-1 text-xs text-gray-500">
+                      <p className="mt-1 text-xs text-neutral-500">
                         Find this in your Supabase dashboard under Settings &gt; API
                       </p>
                     </div>
                     <button
                       type="submit"
-                      className="w-full py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 transition-colors"
+                      className="w-full py-2 text-sm font-medium text-white bg-secondary-600 rounded-lg hover:bg-secondary-700 transition-colors"
                     >
                       Save Configuration
                     </button>
@@ -194,7 +194,7 @@ export function SyncSettingsDialog({ isOpen, onClose, onOpenLogin }: SyncSetting
               <div>
                 <button
                   onClick={() => setShowSql(!showSql)}
-                  className="flex items-center gap-2 text-sm text-gray-600 hover:text-gray-800 transition-colors"
+                  className="flex items-center gap-2 text-sm text-neutral-600 hover:text-gray-800 transition-colors"
                 >
                   <svg
                     className={`w-4 h-4 transition-transform ${showSql ? 'rotate-90' : ''}`}
@@ -210,12 +210,12 @@ export function SyncSettingsDialog({ isOpen, onClose, onOpenLogin }: SyncSetting
                 {showSql && (
                   <div className="mt-2">
                     <div className="flex items-center justify-between mb-2">
-                      <p className="text-xs text-gray-500">
+                      <p className="text-xs text-neutral-500">
                         Run this in your Supabase SQL Editor to set up the database:
                       </p>
                       <button
                         onClick={handleCopySql}
-                        className="text-xs text-indigo-600 hover:text-indigo-700"
+                        className="text-xs text-secondary-600 hover:text-indigo-700"
                       >
                         Copy to clipboard
                       </button>
@@ -233,8 +233,8 @@ export function SyncSettingsDialog({ isOpen, onClose, onOpenLogin }: SyncSetting
           {isConfigured && user && (
             <div className="space-y-4">
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-2">Sync Information</h3>
-                <p className="text-sm text-gray-500">
+                <h3 className="text-sm font-medium text-neutral-700 mb-2">Sync Information</h3>
+                <p className="text-sm text-neutral-500">
                   Your notes are automatically synced to the cloud when you're online.
                   Changes made offline will sync when you reconnect.
                 </p>
@@ -247,7 +247,7 @@ export function SyncSettingsDialog({ isOpen, onClose, onOpenLogin }: SyncSetting
                   </svg>
                   <span className="text-sm font-medium">Sync is active</span>
                 </div>
-                <p className="mt-2 text-sm text-blue-600">
+                <p className="mt-2 text-sm text-primary-600">
                   Your notes are being synced across all your devices.
                 </p>
               </div>

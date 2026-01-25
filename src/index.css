@@ -2,9 +2,156 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ============================================
+   PATCHPAD DESIGN SYSTEM
+   ============================================
+
+   Philosophy: A personal knowledge operating system
+   - Thoughtful & Calm (neutral base, not overwhelming)
+   - Intelligent & Precise (accent colors that guide)
+   - Organic & Connected (natural palette, living system)
+   - Personal & Trustworthy (warm undertones, local-first)
+
+   Palette: "Neural Moss" - Inspired by synaptic connections
+   in nature, where knowledge grows like moss connecting trees
+   ============================================ */
+
+:root {
+  /* === Primary Palette: Neural Moss === */
+  /* Deep forest green - primary actions, connections */
+  --color-primary-900: #0d3b2f;
+  --color-primary-800: #14524a;
+  --color-primary-700: #1a6b5e;
+  --color-primary-600: #218571;
+  --color-primary-500: #2a9d8f; /* Main brand color */
+  --color-primary-400: #4db5a7;
+  --color-primary-300: #70cdbf;
+  --color-primary-200: #a0e0d7;
+  --color-primary-100: #d0f2ed;
+  --color-primary-50: #edfaf8;
+
+  /* === Accent: Amber Light === */
+  /* Warm amber - highlights, AI activity, insights */
+  --color-accent-900: #6b4005;
+  --color-accent-800: #8b5209;
+  --color-accent-700: #ab650f;
+  --color-accent-600: #cb7916;
+  --color-accent-500: #e8a24e; /* Main accent */
+  --color-accent-400: #ecb470;
+  --color-accent-300: #f1c793;
+  --color-accent-200: #f5dab6;
+  --color-accent-100: #faedd9;
+  --color-accent-50: #fdf8f0;
+
+  /* === Secondary: Deep Plum === */
+  /* Rich plum - advanced features, knowledge agents */
+  --color-secondary-900: #2b1a33;
+  --color-secondary-800: #3d2547;
+  --color-secondary-700: #50315b;
+  --color-secondary-600: #633d6f;
+  --color-secondary-500: #7d4e8e; /* Secondary brand */
+  --color-secondary-400: #9771a6;
+  --color-secondary-300: #b194be;
+  --color-secondary-200: #cbb7d6;
+  --color-secondary-100: #e5daee;
+  --color-secondary-50: #f5f0f9;
+
+  /* === Semantic Colors === */
+  /* Success: Vibrant green */
+  --color-success-700: #0e7042;
+  --color-success-600: #15934f;
+  --color-success-500: #1db65d;
+  --color-success-100: #d4f4dd;
+
+  /* Warning: Warm orange */
+  --color-warning-700: #c35a0c;
+  --color-warning-600: #e06a10;
+  --color-warning-500: #f77a15;
+  --color-warning-100: #fde8d5;
+
+  /* Error: Coral red */
+  --color-error-700: #c72929;
+  --color-error-600: #e03636;
+  --color-error-500: #f54444;
+  --color-error-100: #fedede;
+
+  /* Info: Calm teal */
+  --color-info-700: #0e6b7c;
+  --color-info-600: #15879a;
+  --color-info-500: #1da3b8;
+  --color-info-100: #d4f1f5;
+
+  /* === Neutral Palette: Warm Stone === */
+  /* Slightly warm grays for organic feel */
+  --color-neutral-950: #1a1816;
+  --color-neutral-900: #2d2a27;
+  --color-neutral-800: #403c38;
+  --color-neutral-700: #5a5550;
+  --color-neutral-600: #736e68;
+  --color-neutral-500: #8d8780;
+  --color-neutral-400: #a8a39d;
+  --color-neutral-300: #c3bfba;
+  --color-neutral-200: #dedbd7;
+  --color-neutral-100: #f0eeec;
+  --color-neutral-50: #f9f8f7;
+  --color-neutral-white: #ffffff;
+
+  /* === Typography === */
+  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, Oxygen, Ubuntu, sans-serif;
+  --font-family-mono: 'SF Mono', 'Cascadia Code', 'Consolas', 'Monaco', monospace;
+
+  --font-size-xs: 0.75rem;    /* 12px */
+  --font-size-sm: 0.875rem;   /* 14px */
+  --font-size-base: 1rem;     /* 16px */
+  --font-size-lg: 1.125rem;   /* 18px */
+  --font-size-xl: 1.25rem;    /* 20px */
+  --font-size-2xl: 1.5rem;    /* 24px */
+  --font-size-3xl: 1.875rem;  /* 30px */
+  --font-size-4xl: 2.25rem;   /* 36px */
+
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* === Spacing System === */
+  /* 4px base grid (t-shirt sizes) */
+  --space-xs: 0.25rem;    /* 4px */
+  --space-sm: 0.5rem;     /* 8px */
+  --space-md: 1rem;       /* 16px */
+  --space-lg: 1.5rem;     /* 24px */
+  --space-xl: 2rem;       /* 32px */
+  --space-2xl: 3rem;      /* 48px */
+  --space-3xl: 4rem;      /* 64px */
+
+  /* === Border Radius === */
+  --radius-sm: 0.375rem;  /* 6px - inputs, badges */
+  --radius-md: 0.5rem;    /* 8px - buttons, cards */
+  --radius-lg: 0.75rem;   /* 12px - modals, panels */
+  --radius-xl: 1rem;      /* 16px - hero sections */
+  --radius-full: 9999px;  /* Full round */
+
+  /* === Shadows === */
+  --shadow-xs: 0 1px 2px 0 rgba(26, 24, 22, 0.05);
+  --shadow-sm: 0 2px 4px 0 rgba(26, 24, 22, 0.08), 0 1px 2px 0 rgba(26, 24, 22, 0.04);
+  --shadow-md: 0 4px 8px -2px rgba(26, 24, 22, 0.1), 0 2px 4px -1px rgba(26, 24, 22, 0.06);
+  --shadow-lg: 0 10px 20px -4px rgba(26, 24, 22, 0.12), 0 4px 8px -2px rgba(26, 24, 22, 0.08);
+  --shadow-xl: 0 20px 40px -8px rgba(26, 24, 22, 0.16), 0 8px 16px -4px rgba(26, 24, 22, 0.10);
+
+  /* === Transitions === */
+  --transition-fast: 100ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-slow: 300ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-spring: 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  font-family: var(--font-family-base);
+  background-color: var(--color-neutral-50);
+  color: var(--color-neutral-900);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 #root {
@@ -63,21 +210,21 @@ body {
 
 /* CodeMirror prose styling */
 .prose {
-  @apply text-gray-900 max-w-none;
+  @apply text-neutral-900 max-w-none;
 }
 
-.prose h1 { @apply text-2xl font-bold mt-6 mb-4; }
-.prose h2 { @apply text-xl font-bold mt-5 mb-3; }
-.prose h3 { @apply text-lg font-bold mt-4 mb-2; }
-.prose p { @apply my-3 leading-relaxed; }
+.prose h1 { @apply text-2xl font-bold mt-6 mb-4 text-neutral-900; }
+.prose h2 { @apply text-xl font-bold mt-5 mb-3 text-neutral-900; }
+.prose h3 { @apply text-lg font-bold mt-4 mb-2 text-neutral-800; }
+.prose p { @apply my-3 leading-relaxed text-neutral-800; }
 .prose ul { @apply list-disc list-inside my-3; }
 .prose ol { @apply list-decimal list-inside my-3; }
 .prose li { @apply my-1; }
-.prose code { @apply bg-gray-100 px-1.5 py-0.5 rounded text-sm font-mono; }
-.prose pre { @apply bg-gray-100 p-4 rounded-lg overflow-x-auto my-4; }
-.prose blockquote { @apply border-l-4 border-gray-300 pl-4 italic my-4 text-gray-700; }
-.prose a { @apply text-blue-600 underline; }
-.prose hr { @apply my-6 border-gray-300; }
+.prose code { @apply bg-neutral-100 px-1.5 py-0.5 rounded text-sm font-mono text-primary-700; }
+.prose pre { @apply bg-neutral-100 p-4 rounded-lg overflow-x-auto my-4; }
+.prose blockquote { @apply border-l-4 border-primary-300 pl-4 italic my-4 text-neutral-700; }
+.prose a { @apply text-primary-600 underline hover:text-primary-700; }
+.prose hr { @apply my-6 border-neutral-300; }
 .prose strong { @apply font-bold; }
 .prose em { @apply italic; }
 
@@ -92,39 +239,42 @@ body {
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #d1d5db;
-  border-radius: 4px;
+  background: var(--color-neutral-300);
+  border-radius: var(--radius-sm);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #9ca3af;
+  background: var(--color-neutral-400);
 }
 
 /* Selection highlight color */
 ::selection {
-  background-color: #dbeafe;
+  background-color: var(--color-primary-100);
+  color: var(--color-neutral-900);
 }
 
 /* ============================================
    GLASS-MORPHISM & MODERN UI
    ============================================ */
 
-/* Glass card effect */
+/* Glass card effect - organic frosted glass */
 .glass-card {
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(249, 248, 247, 0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(222, 219, 215, 0.3);
 }
 
 .glass-card-dark {
-  background: rgba(30, 30, 30, 0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
+  background: rgba(45, 42, 39, 0.88);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(90, 85, 80, 0.3);
 }
 
 /* Glass overlay for modals */
 .glass-overlay {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(26, 24, 22, 0.4);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
 }
@@ -133,19 +283,19 @@ body {
    AMBIENT AI GLOW EFFECTS
    ============================================ */
 
-/* Subtle breathing glow when AI is processing */
+/* Subtle breathing glow when AI is processing - amber warmth */
 @keyframes aiGlow {
   0%, 100% {
     box-shadow:
-      0 0 20px rgba(99, 102, 241, 0.15),
-      0 0 40px rgba(139, 92, 246, 0.1),
-      0 0 60px rgba(99, 102, 241, 0.05);
+      0 0 20px rgba(232, 162, 78, 0.15),
+      0 0 40px rgba(42, 157, 143, 0.1),
+      0 0 60px rgba(232, 162, 78, 0.05);
   }
   50% {
     box-shadow:
-      0 0 30px rgba(99, 102, 241, 0.25),
-      0 0 60px rgba(139, 92, 246, 0.15),
-      0 0 90px rgba(99, 102, 241, 0.1);
+      0 0 30px rgba(232, 162, 78, 0.25),
+      0 0 60px rgba(42, 157, 143, 0.15),
+      0 0 90px rgba(232, 162, 78, 0.1);
   }
 }
 
@@ -153,7 +303,7 @@ body {
   animation: aiGlow 2s ease-in-out infinite;
 }
 
-/* AI processing border animation */
+/* AI processing border animation - neural moss gradient */
 @keyframes aiProcessing {
   0% {
     background-position: 0% 50%;
@@ -178,11 +328,11 @@ body {
   padding: 2px;
   background: linear-gradient(
     90deg,
-    #6366f1,
-    #8b5cf6,
-    #a855f7,
-    #8b5cf6,
-    #6366f1
+    var(--color-primary-500),
+    var(--color-accent-500),
+    var(--color-secondary-500),
+    var(--color-accent-500),
+    var(--color-primary-500)
   );
   background-size: 200% 100%;
   animation: aiProcessing 2s linear infinite;
@@ -197,13 +347,13 @@ body {
   opacity: 0.6;
 }
 
-/* Concept detection highlight pulse */
+/* Concept detection highlight pulse - primary color */
 @keyframes conceptPulse {
   0%, 100% {
-    background-color: rgba(99, 102, 241, 0.1);
+    background-color: var(--color-primary-100);
   }
   50% {
-    background-color: rgba(99, 102, 241, 0.2);
+    background-color: var(--color-primary-200);
   }
 }
 
@@ -359,17 +509,17 @@ body {
    WIKI LINK ENHANCEMENTS
    ============================================ */
 
-/* Wiki link hover glow */
+/* Wiki link hover glow - organic connections */
 .wiki-link {
-  transition: all 0.2s ease;
+  transition: all var(--transition-base);
 }
 
 .wiki-link:hover {
-  text-shadow: 0 0 8px rgba(59, 130, 246, 0.5);
+  text-shadow: 0 0 8px rgba(42, 157, 143, 0.5);
 }
 
 .wiki-link-broken:hover {
-  text-shadow: 0 0 8px rgba(239, 68, 68, 0.5);
+  text-shadow: 0 0 8px rgba(245, 68, 68, 0.5);
 }
 
 /* ============================================
@@ -377,7 +527,12 @@ body {
    ============================================ */
 
 .gradient-text {
-  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 50%, #a855f7 100%);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-600) 0%,
+    var(--color-accent-500) 50%,
+    var(--color-secondary-600) 100%
+  );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -393,7 +548,12 @@ body {
   inset: 0;
   border-radius: inherit;
   padding: 1px;
-  background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
+  background: linear-gradient(
+    135deg,
+    var(--color-primary-500),
+    var(--color-accent-500),
+    var(--color-secondary-500)
+  );
   -webkit-mask:
     linear-gradient(#fff 0 0) content-box,
     linear-gradient(#fff 0 0);
@@ -404,7 +564,7 @@ body {
   mask-composite: exclude;
 }
 
-/* Animated gradient background */
+/* Animated gradient background - neural connections */
 @keyframes gradientShift {
   0% {
     background-position: 0% 50%;
@@ -420,10 +580,10 @@ body {
 .animated-gradient {
   background: linear-gradient(
     -45deg,
-    #6366f1,
-    #8b5cf6,
-    #a855f7,
-    #ec4899
+    var(--color-primary-500),
+    var(--color-accent-500),
+    var(--color-secondary-500),
+    var(--color-primary-400)
   );
   background-size: 400% 400%;
   animation: gradientShift 15s ease infinite;
@@ -431,16 +591,16 @@ body {
 
 /* Graph paper background for editor - dot grid aligned with 24px line height */
 .graph-paper {
-  background-color: #fefefe;
-  background-image: radial-gradient(circle, #d1d5db 1px, transparent 1px);
+  background-color: var(--color-neutral-50);
+  background-image: radial-gradient(circle, var(--color-neutral-300) 1px, transparent 1px);
   background-size: 24px 24px;
   background-position: 16px 28px; /* Offset for padding (16px) + baseline alignment */
 }
 
 /* Dark mode graph paper - dot grid */
 .graph-paper-dark {
-  background-color: #1e1e1e;
-  background-image: radial-gradient(circle, #3f3f3f 1px, transparent 1px);
+  background-color: var(--color-neutral-950);
+  background-image: radial-gradient(circle, var(--color-neutral-700) 1px, transparent 1px);
   background-size: 24px 24px;
   background-position: 16px 28px;
 }
@@ -448,19 +608,19 @@ body {
 /* Text glow effect to make graph lines fade behind text */
 .graph-paper .cm-line {
   text-shadow:
-    0 0 8px rgba(255, 255, 255, 0.95),
-    0 0 12px rgba(255, 255, 255, 0.9),
-    0 0 16px rgba(255, 255, 255, 0.8),
-    0 0 24px rgba(255, 255, 255, 0.6);
+    0 0 8px rgba(249, 248, 247, 0.95),
+    0 0 12px rgba(249, 248, 247, 0.9),
+    0 0 16px rgba(249, 248, 247, 0.8),
+    0 0 24px rgba(249, 248, 247, 0.6);
 }
 
 /* Dark mode text glow */
 .graph-paper-dark .cm-line {
   text-shadow:
-    0 0 8px rgba(30, 30, 30, 0.95),
-    0 0 12px rgba(30, 30, 30, 0.9),
-    0 0 16px rgba(30, 30, 30, 0.8),
-    0 0 24px rgba(30, 30, 30, 0.6);
+    0 0 8px rgba(26, 24, 22, 0.95),
+    0 0 12px rgba(26, 24, 22, 0.9),
+    0 0 16px rgba(26, 24, 22, 0.8),
+    0 0 24px rgba(26, 24, 22, 0.6);
 }
 
 /* Ensure the content area inherits the graph paper */

@@ -242,7 +242,7 @@ export function DictationMode({ isOpen, onClose, onComplete }: DictationModeProp
             key={i}
             className={`w-1 rounded-full transition-all duration-75 ${
               i < activeCount
-                ? i < bars * 0.5 ? 'bg-green-500' : i < bars * 0.8 ? 'bg-yellow-500' : 'bg-red-500'
+                ? i < bars * 0.5 ? 'bg-green-500' : i < bars * 0.8 ? 'bg-accent-500' : 'bg-red-500'
                 : 'bg-gray-300'
             }`}
             style={{ height: `${40 + i * 4}%` }}
@@ -258,12 +258,12 @@ export function DictationMode({ isOpen, onClose, onComplete }: DictationModeProp
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50">
       <div className="w-full max-w-2xl bg-white rounded-xl shadow-2xl flex flex-col max-h-[90vh] animate-in fade-in slide-in-from-top-4">
         {/* Header */}
-        <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+        <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200">
           <div className="flex items-center gap-3">
             <div className={`w-3 h-3 rounded-full ${
               state === 'listening' ? 'bg-red-500 animate-pulse' : 'bg-gray-400'
             }`} />
-            <h2 className="text-lg font-semibold text-gray-900">
+            <h2 className="text-lg font-semibold text-neutral-900">
               {state === 'idle' && 'Dictation Mode'}
               {state === 'listening' && 'Listening...'}
               {state === 'paused' && 'Paused'}
@@ -271,7 +271,7 @@ export function DictationMode({ isOpen, onClose, onComplete }: DictationModeProp
           </div>
           <button
             onClick={handleCancel}
-            className="p-1.5 text-gray-400 hover:text-gray-600 rounded transition-colors"
+            className="p-1.5 text-neutral-400 hover:text-neutral-600 rounded transition-colors"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -281,7 +281,7 @@ export function DictationMode({ isOpen, onClose, onComplete }: DictationModeProp
 
         {/* Error message */}
         {error && (
-          <div className="mx-4 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+          <div className="mx-4 mt-4 p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-error-600">
             {error}
           </div>
         )}
@@ -308,19 +308,19 @@ export function DictationMode({ isOpen, onClose, onComplete }: DictationModeProp
             value={content + (interimResult ? (content ? ' ' : '') + interimResult : '')}
             onChange={handleContentChange}
             placeholder={state === 'idle' ? 'Click "Start" to begin dictating...' : 'Speak now... Long pauses (2+ seconds) create new paragraphs.'}
-            className="w-full h-full min-h-[300px] p-4 text-gray-800 bg-gray-50 rounded-lg border border-gray-200 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+            className="w-full h-full min-h-[300px] p-4 text-gray-800 bg-neutral-50 rounded-lg border border-neutral-200 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             style={{ whiteSpace: 'pre-wrap' }}
           />
           {interimResult && (
-            <div className="absolute bottom-20 left-4 right-4 text-sm text-gray-500 italic">
+            <div className="absolute bottom-20 left-4 right-4 text-sm text-neutral-500 italic">
               Interim: {interimResult}
             </div>
           )}
         </div>
 
         {/* Footer with controls */}
-        <div className="flex items-center justify-between px-4 py-3 border-t border-gray-200 bg-gray-50">
-          <div className="text-sm text-gray-500">
+        <div className="flex items-center justify-between px-4 py-3 border-t border-neutral-200 bg-neutral-50">
+          <div className="text-sm text-neutral-500">
             {content.split(/\s+/).filter(Boolean).length} words
             {state === 'listening' && ' · Long pause = new paragraph'}
           </div>
@@ -330,7 +330,7 @@ export function DictationMode({ isOpen, onClose, onComplete }: DictationModeProp
               <button
                 onClick={startDictation}
                 disabled={!isAvailable}
-                className="px-4 py-2 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 text-sm font-medium text-white bg-error-600 rounded-lg hover:bg-error-700 focus:outline-none focus:ring-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <span className="flex items-center gap-2">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -358,7 +358,7 @@ export function DictationMode({ isOpen, onClose, onComplete }: DictationModeProp
             {state === 'paused' && (
               <button
                 onClick={resumeDictation}
-                className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-white bg-success-600 rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
               >
                 <span className="flex items-center gap-2">
                   <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
@@ -372,7 +372,7 @@ export function DictationMode({ isOpen, onClose, onComplete }: DictationModeProp
             {(state === 'paused' || content.trim()) && (
               <button
                 onClick={handleComplete}
-                className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
+                className="px-4 py-2 text-sm font-medium text-white bg-secondary-600 rounded-lg hover:bg-secondary-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-colors"
               >
                 <span className="flex items-center gap-2">
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

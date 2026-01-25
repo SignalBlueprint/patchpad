@@ -74,7 +74,7 @@ export function TimelineCluster({
   const hasCanvasPositions = sessionNotes.some(n => n.canvasPosition);
 
   return (
-    <div className="relative ml-6 pl-6 border-l-2 border-gray-200 hover:border-indigo-300 transition-colors">
+    <div className="relative ml-6 pl-6 border-l-2 border-neutral-200 hover:border-indigo-300 transition-colors">
       {/* Timeline connector dot */}
       <div className="absolute left-0 top-4 w-3 h-3 -translate-x-[7px] rounded-full bg-white border-2 border-indigo-400 shadow-sm" />
 
@@ -83,14 +83,14 @@ export function TimelineCluster({
         {/* Header */}
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="w-full px-4 py-3 flex items-start gap-3 text-left hover:bg-gray-50/50 transition-colors"
+          className="w-full px-4 py-3 flex items-start gap-3 text-left hover:bg-neutral-50/50 transition-colors"
         >
           {/* Time info */}
           <div className="flex-shrink-0 text-right min-w-[80px]">
-            <div className="text-sm font-medium text-gray-700">
+            <div className="text-sm font-medium text-neutral-700">
               {formatSessionTimeRange(session)}
             </div>
-            <div className="text-xs text-gray-400">
+            <div className="text-xs text-neutral-400">
               {formatSessionDuration(session)}
             </div>
           </div>
@@ -114,7 +114,7 @@ export function TimelineCluster({
             {/* Meta info */}
             <div className="flex items-center gap-3 mt-1">
               {/* Note count */}
-              <span className="inline-flex items-center gap-1 text-xs text-gray-500">
+              <span className="inline-flex items-center gap-1 text-xs text-neutral-500">
                 <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -127,13 +127,13 @@ export function TimelineCluster({
                   {tags.slice(0, 2).map(tag => (
                     <span
                       key={tag}
-                      className="px-1.5 py-0.5 text-xs bg-indigo-50 text-indigo-600 rounded"
+                      className="px-1.5 py-0.5 text-xs bg-indigo-50 text-secondary-600 rounded"
                     >
                       #{tag}
                     </span>
                   ))}
                   {tags.length > 2 && (
-                    <span className="text-xs text-gray-400">
+                    <span className="text-xs text-neutral-400">
                       +{tags.length - 2}
                     </span>
                   )}
@@ -145,7 +145,7 @@ export function TimelineCluster({
           {/* Expand chevron */}
           <div className="flex-shrink-0">
             <svg
-              className={`w-5 h-5 text-gray-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
+              className={`w-5 h-5 text-neutral-400 transition-transform ${isExpanded ? 'rotate-180' : ''}`}
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -164,17 +164,17 @@ export function TimelineCluster({
                 <button
                   key={note.id}
                   onClick={() => onSelectNote(note.id)}
-                  className="w-full text-left px-3 py-2 rounded-lg bg-gray-50 hover:bg-indigo-50 transition-colors group"
+                  className="w-full text-left px-3 py-2 rounded-lg bg-neutral-50 hover:bg-indigo-50 transition-colors group"
                 >
                   <div className="flex items-start gap-2">
-                    <svg className="w-4 h-4 mt-0.5 text-gray-400 group-hover:text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <svg className="w-4 h-4 mt-0.5 text-neutral-400 group-hover:text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                     <div className="min-w-0 flex-grow">
-                      <h4 className="text-sm font-medium text-gray-700 group-hover:text-indigo-700 truncate">
+                      <h4 className="text-sm font-medium text-neutral-700 group-hover:text-indigo-700 truncate">
                         {note.title || 'Untitled'}
                       </h4>
-                      <p className="text-xs text-gray-500 truncate mt-0.5">
+                      <p className="text-xs text-neutral-500 truncate mt-0.5">
                         {note.content.slice(0, 60)}...
                       </p>
                     </div>
@@ -188,7 +188,7 @@ export function TimelineCluster({
               {hasCanvasPositions && (
                 <button
                   onClick={() => onViewOnCanvas(session.noteIds)}
-                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-indigo-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors"
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-secondary-600 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors"
                 >
                   <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
@@ -197,7 +197,7 @@ export function TimelineCluster({
                 </button>
               )}
 
-              <span className="text-xs text-gray-400">
+              <span className="text-xs text-neutral-400">
                 Created {new Date(session.startTime).toLocaleDateString()}
               </span>
             </div>

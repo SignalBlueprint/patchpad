@@ -218,16 +218,16 @@ export function CanvasReplayRenderer({
   };
 
   return (
-    <div className="relative w-full h-64 bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+    <div className="relative w-full h-64 bg-neutral-50 rounded-lg border border-neutral-200 overflow-hidden">
       {/* AI Activity Indicator */}
       {aiActivity && (
-        <div className="absolute top-2 left-2 px-3 py-1 bg-blue-500 text-white text-sm rounded-full shadow-lg z-10 animate-pulse">
+        <div className="absolute top-2 left-2 px-3 py-1 bg-primary-500 text-white text-sm rounded-full shadow-lg z-10 animate-pulse">
           {aiActivity}
         </div>
       )}
 
       {/* Canvas Stats */}
-      <div className="absolute top-2 right-2 text-xs text-gray-500 bg-white/80 px-2 py-1 rounded">
+      <div className="absolute top-2 right-2 text-xs text-neutral-500 bg-white/80 px-2 py-1 rounded">
         {notes.size} notes • Zoom: {viewport.zoom.toFixed(2)}x
       </div>
 
@@ -329,7 +329,7 @@ export function CanvasReplayRenderer({
 
       {/* Empty state */}
       {notes.size === 0 && (
-        <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+        <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
           <div className="text-center">
             <div className="text-4xl mb-2">📝</div>
             <div className="text-sm">No notes yet</div>

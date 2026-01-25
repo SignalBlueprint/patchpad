@@ -67,7 +67,7 @@ export function PresenceIndicator({
             <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
               {peer.name}
               {peer.cursor && (
-                <span className="text-gray-400 ml-1">
+                <span className="text-neutral-400 ml-1">
                   (editing)
                 </span>
               )}
@@ -78,7 +78,7 @@ export function PresenceIndicator({
         {/* Hidden count badge */}
         {hiddenCount > 0 && (
           <div
-            className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium text-gray-600 bg-gray-200 border-2 border-white"
+            className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-medium text-neutral-600 bg-gray-200 border-2 border-white"
             title={`${hiddenCount} more ${hiddenCount === 1 ? 'person' : 'people'}`}
           >
             +{hiddenCount}
@@ -88,7 +88,7 @@ export function PresenceIndicator({
 
       {/* Peer count label */}
       {peers.length > 0 && (
-        <span className="ml-2 text-xs text-gray-500">
+        <span className="ml-2 text-xs text-neutral-500">
           {peers.length} {peers.length === 1 ? 'person' : 'people'} editing
         </span>
       )}

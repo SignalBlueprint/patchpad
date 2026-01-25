@@ -108,8 +108,8 @@ export function DailyDigestModal({
           {/* Tasks section */}
           {digest.tasksExtracted.length > 0 && (
             <div className="mb-6">
-              <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                <svg className="w-4 h-4 text-amber-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <h3 className="text-sm font-semibold text-neutral-700 mb-2 flex items-center gap-2">
+                <svg className="w-4 h-4 text-accent-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
                 </svg>
                 Open Tasks ({digest.tasksExtracted.length})
@@ -118,14 +118,14 @@ export function DailyDigestModal({
                 {digest.tasksExtracted.slice(0, 5).map((task, index) => (
                   <li
                     key={index}
-                    className="flex items-start gap-2 text-sm text-gray-600 bg-gray-50 rounded-lg px-3 py-2"
+                    className="flex items-start gap-2 text-sm text-neutral-600 bg-neutral-50 rounded-lg px-3 py-2"
                   >
-                    <span className="flex-shrink-0 w-4 h-4 mt-0.5 rounded border-2 border-gray-300" />
+                    <span className="flex-shrink-0 w-4 h-4 mt-0.5 rounded border-2 border-neutral-300" />
                     <span className="line-clamp-1">{task}</span>
                   </li>
                 ))}
                 {digest.tasksExtracted.length > 5 && (
-                  <li className="text-xs text-gray-400 pl-6">
+                  <li className="text-xs text-neutral-400 pl-6">
                     +{digest.tasksExtracted.length - 5} more tasks
                   </li>
                 )}
@@ -136,8 +136,8 @@ export function DailyDigestModal({
           {/* Top concepts */}
           {digest.topConcepts.length > 0 && (
             <div className="mb-6">
-              <h3 className="text-sm font-semibold text-gray-700 mb-2 flex items-center gap-2">
-                <svg className="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <h3 className="text-sm font-semibold text-neutral-700 mb-2 flex items-center gap-2">
+                <svg className="w-4 h-4 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                 </svg>
                 Top Concepts
@@ -190,8 +190,8 @@ interface StatCardProps {
 
 function StatCard({ icon, value, label, color }: StatCardProps) {
   const colorClasses = {
-    indigo: 'from-indigo-50 to-indigo-100 text-indigo-600 border-indigo-100',
-    purple: 'from-purple-50 to-purple-100 text-purple-600 border-purple-100',
+    indigo: 'from-indigo-50 to-indigo-100 text-secondary-600 border-indigo-100',
+    purple: 'from-purple-50 to-purple-100 text-secondary-600 border-purple-100',
     pink: 'from-pink-50 to-pink-100 text-pink-600 border-pink-100',
   };
 

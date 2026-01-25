@@ -81,7 +81,7 @@ export function LinkSuggestionToast({
       <div
         className={`
           flex items-center gap-3 p-4 rounded-xl
-          bg-white/80 backdrop-blur-lg border border-gray-200/50
+          bg-white/80 backdrop-blur-lg border border-neutral-200/50
           shadow-lg shadow-gray-200/50
           transition-all duration-300 ease-out
           max-w-sm
@@ -100,11 +100,11 @@ export function LinkSuggestionToast({
 
         {/* Content */}
         <div className="flex-1 min-w-0">
-          <p className="text-sm text-gray-900">
-            Link <span className="font-semibold text-blue-600">"{currentSuggestion.term}"</span> to existing note?
+          <p className="text-sm text-neutral-900">
+            Link <span className="font-semibold text-primary-600">"{currentSuggestion.term}"</span> to existing note?
           </p>
           {suggestions.length > 1 && (
-            <p className="text-xs text-gray-500 mt-0.5">
+            <p className="text-xs text-neutral-500 mt-0.5">
               +{suggestions.length - 1} more suggestion{suggestions.length > 2 ? 's' : ''}
             </p>
           )}
@@ -120,7 +120,7 @@ export function LinkSuggestionToast({
           </button>
           <button
             onClick={handleDismiss}
-            className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-1.5 text-neutral-400 hover:text-neutral-600 hover:bg-neutral-100 rounded-lg transition-colors"
             title="Dismiss"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

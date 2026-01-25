@@ -105,14 +105,14 @@ export function TranscriptionSettingsDialog({ isOpen, onClose }: TranscriptionSe
 
       {/* Dialog */}
       <div className="relative w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-4">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+        <div className="px-6 py-4 border-b border-neutral-200">
+          <h2 className="text-lg font-semibold text-neutral-900 flex items-center gap-2">
             <svg className="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
             </svg>
             Transcription Settings
           </h2>
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-neutral-500 mt-1">
             Configure voice recording and transcription preferences
           </p>
         </div>
@@ -120,14 +120,14 @@ export function TranscriptionSettingsDialog({ isOpen, onClose }: TranscriptionSe
         <div className="p-6 space-y-6">
           {/* Language Selection */}
           <div>
-            <label htmlFor="language" className="block text-sm font-medium text-gray-700 mb-2">
+            <label htmlFor="language" className="block text-sm font-medium text-neutral-700 mb-2">
               Transcription Language
             </label>
             <select
               id="language"
               value={language}
               onChange={(e) => handleLanguageChange(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+              className="w-full px-3 py-2 text-sm border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
             >
               {SUPPORTED_LANGUAGES.map((lang) => (
                 <option key={lang.code} value={lang.code}>
@@ -135,7 +135,7 @@ export function TranscriptionSettingsDialog({ isOpen, onClose }: TranscriptionSe
                 </option>
               ))}
             </select>
-            <p className="mt-1 text-xs text-gray-500">
+            <p className="mt-1 text-xs text-neutral-500">
               Select the language you'll be speaking in for voice notes
             </p>
           </div>
@@ -144,10 +144,10 @@ export function TranscriptionSettingsDialog({ isOpen, onClose }: TranscriptionSe
           <div>
             <div className="flex items-center justify-between">
               <div>
-                <label htmlFor="localTranscription" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="localTranscription" className="block text-sm font-medium text-neutral-700">
                   Use Local Transcription
                 </label>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-neutral-500 mt-1">
                   Keep audio data on your device (browser-based, less accurate)
                 </p>
               </div>
@@ -156,7 +156,7 @@ export function TranscriptionSettingsDialog({ isOpen, onClose }: TranscriptionSe
                 type="button"
                 onClick={() => handleLocalTranscriptionChange(!preferLocalTranscription)}
                 className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-                  preferLocalTranscription ? 'bg-indigo-600' : 'bg-gray-200'
+                  preferLocalTranscription ? 'bg-secondary-600' : 'bg-gray-200'
                 }`}
                 role="switch"
                 aria-checked={preferLocalTranscription}
@@ -180,60 +180,60 @@ export function TranscriptionSettingsDialog({ isOpen, onClose }: TranscriptionSe
 
           {/* Quality vs Speed Preference */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
+            <label className="block text-sm font-medium text-neutral-700 mb-2">
               Transcription Quality
             </label>
             <div className="space-y-2">
-              <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+              <label className="flex items-center gap-3 p-3 border border-neutral-200 rounded-lg cursor-pointer hover:bg-neutral-50 transition-colors">
                 <input
                   type="radio"
                   name="quality"
                   value="speed"
                   checked={qualityPreference === 'speed'}
                   onChange={() => handleQualityChange('speed')}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                  className="h-4 w-4 text-secondary-600 focus:ring-indigo-500 border-neutral-300"
                 />
                 <div className="flex-1">
-                  <div className="text-sm font-medium text-gray-900">Fast</div>
-                  <div className="text-xs text-gray-500">Quick transcription, may miss some words</div>
+                  <div className="text-sm font-medium text-neutral-900">Fast</div>
+                  <div className="text-xs text-neutral-500">Quick transcription, may miss some words</div>
                 </div>
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
               </label>
 
-              <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+              <label className="flex items-center gap-3 p-3 border border-neutral-200 rounded-lg cursor-pointer hover:bg-neutral-50 transition-colors">
                 <input
                   type="radio"
                   name="quality"
                   value="balanced"
                   checked={qualityPreference === 'balanced'}
                   onChange={() => handleQualityChange('balanced')}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                  className="h-4 w-4 text-secondary-600 focus:ring-indigo-500 border-neutral-300"
                 />
                 <div className="flex-1">
-                  <div className="text-sm font-medium text-gray-900">Balanced (Recommended)</div>
-                  <div className="text-xs text-gray-500">Good accuracy with reasonable speed</div>
+                  <div className="text-sm font-medium text-neutral-900">Balanced (Recommended)</div>
+                  <div className="text-xs text-neutral-500">Good accuracy with reasonable speed</div>
                 </div>
                 <svg className="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </label>
 
-              <label className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+              <label className="flex items-center gap-3 p-3 border border-neutral-200 rounded-lg cursor-pointer hover:bg-neutral-50 transition-colors">
                 <input
                   type="radio"
                   name="quality"
                   value="quality"
                   checked={qualityPreference === 'quality'}
                   onChange={() => handleQualityChange('quality')}
-                  className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300"
+                  className="h-4 w-4 text-secondary-600 focus:ring-indigo-500 border-neutral-300"
                 />
                 <div className="flex-1">
-                  <div className="text-sm font-medium text-gray-900">High Quality</div>
-                  <div className="text-xs text-gray-500">Best accuracy, slower processing</div>
+                  <div className="text-sm font-medium text-neutral-900">High Quality</div>
+                  <div className="text-xs text-neutral-500">Best accuracy, slower processing</div>
                 </div>
-                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
                 </svg>
               </label>
@@ -244,10 +244,10 @@ export function TranscriptionSettingsDialog({ isOpen, onClose }: TranscriptionSe
           <div>
             <div className="flex items-center justify-between">
               <div>
-                <label htmlFor="storeAudio" className="block text-sm font-medium text-gray-700">
+                <label htmlFor="storeAudio" className="block text-sm font-medium text-neutral-700">
                   Store Original Audio
                 </label>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-neutral-500 mt-1">
                   Save recordings for playback in voice notes
                 </p>
               </div>
@@ -256,7 +256,7 @@ export function TranscriptionSettingsDialog({ isOpen, onClose }: TranscriptionSe
                 type="button"
                 onClick={() => handleStoreAudioChange(!storeOriginalAudio)}
                 className={`relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 ${
-                  storeOriginalAudio ? 'bg-indigo-600' : 'bg-gray-200'
+                  storeOriginalAudio ? 'bg-secondary-600' : 'bg-gray-200'
                 }`}
                 role="switch"
                 aria-checked={storeOriginalAudio}
@@ -279,17 +279,17 @@ export function TranscriptionSettingsDialog({ isOpen, onClose }: TranscriptionSe
           </div>
         </div>
 
-        <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 flex justify-end gap-3">
+        <div className="px-6 py-4 bg-neutral-50 border-t border-neutral-200 flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="px-4 py-2 text-sm font-medium text-neutral-700 bg-white border border-neutral-300 rounded-lg hover:bg-neutral-50 focus:outline-none focus:ring-2 focus:ring-indigo-500"
           >
             Cancel
           </button>
           <button
             onClick={handleSave}
             disabled={!hasChanges}
-            className="px-4 py-2 text-sm font-medium text-white bg-indigo-600 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="px-4 py-2 text-sm font-medium text-white bg-secondary-600 rounded-lg hover:bg-secondary-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Save Settings
           </button>

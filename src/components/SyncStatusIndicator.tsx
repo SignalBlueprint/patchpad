@@ -21,7 +21,7 @@ export function SyncStatusIndicator({ onClick }: SyncStatusIndicatorProps) {
     return (
       <button
         onClick={onClick}
-        className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+        className="flex items-center gap-2 px-3 py-1.5 text-sm text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
         title="Set up cloud sync"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -37,7 +37,7 @@ export function SyncStatusIndicator({ onClick }: SyncStatusIndicatorProps) {
     return (
       <button
         onClick={onClick}
-        className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-500 hover:text-gray-700 hover:bg-gray-100 rounded-lg transition-colors"
+        className="flex items-center gap-2 px-3 py-1.5 text-sm text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 rounded-lg transition-colors"
         title="Sign in to sync"
       >
         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -70,8 +70,8 @@ export function SyncStatusIndicator({ onClick }: SyncStatusIndicatorProps) {
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3" />
           </svg>
         ),
-        color: 'text-gray-400',
-        bgColor: 'bg-gray-100',
+        color: 'text-neutral-400',
+        bgColor: 'bg-neutral-100',
         label: 'Offline',
       };
     }
@@ -85,7 +85,7 @@ export function SyncStatusIndicator({ onClick }: SyncStatusIndicatorProps) {
               <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
             </svg>
           ),
-          color: 'text-blue-600',
+          color: 'text-primary-600',
           bgColor: 'bg-blue-50',
           label: 'Syncing...',
         };
@@ -97,7 +97,7 @@ export function SyncStatusIndicator({ onClick }: SyncStatusIndicatorProps) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           ),
-          color: 'text-red-600',
+          color: 'text-error-600',
           bgColor: 'bg-red-50',
           label: 'Sync error',
         };
@@ -122,7 +122,7 @@ export function SyncStatusIndicator({ onClick }: SyncStatusIndicatorProps) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
             </svg>
           ),
-          color: 'text-green-600',
+          color: 'text-success-600',
           bgColor: 'bg-green-50',
           label: 'Synced',
         };

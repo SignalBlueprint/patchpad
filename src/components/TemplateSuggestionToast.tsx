@@ -73,17 +73,17 @@ export function TemplateSuggestionToast({
               </svg>
             </div>
             <div>
-              <p className="text-sm font-medium text-gray-900">
+              <p className="text-sm font-medium text-neutral-900">
                 Use template?
               </p>
-              <p className="text-xs text-gray-500">
+              <p className="text-xs text-neutral-500">
                 {template.name}
               </p>
             </div>
           </div>
           <button
             onClick={handleDismiss}
-            className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+            className="p-1 text-neutral-400 hover:text-neutral-600 transition-colors"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -97,13 +97,13 @@ export function TemplateSuggestionToast({
         </div>
 
         {/* Description */}
-        <p className="mt-2 text-xs text-gray-600 line-clamp-2">
+        <p className="mt-2 text-xs text-neutral-600 line-clamp-2">
           {template.description}
         </p>
 
         {/* Confidence indicator */}
         {confidence >= 0.8 && (
-          <div className="mt-2 flex items-center gap-1 text-xs text-emerald-600">
+          <div className="mt-2 flex items-center gap-1 text-xs text-success-600">
             <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
@@ -125,7 +125,7 @@ export function TemplateSuggestionToast({
           </button>
           <button
             onClick={handleDismiss}
-            className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            className="px-3 py-1.5 text-sm font-medium text-neutral-600 bg-neutral-100 rounded-lg hover:bg-gray-200 transition-colors"
           >
             Skip
           </button>
@@ -137,7 +137,7 @@ export function TemplateSuggestionToast({
             {template.tags.slice(0, 3).map((tag) => (
               <span
                 key={tag}
-                className="px-1.5 py-0.5 text-xs bg-gray-100 text-gray-500 rounded"
+                className="px-1.5 py-0.5 text-xs bg-neutral-100 text-neutral-500 rounded"
               >
                 #{tag}
               </span>

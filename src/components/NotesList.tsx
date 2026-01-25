@@ -89,12 +89,12 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
     };
 
     return (
-      <div className="flex flex-col h-full bg-gray-50 border-r border-gray-200">
+      <div className="flex flex-col h-full bg-neutral-50 border-r border-neutral-200">
         {/* Header */}
-        <div className="p-3 border-b border-gray-200">
+        <div className="p-3 border-b border-neutral-200">
           {/* Search */}
           <div className="relative mb-3">
-            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
             <input
@@ -103,7 +103,7 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
               placeholder="Search notes..."
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white"
+              className="w-full pl-9 pr-3 py-2 text-sm border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white"
             />
           </div>
 
@@ -113,8 +113,8 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
               onClick={() => setShowFilters(!showFilters)}
               className={`flex-1 flex items-center justify-between px-3 py-1.5 text-xs font-medium rounded-lg border transition-colors ${
                 filter.type !== 'all'
-                  ? 'bg-blue-50 border-blue-200 text-blue-700'
-                  : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                  ? 'bg-primary-50 border-primary-200 text-primary-700'
+                  : 'bg-white border-neutral-300 text-neutral-700 hover:bg-neutral-50'
               }`}
             >
               <span className="truncate">{filterLabel()}</span>
@@ -126,7 +126,7 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
             <select
               value={sortBy}
               onChange={(e) => onSortChange(e.target.value as SortOption)}
-              className="px-2 py-1.5 text-xs font-medium bg-white border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="px-2 py-1.5 text-xs font-medium bg-white border border-neutral-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-500"
             >
               <option value="updated">Recent</option>
               <option value="created">Created</option>
@@ -137,12 +137,12 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
 
           {/* Filter Dropdown */}
           {showFilters && (
-            <div className="mb-3 p-2 bg-white rounded-lg border border-gray-200 shadow-sm animate-fade-in">
+            <div className="mb-3 p-2 bg-white rounded-lg border border-neutral-200 shadow-sm animate-fade-in">
               <div className="space-y-1">
                 <button
                   onClick={() => { onFilterChange({ type: 'all' }); setShowFilters(false); }}
                   className={`w-full text-left px-2 py-1.5 text-xs rounded-md transition-colors ${
-                    filter.type === 'all' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'
+                    filter.type === 'all' ? 'bg-primary-100 text-primary-700' : 'hover:bg-neutral-100'
                   }`}
                 >
                   All Notes
@@ -150,10 +150,10 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
                 <button
                   onClick={() => { onFilterChange({ type: 'favorites' }); setShowFilters(false); }}
                   className={`w-full text-left px-2 py-1.5 text-xs rounded-md transition-colors flex items-center gap-2 ${
-                    filter.type === 'favorites' ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'
+                    filter.type === 'favorites' ? 'bg-primary-100 text-primary-700' : 'hover:bg-neutral-100'
                   }`}
                 >
-                  <svg className="w-3.5 h-3.5 text-yellow-500" fill="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-3.5 h-3.5 text-accent-500" fill="currentColor" viewBox="0 0 24 24">
                     <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                   </svg>
                   Favorites
@@ -162,16 +162,16 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
                 {folders.length > 0 && (
                   <>
                     <div className="h-px bg-gray-200 my-1" />
-                    <div className="text-[10px] font-medium text-gray-500 uppercase px-2 py-1">Folders</div>
+                    <div className="text-[10px] font-medium text-neutral-500 uppercase px-2 py-1">Folders</div>
                     {folders.map(folder => (
                       <button
                         key={folder.id}
                         onClick={() => { onFilterChange({ type: 'folder', value: folder.id }); setShowFilters(false); }}
                         className={`w-full text-left px-2 py-1.5 text-xs rounded-md transition-colors flex items-center gap-2 ${
-                          filter.type === 'folder' && filter.value === folder.id ? 'bg-blue-100 text-blue-700' : 'hover:bg-gray-100'
+                          filter.type === 'folder' && filter.value === folder.id ? 'bg-primary-100 text-primary-700' : 'hover:bg-neutral-100'
                         }`}
                       >
-                        <svg className="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3.5 h-3.5 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
                         </svg>
                         {folder.name}
@@ -183,7 +183,7 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
                 {allTags.length > 0 && (
                   <>
                     <div className="h-px bg-gray-200 my-1" />
-                    <div className="text-[10px] font-medium text-gray-500 uppercase px-2 py-1">Tags</div>
+                    <div className="text-[10px] font-medium text-neutral-500 uppercase px-2 py-1">Tags</div>
                     <div className="flex flex-wrap gap-1 px-1">
                       {allTags.map(tag => (
                         <button
@@ -191,8 +191,8 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
                           onClick={() => { onFilterChange({ type: 'tag', value: tag }); setShowFilters(false); }}
                           className={`px-2 py-0.5 text-xs rounded-full transition-colors ${
                             filter.type === 'tag' && filter.value === tag
-                              ? 'bg-blue-100 text-blue-700'
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              ? 'bg-primary-100 text-primary-700'
+                              : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200'
                           }`}
                         >
                           #{tag}
@@ -209,7 +209,7 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
           <div className="flex gap-2">
             <button
               onClick={onNew}
-              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+              className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -218,10 +218,10 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
             </button>
             <button
               onClick={onToggleMultiSelect}
-              className={`px-3 py-2 text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 transition-colors ${
+              className={`px-3 py-2 text-sm font-medium rounded-lg focus:outline-none focus:ring-2 focus:ring-secondary-500 focus:ring-offset-2 transition-colors ${
                 multiSelectMode
-                  ? 'bg-purple-600 text-white'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                  ? 'bg-secondary-600 text-white'
+                  : 'bg-white text-neutral-700 border border-neutral-300 hover:bg-neutral-50'
               }`}
               title="Toggle multi-select mode"
             >
@@ -233,14 +233,14 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
 
           {/* Multi-select Actions */}
           {multiSelectMode && (
-            <div className="mt-3 p-2 bg-purple-50 rounded-lg animate-slide-in-from-bottom">
-              <div className="text-xs text-purple-700 mb-2 font-medium">
+            <div className="mt-3 p-2 bg-secondary-50 rounded-lg animate-slide-in-from-bottom">
+              <div className="text-xs text-secondary-700 mb-2 font-medium">
                 {selectedIds.size} note{selectedIds.size !== 1 ? 's' : ''} selected
               </div>
               <button
                 onClick={onStitch}
                 disabled={selectedIds.size < 2 || stitchLoading}
-                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-white bg-purple-600 rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-3 py-2 text-sm font-medium text-white bg-secondary-600 rounded-lg hover:bg-secondary-700 focus:outline-none focus:ring-2 focus:ring-secondary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {stitchLoading ? (
                   <>
@@ -260,7 +260,7 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
                 )}
               </button>
               {selectedIds.size < 2 && (
-                <p className="text-xs text-purple-600 mt-1.5 text-center">
+                <p className="text-xs text-secondary-600 mt-1.5 text-center">
                   Select at least 2 notes to stitch
                 </p>
               )}
@@ -272,15 +272,15 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
         <div className="flex-1 overflow-y-auto">
           {notes.length === 0 ? (
             <div className="p-6 text-center">
-              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 flex items-center justify-center">
-                <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-neutral-100 flex items-center justify-center">
+                <svg className="w-6 h-6 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
               </div>
-              <p className="text-sm font-medium text-gray-600">
+              <p className="text-sm font-medium text-neutral-600">
                 {searchQuery ? 'No notes found' : 'No notes yet'}
               </p>
-              <p className="text-xs text-gray-400 mt-1">
+              <p className="text-xs text-neutral-400 mt-1">
                 {searchQuery ? 'Try a different search' : 'Create your first note'}
               </p>
             </div>
@@ -309,10 +309,10 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
                       key={note.id}
                       className={`group cursor-pointer transition-colors ${
                         isMultiSelected
-                          ? 'bg-purple-50'
+                          ? 'bg-secondary-50'
                           : isSelected
                           ? 'bg-blue-50'
-                          : 'hover:bg-gray-50'
+                          : 'hover:bg-neutral-50'
                       }`}
                     >
                       <div
@@ -333,7 +333,7 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
                                 e.stopPropagation();
                                 onToggleCollapsed(note.id);
                               }}
-                              className="mt-0.5 p-0.5 text-gray-400 hover:text-gray-600 transition-colors flex-shrink-0"
+                              className="mt-0.5 p-0.5 text-neutral-400 hover:text-neutral-600 transition-colors flex-shrink-0"
                               title={note.collapsed ? 'Expand' : 'Collapse'}
                             >
                               <svg
@@ -349,7 +349,7 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
 
                           {/* Child note indicator */}
                           {isChild && (
-                            <svg className="w-3 h-3 mt-1 text-gray-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-3 h-3 mt-1 text-neutral-300 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                             </svg>
                           )}
@@ -359,7 +359,7 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
                             <div
                               className={`mt-0.5 w-4 h-4 rounded border-2 flex items-center justify-center flex-shrink-0 transition-colors ${
                                 isMultiSelected
-                                  ? 'bg-purple-600 border-purple-600'
+                                  ? 'bg-secondary-600 border-secondary-600'
                                   : 'border-gray-400'
                               }`}
                             >
@@ -375,25 +375,25 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
                             <div className="flex items-center gap-2">
                               {/* Parent indicator icon */}
                               {hasChildren && (
-                                <svg className="w-3.5 h-3.5 text-blue-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-3.5 h-3.5 text-primary-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                                 </svg>
                               )}
-                              <h3 className={`text-sm font-medium text-gray-900 truncate flex-1 ${isChild ? 'text-gray-600' : ''}`}>
+                              <h3 className={`text-sm font-medium text-neutral-900 truncate flex-1 ${isChild ? 'text-neutral-600' : ''}`}>
                                 {note.title}
                               </h3>
                               {note.favorite && (
-                                <svg className="w-3.5 h-3.5 text-yellow-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                                <svg className="w-3.5 h-3.5 text-accent-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                                   <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
                                 </svg>
                               )}
                               {note.tags?.includes('voice-note') && (
-                                <svg className="w-3.5 h-3.5 text-indigo-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" title="Voice note">
+                                <svg className="w-3.5 h-3.5 text-secondary-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" title="Voice note">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                                 </svg>
                               )}
                               {hasChildren && (
-                                <span className="text-[10px] text-gray-400 flex-shrink-0">
+                                <span className="text-[10px] text-neutral-400 flex-shrink-0">
                                   {children.length}
                                 </span>
                               )}
@@ -401,25 +401,25 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
 
                             {/* Content preview - hide for child notes to save space */}
                             {note.content && !isChild && (
-                              <p className="text-xs text-gray-500 truncate mt-0.5">
+                              <p className="text-xs text-neutral-500 truncate mt-0.5">
                                 {getContentPreview(note.content)}
                               </p>
                             )}
 
                             {/* Meta row */}
                             <div className="flex items-center gap-2 mt-1.5">
-                              <span className="text-[10px] text-gray-400">
+                              <span className="text-[10px] text-neutral-400">
                                 {formatRelativeTime(note.updatedAt)}
                               </span>
                               {note.tags && note.tags.length > 0 && !isChild && (
                                 <div className="flex gap-1">
                                   {note.tags.slice(0, 2).map(tag => (
-                                    <span key={tag} className="text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded">
+                                    <span key={tag} className="text-[10px] px-1.5 py-0.5 bg-neutral-100 text-neutral-500 rounded">
                                       #{tag}
                                     </span>
                                   ))}
                                   {note.tags.length > 2 && (
-                                    <span className="text-[10px] text-gray-400">
+                                    <span className="text-[10px] text-neutral-400">
                                       +{note.tags.length - 2}
                                     </span>
                                   )}
@@ -436,7 +436,7 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
                                   e.stopPropagation();
                                   onToggleFavorite(note.id);
                                 }}
-                                className="p-1 text-gray-400 hover:text-yellow-500 transition-colors"
+                                className="p-1 text-neutral-400 hover:text-accent-500 transition-colors"
                                 title={note.favorite ? 'Remove from favorites' : 'Add to favorites'}
                               >
                                 <svg className="w-4 h-4" fill={note.favorite ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
@@ -450,7 +450,7 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
                                     onDelete(note.id);
                                   }
                                 }}
-                                className="p-1 text-gray-400 hover:text-red-600 transition-colors"
+                                className="p-1 text-neutral-400 hover:text-error-600 transition-colors"
                                 title="Delete note"
                               >
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -464,7 +464,7 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
 
                       {/* Render children if not collapsed */}
                       {hasChildren && !note.collapsed && !multiSelectMode && (
-                        <ul className="border-t border-gray-100 bg-gray-25">
+                        <ul className="border-t border-neutral-100 bg-gray-25">
                           {children.map(child => renderNote(child, true))}
                         </ul>
                       )}
@@ -479,8 +479,8 @@ export const NotesList = forwardRef<HTMLInputElement, NotesListProps>(
         </div>
 
         {/* Footer stats */}
-        <div className="px-3 py-2 border-t border-gray-200 bg-gray-50">
-          <p className="text-[10px] text-gray-400 text-center">
+        <div className="px-3 py-2 border-t border-neutral-200 bg-neutral-50">
+          <p className="text-[10px] text-neutral-400 text-center">
             {notes.length} note{notes.length !== 1 ? 's' : ''}
             {filter.type !== 'all' && ' (filtered)'}
           </p>

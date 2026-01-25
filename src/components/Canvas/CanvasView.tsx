@@ -752,13 +752,13 @@ export function CanvasView({
 
   if (notes.length === 0) {
     return (
-      <div className="h-full flex items-center justify-center text-gray-500 bg-gray-50">
+      <div className="h-full flex items-center justify-center text-neutral-500 bg-neutral-50">
         <div className="text-center">
           <svg className="w-12 h-12 mx-auto text-gray-300 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2" />
           </svg>
           <p className="text-sm">No notes to display</p>
-          <p className="text-xs text-gray-400 mt-1">Create some notes to see them on the canvas</p>
+          <p className="text-xs text-neutral-400 mt-1">Create some notes to see them on the canvas</p>
         </div>
       </div>
     );
@@ -767,7 +767,7 @@ export function CanvasView({
   return (
     <div
       ref={containerRef}
-      className="relative h-full bg-gray-100 overflow-hidden select-none"
+      className="relative h-full bg-neutral-100 overflow-hidden select-none"
       onMouseDown={handleMouseDown}
       onMouseMove={(e) => {
         handleMouseMove(e);
@@ -881,7 +881,7 @@ export function CanvasView({
         {/* Selection rectangle */}
         {selectionRect && (
           <div
-            className="absolute border-2 border-blue-500 bg-blue-500/20 pointer-events-none"
+            className="absolute border-2 border-primary-500 bg-primary-500/20 pointer-events-none"
             style={{
               left: Math.min(selectionRect.startX, selectionRect.endX),
               top: Math.min(selectionRect.startY, selectionRect.endY),
@@ -920,7 +920,7 @@ export function CanvasView({
 
           {/* Viewport indicator */}
           <div
-            className="absolute border-2 border-blue-500 bg-blue-500/10 rounded-sm pointer-events-none"
+            className="absolute border-2 border-primary-500 bg-primary-500/10 rounded-sm pointer-events-none"
             style={{
               left: ((-viewport.x / viewport.zoom - bounds.minX) / (bounds.maxX - bounds.minX + 200)) * minimapWidth,
               top: ((-viewport.y / viewport.zoom - bounds.minY) / (bounds.maxY - bounds.minY + 200)) * minimapHeight,
@@ -935,44 +935,44 @@ export function CanvasView({
       <div className="absolute top-2 right-2 flex flex-col gap-1">
         <button
           onClick={() => setViewport(v => ({ ...v, zoom: Math.min(2, v.zoom * 1.2) }))}
-          className="p-1.5 bg-white rounded shadow hover:bg-gray-50"
+          className="p-1.5 bg-white rounded shadow hover:bg-neutral-50"
           title="Zoom in"
         >
-          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
           </svg>
         </button>
         <button
           onClick={() => setViewport(v => ({ ...v, zoom: Math.max(0.25, v.zoom / 1.2) }))}
-          className="p-1.5 bg-white rounded shadow hover:bg-gray-50"
+          className="p-1.5 bg-white rounded shadow hover:bg-neutral-50"
           title="Zoom out"
         >
-          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
           </svg>
         </button>
         <button
           onClick={handleZoomToFit}
-          className="p-1.5 bg-white rounded shadow hover:bg-gray-50"
+          className="p-1.5 bg-white rounded shadow hover:bg-neutral-50"
           title="Zoom to fit"
         >
-          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
           </svg>
         </button>
         <button
           onClick={handleResetView}
-          className="p-1.5 bg-white rounded shadow hover:bg-gray-50"
+          className="p-1.5 bg-white rounded shadow hover:bg-neutral-50"
           title="Reset view"
         >
-          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
           </svg>
         </button>
       </div>
 
       {/* Stats */}
-      <div className="absolute bottom-2 right-2 text-xs text-gray-500 bg-white/80 px-2 py-1 rounded">
+      <div className="absolute bottom-2 right-2 text-xs text-neutral-500 bg-white/80 px-2 py-1 rounded">
         {notes.length} notes, {connections.length} connections • {Math.round(viewport.zoom * 100)}%
       </div>
 
@@ -982,10 +982,10 @@ export function CanvasView({
         {onAddNote && (
           <button
             onClick={onAddNote}
-            className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+            className="p-2 hover:bg-neutral-100 rounded-md transition-colors"
             title="Add Note"
           >
-            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
             </svg>
           </button>
@@ -996,21 +996,21 @@ export function CanvasView({
           <div className="relative">
             <button
               onClick={() => setShowLayoutMenu(!showLayoutMenu)}
-              className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+              className="p-2 hover:bg-neutral-100 rounded-md transition-colors"
               title="Auto Layout"
             >
-              <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z" />
               </svg>
             </button>
             {showLayoutMenu && (
-              <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 py-1 min-w-[120px] z-50">
+              <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-lg border border-neutral-200 py-1 min-w-[120px] z-50">
                 <button
                   onClick={() => {
                     onAutoLayout('grid');
                     setShowLayoutMenu(false);
                   }}
-                  className="w-full px-3 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  className="w-full px-3 py-1.5 text-left text-sm text-neutral-700 hover:bg-neutral-100"
                 >
                   Grid Layout
                 </button>
@@ -1019,7 +1019,7 @@ export function CanvasView({
                     onAutoLayout('force');
                     setShowLayoutMenu(false);
                   }}
-                  className="w-full px-3 py-1.5 text-left text-sm text-gray-700 hover:bg-gray-100"
+                  className="w-full px-3 py-1.5 text-left text-sm text-neutral-700 hover:bg-neutral-100"
                 >
                   Force Layout
                 </button>
@@ -1034,10 +1034,10 @@ export function CanvasView({
         {/* Zoom to Fit */}
         <button
           onClick={handleZoomToFit}
-          className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+          className="p-2 hover:bg-neutral-100 rounded-md transition-colors"
           title="Zoom to Fit"
         >
-          <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <svg className="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
           </svg>
         </button>
@@ -1046,15 +1046,15 @@ export function CanvasView({
         <button
           onClick={handleExportPNG}
           disabled={isExporting}
-          className="p-2 hover:bg-gray-100 rounded-md transition-colors disabled:opacity-50"
+          className="p-2 hover:bg-neutral-100 rounded-md transition-colors disabled:opacity-50"
           title="Export as PNG"
         >
           {isExporting ? (
-            <svg className="w-4 h-4 text-gray-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-neutral-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
             </svg>
           ) : (
-            <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
           )}
@@ -1064,7 +1064,7 @@ export function CanvasView({
         <div className="w-px h-6 bg-gray-200 mx-1" />
 
         {/* Help text */}
-        <span className="text-xs text-gray-400 px-2">
+        <span className="text-xs text-neutral-400 px-2">
           Drag: pan • Scroll: zoom • Alt+drag: group
         </span>
 
@@ -1084,10 +1084,10 @@ export function CanvasView({
             ) : (
               <button
                 onClick={onStartRecording}
-                className="p-2 hover:bg-gray-100 rounded-md transition-colors"
+                className="p-2 hover:bg-neutral-100 rounded-md transition-colors"
                 title="Start Recording Session"
               >
-                <svg className="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
                   <circle cx="12" cy="12" r="9" strokeWidth={2} />
                 </svg>
@@ -1113,7 +1113,7 @@ export function CanvasView({
                 className={`ml-2 p-2 rounded-md transition-colors relative ${
                   collaborationChatOpen
                     ? 'bg-indigo-100 text-indigo-700'
-                    : 'hover:bg-gray-100 text-gray-600'
+                    : 'hover:bg-neutral-100 text-neutral-600'
                 }`}
                 title={collaborationChatOpen ? 'Close chat' : 'Open chat'}
               >

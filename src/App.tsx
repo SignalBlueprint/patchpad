@@ -1434,7 +1434,7 @@ export default function App() {
   }, [handleNewNote, multiSelectMode, commandPaletteOpen, currentNote, handleAIAction, notes.length]);
 
   return (
-    <div className="h-full flex bg-gray-100">
+    <div className="h-full flex bg-neutral-100">
       {/* Notes Sidebar */}
       <div className="w-64 flex-shrink-0">
         <NotesList
@@ -1466,14 +1466,14 @@ export default function App() {
       {/* Main Content Area with Tab Bar */}
       <div className="flex-1 min-w-0 flex flex-col">
         {/* Tab Bar */}
-        <div className="flex-shrink-0 border-b border-gray-200 bg-white">
+        <div className="flex-shrink-0 border-b border-neutral-200 bg-white">
           <div className="flex gap-1 px-4 pt-2">
             <button
               onClick={() => setMainView('notes')}
               className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
                 mainView === 'notes'
-                  ? 'bg-gray-100 text-gray-900 border-b-2 border-indigo-500'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  ? 'bg-neutral-100 text-neutral-900 border-b-2 border-indigo-500'
+                  : 'text-neutral-500 hover:text-neutral-700 hover:bg-neutral-50'
               }`}
             >
               <span className="flex items-center gap-2">
@@ -1487,8 +1487,8 @@ export default function App() {
               onClick={() => setMainView('canvas')}
               className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
                 mainView === 'canvas'
-                  ? 'bg-gray-100 text-gray-900 border-b-2 border-indigo-500'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  ? 'bg-neutral-100 text-neutral-900 border-b-2 border-indigo-500'
+                  : 'text-neutral-500 hover:text-neutral-700 hover:bg-neutral-50'
               }`}
             >
               <span className="flex items-center gap-2">
@@ -1502,8 +1502,8 @@ export default function App() {
               onClick={() => setBrainDashboardOpen(true)}
               className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
                 mainView === 'graph'
-                  ? 'bg-gray-100 text-gray-900 border-b-2 border-indigo-500'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  ? 'bg-neutral-100 text-neutral-900 border-b-2 border-indigo-500'
+                  : 'text-neutral-500 hover:text-neutral-700 hover:bg-neutral-50'
               }`}
             >
               <span className="flex items-center gap-2">
@@ -1517,8 +1517,8 @@ export default function App() {
               onClick={() => setMainView('timeline')}
               className={`px-4 py-2 text-sm font-medium rounded-t-lg transition-colors ${
                 mainView === 'timeline'
-                  ? 'bg-gray-100 text-gray-900 border-b-2 border-indigo-500'
-                  : 'text-gray-500 hover:text-gray-700 hover:bg-gray-50'
+                  ? 'bg-neutral-100 text-neutral-900 border-b-2 border-indigo-500'
+                  : 'text-neutral-500 hover:text-neutral-700 hover:bg-neutral-50'
               }`}
             >
               <span className="flex items-center gap-2">
@@ -1623,7 +1623,7 @@ export default function App() {
 
       {/* Markdown Preview - only show in notes view */}
       {showPreview && !stitchPreview && mainView === 'notes' && (
-        <div className="w-1/3 border-l border-gray-200">
+        <div className="w-1/3 border-l border-neutral-200">
           <MarkdownPreview content={currentNote?.content ?? ''} />
         </div>
       )}
@@ -1789,7 +1789,7 @@ export default function App() {
             </div>
             <div className="text-center">
               <p className="text-sm font-semibold gradient-text">AI is thinking...</p>
-              <p className="text-xs text-gray-500 mt-1">Analyzing your content</p>
+              <p className="text-xs text-neutral-500 mt-1">Analyzing your content</p>
             </div>
           </div>
         </div>
@@ -1797,8 +1797,8 @@ export default function App() {
 
       {/* Keyboard hint and Sync Status */}
       <div className="fixed bottom-4 left-4 flex items-center gap-4">
-        <div className="text-xs text-gray-400">
-          Press <kbd className="px-1.5 py-0.5 bg-gray-200 rounded text-gray-600">Ctrl+K</kbd> to open command palette
+        <div className="text-xs text-neutral-400">
+          Press <kbd className="px-1.5 py-0.5 bg-neutral-200 rounded text-neutral-600">Ctrl+K</kbd> to open command palette
         </div>
         <SyncStatusIndicator
           onClick={() => isSyncConfigured ? setSyncSettingsOpen(true) : setLoginModalOpen(true)}

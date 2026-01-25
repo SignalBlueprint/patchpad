@@ -97,13 +97,13 @@ export function ExportDialog({
       />
 
       {/* Dialog */}
-      <div className="relative w-full max-w-lg mx-4 bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
+      <div className="relative w-full max-w-lg mx-4 bg-white rounded-2xl shadow-2xl border border-neutral-200 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Export Notes</h2>
+        <div className="flex items-center justify-between px-6 py-4 border-b border-neutral-200">
+          <h2 className="text-lg font-semibold text-neutral-900">Export Notes</h2>
           <button
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-lg hover:bg-gray-100"
+            className="p-2 text-neutral-400 hover:text-neutral-600 transition-colors rounded-lg hover:bg-neutral-100"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -114,43 +114,43 @@ export function ExportDialog({
         {/* Notes selection */}
         <div className="px-6 py-4">
           <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-gray-700">
+            <span className="text-sm font-medium text-neutral-700">
               Select Notes ({selectedNotes.length} selected)
             </span>
             <div className="flex gap-2">
               <button
                 onClick={selectAll}
-                className="text-xs text-blue-600 hover:text-blue-700"
+                className="text-xs text-primary-600 hover:text-blue-700"
               >
                 Select All
               </button>
               <span className="text-gray-300">|</span>
               <button
                 onClick={clearAll}
-                className="text-xs text-gray-500 hover:text-gray-700"
+                className="text-xs text-neutral-500 hover:text-neutral-700"
               >
                 Clear
               </button>
             </div>
           </div>
 
-          <div className="max-h-48 overflow-y-auto border border-gray-200 rounded-lg">
+          <div className="max-h-48 overflow-y-auto border border-neutral-200 rounded-lg">
             {notes.map(note => (
               <label
                 key={note.id}
-                className="flex items-center gap-3 px-3 py-2 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                className="flex items-center gap-3 px-3 py-2 hover:bg-neutral-50 cursor-pointer border-b border-gray-100 last:border-b-0"
               >
                 <input
                   type="checkbox"
                   checked={checkedIds.has(note.id)}
                   onChange={() => toggleNote(note.id)}
-                  className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+                  className="w-4 h-4 text-primary-600 rounded border-neutral-300 focus:ring-primary-500"
                 />
-                <span className="text-sm text-gray-700 truncate flex-1">
+                <span className="text-sm text-neutral-700 truncate flex-1">
                   {note.title || 'Untitled'}
                 </span>
                 {note.tags && note.tags.length > 0 && (
-                  <span className="text-xs text-gray-400">
+                  <span className="text-xs text-neutral-400">
                     {note.tags.length} tag{note.tags.length !== 1 ? 's' : ''}
                   </span>
                 )}
@@ -160,19 +160,19 @@ export function ExportDialog({
         </div>
 
         {/* Options */}
-        <div className="px-6 py-4 border-t border-gray-100 bg-gray-50">
-          <span className="text-sm font-medium text-gray-700 block mb-3">Options</span>
+        <div className="px-6 py-4 border-t border-gray-100 bg-neutral-50">
+          <span className="text-sm font-medium text-neutral-700 block mb-3">Options</span>
 
           <label className="flex items-center gap-3 mb-2 cursor-pointer">
             <input
               type="checkbox"
               checked={includeManifest}
               onChange={(e) => setIncludeManifest(e.target.checked)}
-              className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+              className="w-4 h-4 text-primary-600 rounded border-neutral-300 focus:ring-primary-500"
             />
             <div>
-              <span className="text-sm text-gray-700">Include manifest.json</span>
-              <p className="text-xs text-gray-500">Adds metadata file with note information</p>
+              <span className="text-sm text-neutral-700">Include manifest.json</span>
+              <p className="text-xs text-neutral-500">Adds metadata file with note information</p>
             </div>
           </label>
 
@@ -181,11 +181,11 @@ export function ExportDialog({
               type="checkbox"
               checked={rewriteLinks}
               onChange={(e) => setRewriteLinks(e.target.checked)}
-              className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500"
+              className="w-4 h-4 text-primary-600 rounded border-neutral-300 focus:ring-primary-500"
             />
             <div>
-              <span className="text-sm text-gray-700">Convert wiki links</span>
-              <p className="text-xs text-gray-500">Transform [[links]] to relative markdown links</p>
+              <span className="text-sm text-neutral-700">Convert wiki links</span>
+              <p className="text-xs text-neutral-500">Transform [[links]] to relative markdown links</p>
             </div>
           </label>
         </div>
@@ -193,22 +193,22 @@ export function ExportDialog({
         {/* Error message */}
         {error && (
           <div className="px-6 py-2 bg-red-50 border-t border-red-100">
-            <p className="text-sm text-red-600">{error}</p>
+            <p className="text-sm text-error-600">{error}</p>
           </div>
         )}
 
         {/* Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-gray-200">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-neutral-200">
           <button
             onClick={onClose}
-            className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+            className="px-4 py-2 text-sm font-medium text-neutral-700 bg-neutral-100 rounded-lg hover:bg-gray-200 transition-colors"
           >
             Cancel
           </button>
           <button
             onClick={handleExport}
             disabled={isExporting || selectedNotes.length === 0}
-            className="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+            className="px-4 py-2 text-sm font-medium text-white bg-primary-600 rounded-lg hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             {isExporting ? (
               <>

@@ -60,13 +60,13 @@ export function TimelineView({
 
   if (notes.length === 0) {
     return (
-      <div className="h-full flex items-center justify-center bg-gray-50">
+      <div className="h-full flex items-center justify-center bg-neutral-50">
         <div className="text-center">
           <svg className="w-16 h-16 mx-auto text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-          <h3 className="text-lg font-medium text-gray-600 mb-2">No thinking sessions yet</h3>
-          <p className="text-sm text-gray-400 max-w-xs">
+          <h3 className="text-lg font-medium text-neutral-600 mb-2">No thinking sessions yet</h3>
+          <p className="text-sm text-neutral-400 max-w-xs">
             Start creating notes and they'll appear here grouped by when you created them.
           </p>
         </div>
@@ -75,13 +75,13 @@ export function TimelineView({
   }
 
   return (
-    <div className="h-full flex flex-col bg-gray-50">
+    <div className="h-full flex flex-col bg-neutral-50">
       {/* Header */}
-      <div className="flex-shrink-0 px-6 py-4 bg-white border-b border-gray-200">
+      <div className="flex-shrink-0 px-6 py-4 bg-white border-b border-neutral-200">
         <div className="flex items-center justify-between">
           <div>
             <h2 className="text-lg font-semibold text-gray-800">Thinking Timeline</h2>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <p className="text-sm text-neutral-500 mt-0.5">
               Your notes grouped by thinking sessions
             </p>
           </div>
@@ -89,10 +89,10 @@ export function TimelineView({
           {/* Settings button */}
           <button
             onClick={() => setIsSettingsOpen(!isSettingsOpen)}
-            className="p-2 rounded-lg hover:bg-gray-100 transition-colors"
+            className="p-2 rounded-lg hover:bg-neutral-100 transition-colors"
             title="Timeline settings"
           >
-            <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-neutral-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
             </svg>
@@ -101,9 +101,9 @@ export function TimelineView({
 
         {/* Settings panel */}
         {isSettingsOpen && (
-          <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-100">
+          <div className="mt-4 p-4 bg-neutral-50 rounded-lg border border-gray-100">
             <label className="flex items-center justify-between">
-              <span className="text-sm text-gray-600">Session gap threshold</span>
+              <span className="text-sm text-neutral-600">Session gap threshold</span>
               <div className="flex items-center gap-2">
                 <input
                   type="range"
@@ -114,12 +114,12 @@ export function TimelineView({
                   onChange={(e) => setMaxGapMinutes(Number(e.target.value))}
                   className="w-32 accent-indigo-500"
                 />
-                <span className="text-sm font-medium text-gray-700 w-16 text-right">
+                <span className="text-sm font-medium text-neutral-700 w-16 text-right">
                   {maxGapMinutes} min
                 </span>
               </div>
             </label>
-            <p className="text-xs text-gray-400 mt-2">
+            <p className="text-xs text-neutral-400 mt-2">
               Notes created within this time of each other are grouped into the same session.
             </p>
           </div>
@@ -128,11 +128,11 @@ export function TimelineView({
         {/* Stats */}
         <div className="mt-4 grid grid-cols-3 gap-4">
           <div className="bg-gradient-to-br from-indigo-50 to-indigo-100 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-indigo-600">{stats.totalSessions}</div>
+            <div className="text-2xl font-bold text-secondary-600">{stats.totalSessions}</div>
             <div className="text-xs text-indigo-500">Sessions</div>
           </div>
           <div className="bg-gradient-to-br from-purple-50 to-purple-100 rounded-lg p-3 text-center">
-            <div className="text-2xl font-bold text-purple-600">{stats.avgNotesPerSession}</div>
+            <div className="text-2xl font-bold text-secondary-600">{stats.avgNotesPerSession}</div>
             <div className="text-xs text-purple-500">Avg notes/session</div>
           </div>
           <div className="bg-gradient-to-br from-pink-50 to-pink-100 rounded-lg p-3 text-center">

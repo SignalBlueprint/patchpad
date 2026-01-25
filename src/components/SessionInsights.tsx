@@ -74,7 +74,7 @@ export function SessionInsights({
       case 'cluster': return 'bg-green-50 border-green-200';
       case 'breakthrough': return 'bg-yellow-50 border-yellow-200';
       case 'ai-usage': return 'bg-indigo-50 border-indigo-200';
-      default: return 'bg-gray-50 border-gray-200';
+      default: return 'bg-neutral-50 border-neutral-200';
     }
   };
 
@@ -82,22 +82,22 @@ export function SessionInsights({
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white rounded-xl shadow-2xl w-[700px] max-h-[85vh] flex flex-col">
         {/* Header */}
-        <div className="px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+        <div className="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
           <div>
-            <h2 className="text-lg font-semibold text-gray-900 flex items-center gap-2">
+            <h2 className="text-lg font-semibold text-neutral-900 flex items-center gap-2">
               <svg className="w-5 h-5 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
               </svg>
               Session Insights
             </h2>
-            <p className="text-sm text-gray-500 mt-0.5">
+            <p className="text-sm text-neutral-500 mt-0.5">
               {session.title} • {formatDuration(session.durationMs)}
             </p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={handleExportHTML}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm bg-neutral-100 text-neutral-700 rounded-lg hover:bg-gray-200"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
@@ -106,7 +106,7 @@ export function SessionInsights({
             </button>
             <button
               onClick={onClose}
-              className="p-2 text-gray-400 hover:text-gray-600 rounded-lg hover:bg-gray-100"
+              className="p-2 text-neutral-400 hover:text-neutral-600 rounded-lg hover:bg-neutral-100"
             >
               <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -121,8 +121,8 @@ export function SessionInsights({
             onClick={() => setActiveTab('insights')}
             className={`pb-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'insights'
-                ? 'border-indigo-500 text-indigo-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-indigo-500 text-secondary-600'
+                : 'border-transparent text-neutral-500 hover:text-neutral-700'
             }`}
           >
             Patterns & Insights
@@ -131,8 +131,8 @@ export function SessionInsights({
             onClick={() => setActiveTab('heatmap')}
             className={`pb-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'heatmap'
-                ? 'border-indigo-500 text-indigo-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-indigo-500 text-secondary-600'
+                : 'border-transparent text-neutral-500 hover:text-neutral-700'
             }`}
           >
             Activity Heatmap
@@ -141,8 +141,8 @@ export function SessionInsights({
             onClick={() => setActiveTab('summary')}
             className={`pb-2 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'summary'
-                ? 'border-indigo-500 text-indigo-600'
-                : 'border-transparent text-gray-500 hover:text-gray-700'
+                ? 'border-indigo-500 text-secondary-600'
+                : 'border-transparent text-neutral-500 hover:text-neutral-700'
             }`}
           >
             AI Summary
@@ -155,36 +155,36 @@ export function SessionInsights({
             <div className="space-y-6">
               {/* Quick stats */}
               <div className="grid grid-cols-4 gap-4">
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <p className="text-2xl font-bold text-gray-900">
+                <div className="text-center p-3 bg-neutral-50 rounded-lg">
+                  <p className="text-2xl font-bold text-neutral-900">
                     {session.events.filter(e => e.type === 'note-create').length}
                   </p>
-                  <p className="text-xs text-gray-500">Notes Created</p>
+                  <p className="text-xs text-neutral-500">Notes Created</p>
                 </div>
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <p className="text-2xl font-bold text-gray-900">
+                <div className="text-center p-3 bg-neutral-50 rounded-lg">
+                  <p className="text-2xl font-bold text-neutral-900">
                     {session.events.filter(e => e.type === 'note-edit').length}
                   </p>
-                  <p className="text-xs text-gray-500">Edits Made</p>
+                  <p className="text-xs text-neutral-500">Edits Made</p>
                 </div>
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <p className="text-2xl font-bold text-gray-900">
+                <div className="text-center p-3 bg-neutral-50 rounded-lg">
+                  <p className="text-2xl font-bold text-neutral-900">
                     {session.events.filter(e => e.type === 'note-connect').length}
                   </p>
-                  <p className="text-xs text-gray-500">Connections</p>
+                  <p className="text-xs text-neutral-500">Connections</p>
                 </div>
-                <div className="text-center p-3 bg-gray-50 rounded-lg">
-                  <p className="text-2xl font-bold text-gray-900">
+                <div className="text-center p-3 bg-neutral-50 rounded-lg">
+                  <p className="text-2xl font-bold text-neutral-900">
                     {session.annotations.length}
                   </p>
-                  <p className="text-xs text-gray-500">Annotations</p>
+                  <p className="text-xs text-neutral-500">Annotations</p>
                 </div>
               </div>
 
               {/* Insights list */}
               {insights.length > 0 ? (
                 <div className="space-y-3">
-                  <h3 className="text-sm font-medium text-gray-700">Key Patterns</h3>
+                  <h3 className="text-sm font-medium text-neutral-700">Key Patterns</h3>
                   {insights.map((insight, i) => (
                     <div
                       key={i}
@@ -200,10 +200,10 @@ export function SessionInsights({
                       <div className="flex items-start gap-3">
                         <span className="text-2xl">{insight.icon}</span>
                         <div className="flex-1">
-                          <h4 className="font-medium text-gray-900">{insight.title}</h4>
-                          <p className="text-sm text-gray-600 mt-0.5">{insight.description}</p>
+                          <h4 className="font-medium text-neutral-900">{insight.title}</h4>
+                          <p className="text-sm text-neutral-600 mt-0.5">{insight.description}</p>
                           {insight.timestamp && (
-                            <p className="text-xs text-gray-400 mt-1">
+                            <p className="text-xs text-neutral-400 mt-1">
                               At {formatTime(insight.timestamp)}
                             </p>
                           )}
@@ -213,7 +213,7 @@ export function SessionInsights({
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-gray-400">
+                <div className="text-center py-8 text-neutral-400">
                   <svg className="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
@@ -246,12 +246,12 @@ export function SessionInsights({
 
           {activeTab === 'heatmap' && (
             <div>
-              <p className="text-sm text-gray-600 mb-4">
+              <p className="text-sm text-neutral-600 mb-4">
                 Activity density across the canvas during this session
               </p>
 
               {/* Heatmap visualization */}
-              <div className="relative w-full aspect-video bg-gray-100 rounded-lg overflow-hidden">
+              <div className="relative w-full aspect-video bg-neutral-100 rounded-lg overflow-hidden">
                 {heatmap.length > 0 ? (
                   <svg className="w-full h-full" viewBox="0 0 1000 600" preserveAspectRatio="xMidYMid meet">
                     {/* Background grid */}
@@ -290,7 +290,7 @@ export function SessionInsights({
                     })}
                   </svg>
                 ) : (
-                  <div className="absolute inset-0 flex items-center justify-center text-gray-400">
+                  <div className="absolute inset-0 flex items-center justify-center text-neutral-400">
                     <div className="text-center">
                       <svg className="w-12 h-12 mx-auto mb-2 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
@@ -302,7 +302,7 @@ export function SessionInsights({
               </div>
 
               {/* Legend */}
-              <div className="mt-4 flex items-center justify-center gap-4 text-xs text-gray-500">
+              <div className="mt-4 flex items-center justify-center gap-4 text-xs text-neutral-500">
                 <div className="flex items-center gap-1">
                   <div className="w-4 h-4 rounded-full bg-indigo-200" />
                   <span>Low activity</span>
@@ -312,7 +312,7 @@ export function SessionInsights({
                   <span>Medium</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <div className="w-4 h-4 rounded-full bg-indigo-600" />
+                  <div className="w-4 h-4 rounded-full bg-secondary-600" />
                   <span>High activity</span>
                 </div>
               </div>
@@ -331,7 +331,7 @@ export function SessionInsights({
                 </h3>
 
                 {loadingSummary ? (
-                  <div className="flex items-center gap-2 text-sm text-indigo-600">
+                  <div className="flex items-center gap-2 text-sm text-secondary-600">
                     <svg className="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="3" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
@@ -345,7 +345,7 @@ export function SessionInsights({
 
               {/* Session timeline */}
               <div>
-                <h3 className="text-sm font-medium text-gray-700 mb-3">Session Timeline</h3>
+                <h3 className="text-sm font-medium text-neutral-700 mb-3">Session Timeline</h3>
                 <div className="space-y-2">
                   {getSessionPhases(session).map((phase, i) => (
                     <div key={i} className="flex items-start gap-3">
@@ -356,8 +356,8 @@ export function SessionInsights({
                         )}
                       </div>
                       <div className="flex-1 pb-4">
-                        <p className="text-xs text-gray-400">{formatTime(phase.startTime)}</p>
-                        <p className="text-sm text-gray-700">{phase.description}</p>
+                        <p className="text-xs text-neutral-400">{formatTime(phase.startTime)}</p>
+                        <p className="text-sm text-neutral-700">{phase.description}</p>
                       </div>
                     </div>
                   ))}
@@ -367,7 +367,7 @@ export function SessionInsights({
               {/* Annotations as thoughts */}
               {session.annotations.length > 0 && (
                 <div>
-                  <h3 className="text-sm font-medium text-gray-700 mb-3">Your Thoughts During Session</h3>
+                  <h3 className="text-sm font-medium text-neutral-700 mb-3">Your Thoughts During Session</h3>
                   <div className="space-y-2">
                     {session.annotations.map((ann) => (
                       <div

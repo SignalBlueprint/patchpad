@@ -139,7 +139,7 @@ export function LiveSessionViewer({ sessionId, onClose }: LiveSessionViewerProps
   function renderCanvas() {
     if (!snapshot) {
       return (
-        <div className="flex items-center justify-center h-full text-gray-400">
+        <div className="flex items-center justify-center h-full text-neutral-400">
           Waiting for canvas data...
         </div>
       );
@@ -163,7 +163,7 @@ export function LiveSessionViewer({ sessionId, onClose }: LiveSessionViewerProps
               <h4 className="font-medium text-sm text-gray-800 truncate">
                 {note.title || 'Untitled'}
               </h4>
-              <p className="text-xs text-gray-600 mt-1 line-clamp-3">
+              <p className="text-xs text-neutral-600 mt-1 line-clamp-3">
                 {note.content.slice(0, 150)}
               </p>
             </div>
@@ -193,7 +193,7 @@ export function LiveSessionViewer({ sessionId, onClose }: LiveSessionViewerProps
 
         {/* Event indicator */}
         {events.length > 0 && (
-          <div className="absolute bottom-4 left-4 px-3 py-1 bg-indigo-600 text-white text-xs rounded-full">
+          <div className="absolute bottom-4 left-4 px-3 py-1 bg-secondary-600 text-white text-xs rounded-full">
             {events.length} events
           </div>
         )}
@@ -213,7 +213,7 @@ export function LiveSessionViewer({ sessionId, onClose }: LiveSessionViewerProps
               </svg>
             </div>
             <h2 className="text-xl font-bold text-white">Join Live Session</h2>
-            <p className="text-sm text-gray-400 mt-1">Watch a thinking session in real-time</p>
+            <p className="text-sm text-neutral-400 mt-1">Watch a thinking session in real-time</p>
           </div>
 
           {error && (
@@ -247,7 +247,7 @@ export function LiveSessionViewer({ sessionId, onClose }: LiveSessionViewerProps
               <button
                 onClick={handleJoin}
                 disabled={isJoining || !viewerName.trim()}
-                className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2 bg-secondary-600 text-white rounded-lg hover:bg-secondary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
                 {isJoining ? (
                   <>
@@ -274,7 +274,7 @@ export function LiveSessionViewer({ sessionId, onClose }: LiveSessionViewerProps
         <header className="bg-gray-800/80 backdrop-blur-sm border-b border-gray-700 px-4 py-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex items-center gap-2 px-3 py-1 bg-red-600 rounded-full animate-pulse">
+              <div className="flex items-center gap-2 px-3 py-1 bg-error-600 rounded-full animate-pulse">
                 <div className="w-2 h-2 bg-white rounded-full" />
                 <span className="text-xs font-medium text-white">LIVE</span>
               </div>
@@ -282,13 +282,13 @@ export function LiveSessionViewer({ sessionId, onClose }: LiveSessionViewerProps
                 <h1 className="text-sm font-semibold text-white">
                   {broadcast?.title || 'Thinking Session'}
                 </h1>
-                <p className="text-xs text-gray-400">
+                <p className="text-xs text-neutral-400">
                   Hosted by {broadcast?.hostName || 'Unknown'}
                 </p>
               </div>
             </div>
             <div className="flex items-center gap-4">
-              <div className="flex items-center gap-2 text-xs text-gray-400">
+              <div className="flex items-center gap-2 text-xs text-neutral-400">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
@@ -298,7 +298,7 @@ export function LiveSessionViewer({ sessionId, onClose }: LiveSessionViewerProps
               <button
                 onClick={() => setIsChatOpen(!isChatOpen)}
                 className={`p-2 rounded-lg transition-colors ${
-                  isChatOpen ? 'bg-indigo-600 text-white' : 'bg-gray-700 text-gray-400 hover:text-white'
+                  isChatOpen ? 'bg-secondary-600 text-white' : 'bg-gray-700 text-neutral-400 hover:text-white'
                 }`}
               >
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -307,7 +307,7 @@ export function LiveSessionViewer({ sessionId, onClose }: LiveSessionViewerProps
               </button>
               <button
                 onClick={handleLeave}
-                className="px-3 py-1.5 bg-red-600 text-white text-sm rounded-lg hover:bg-red-700 transition-colors"
+                className="px-3 py-1.5 bg-error-600 text-white text-sm rounded-lg hover:bg-error-700 transition-colors"
               >
                 Leave
               </button>
@@ -332,7 +332,7 @@ export function LiveSessionViewer({ sessionId, onClose }: LiveSessionViewerProps
               </span>
             ))}
             {events.length === 0 && (
-              <span className="text-xs text-gray-500">Waiting for events...</span>
+              <span className="text-xs text-neutral-500">Waiting for events...</span>
             )}
           </div>
         </div>
@@ -348,7 +348,7 @@ export function LiveSessionViewer({ sessionId, onClose }: LiveSessionViewerProps
 
           {/* Viewers list */}
           <div className="px-4 py-2 border-b border-gray-700">
-            <div className="text-xs text-gray-400 mb-2">Viewers ({viewers.length})</div>
+            <div className="text-xs text-neutral-400 mb-2">Viewers ({viewers.length})</div>
             <div className="flex flex-wrap gap-1">
               {viewers.slice(0, 10).map((viewer) => (
                 <span
@@ -360,7 +360,7 @@ export function LiveSessionViewer({ sessionId, onClose }: LiveSessionViewerProps
                 </span>
               ))}
               {viewers.length > 10 && (
-                <span className="px-2 py-0.5 text-xs bg-gray-700 text-gray-400 rounded-full">
+                <span className="px-2 py-0.5 text-xs bg-gray-700 text-neutral-400 rounded-full">
                   +{viewers.length - 10}
                 </span>
               )}
@@ -384,7 +384,7 @@ export function LiveSessionViewer({ sessionId, onClose }: LiveSessionViewerProps
               </div>
             ))}
             {messages.length === 0 && (
-              <div className="text-center text-gray-500 text-sm py-8">
+              <div className="text-center text-neutral-500 text-sm py-8">
                 No messages yet. Say hi!
               </div>
             )}
@@ -404,7 +404,7 @@ export function LiveSessionViewer({ sessionId, onClose }: LiveSessionViewerProps
               <button
                 onClick={handleSendMessage}
                 disabled={!chatInput.trim()}
-                className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 bg-secondary-600 text-white rounded-lg hover:bg-secondary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -425,10 +425,10 @@ export function LiveSessionViewer({ sessionId, onClose }: LiveSessionViewerProps
               </svg>
             </div>
             <h3 className="text-lg font-semibold text-white mb-2">Broadcast Ended</h3>
-            <p className="text-gray-400 text-sm mb-4">{error}</p>
+            <p className="text-neutral-400 text-sm mb-4">{error}</p>
             <button
               onClick={onClose}
-              className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+              className="px-6 py-2 bg-secondary-600 text-white rounded-lg hover:bg-secondary-700 transition-colors"
             >
               Close
             </button>

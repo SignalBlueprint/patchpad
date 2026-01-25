@@ -72,14 +72,14 @@ export function FollowModeIndicator({
         </div>
 
         {/* Following text */}
-        <span className="text-sm text-gray-700">
+        <span className="text-sm text-neutral-700">
           Following <span className="font-medium">{followingPeer.name}</span>
         </span>
 
         {/* Stop button */}
         <button
           onClick={onStopFollowing}
-          className="px-2 py-1 text-xs text-gray-600 hover:text-gray-800 hover:bg-white/50 rounded transition-colors"
+          className="px-2 py-1 text-xs text-neutral-600 hover:text-gray-800 hover:bg-white/50 rounded transition-colors"
         >
           Stop
         </button>
@@ -138,7 +138,7 @@ export function FollowMenu({
         className={`p-2 rounded-lg transition-colors ${
           followingPeerId
             ? 'bg-blue-100 text-blue-700'
-            : 'text-gray-500 hover:bg-gray-100'
+            : 'text-neutral-500 hover:bg-neutral-100'
         }`}
         title={followingPeerId ? 'Following' : 'Follow a collaborator'}
       >
@@ -159,8 +159,8 @@ export function FollowMenu({
       </button>
 
       {isOpen && (
-        <div className="absolute top-full right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
-          <div className="px-3 py-2 text-xs font-medium text-gray-400 uppercase">
+        <div className="absolute top-full right-0 mt-1 w-48 bg-white rounded-lg shadow-lg border border-neutral-200 py-1 z-50">
+          <div className="px-3 py-2 text-xs font-medium text-neutral-400 uppercase">
             Follow
           </div>
           {followablePeers.map((peer) => (
@@ -174,7 +174,7 @@ export function FollowMenu({
                 }
                 setIsOpen(false);
               }}
-              className={`w-full px-3 py-2 flex items-center gap-2 hover:bg-gray-50 transition-colors ${
+              className={`w-full px-3 py-2 flex items-center gap-2 hover:bg-neutral-50 transition-colors ${
                 followingPeerId === peer.id ? 'bg-blue-50' : ''
               }`}
             >
@@ -184,11 +184,11 @@ export function FollowMenu({
               >
                 {peer.name.charAt(0).toUpperCase()}
               </div>
-              <span className="flex-1 text-sm text-left text-gray-700">
+              <span className="flex-1 text-sm text-left text-neutral-700">
                 {peer.name}
               </span>
               {followingPeerId === peer.id && (
-                <svg className="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                 </svg>
               )}
@@ -202,7 +202,7 @@ export function FollowMenu({
                   onStopFollowing();
                   setIsOpen(false);
                 }}
-                className="w-full px-3 py-2 text-sm text-left text-red-600 hover:bg-red-50 transition-colors"
+                className="w-full px-3 py-2 text-sm text-left text-error-600 hover:bg-red-50 transition-colors"
               >
                 Stop following
               </button>

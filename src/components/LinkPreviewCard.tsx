@@ -117,10 +117,10 @@ export function LinkPreviewCard({
                   {linkedNote.title.charAt(0).toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-gray-900 truncate">
+                  <h3 className="font-semibold text-neutral-900 truncate">
                     {linkedNote.title}
                   </h3>
-                  <p className="text-xs text-gray-500">
+                  <p className="text-xs text-neutral-500">
                     {new Date(linkedNote.updatedAt).toLocaleDateString('en-US', {
                       month: 'short',
                       day: 'numeric',
@@ -128,7 +128,7 @@ export function LinkPreviewCard({
                     {linkedNote.tags && linkedNote.tags.length > 0 && (
                       <span className="ml-2">
                         {linkedNote.tags.slice(0, 2).map(tag => (
-                          <span key={tag} className="inline-block px-1.5 py-0.5 bg-gray-100 rounded text-[10px] ml-1">
+                          <span key={tag} className="inline-block px-1.5 py-0.5 bg-neutral-100 rounded text-[10px] ml-1">
                             #{tag}
                           </span>
                         ))}
@@ -141,14 +141,14 @@ export function LinkPreviewCard({
 
             {/* Content preview */}
             <div className="px-4 py-3 max-h-32 overflow-hidden">
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <p className="text-sm text-neutral-600 leading-relaxed">
                 {getPreviewContent(linkedNote.content)}
               </p>
             </div>
 
             {/* Footer */}
-            <div className="px-4 py-2 border-t border-white/10 bg-gray-50/50 flex items-center justify-between">
-              <span className="text-xs text-gray-400">
+            <div className="px-4 py-2 border-t border-white/10 bg-neutral-50/50 flex items-center justify-between">
+              <span className="text-xs text-neutral-400">
                 {linkedNote.content.split(/\s+/).filter(w => w).length} words
               </span>
               <button
@@ -167,8 +167,8 @@ export function LinkPreviewCard({
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
             </div>
-            <h3 className="font-semibold text-gray-900 mb-1">Create "{targetTitle}"</h3>
-            <p className="text-sm text-gray-500 mb-4">
+            <h3 className="font-semibold text-neutral-900 mb-1">Create "{targetTitle}"</h3>
+            <p className="text-sm text-neutral-500 mb-4">
               This note doesn't exist yet
             </p>
             <button

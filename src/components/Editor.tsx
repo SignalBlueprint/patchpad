@@ -206,7 +206,7 @@ function createWikiLinkDecorations(links: ParsedWikiLink[], allNotes: Note[]): D
 
       return Decoration.mark({
         class: noteExists
-          ? 'wiki-link wiki-link-valid cursor-pointer text-blue-600 hover:text-blue-800 hover:bg-blue-50 underline decoration-blue-400 decoration-1 underline-offset-2'
+          ? 'wiki-link wiki-link-valid cursor-pointer text-primary-600 hover:text-blue-800 hover:bg-blue-50 underline decoration-blue-400 decoration-1 underline-offset-2'
           : 'wiki-link wiki-link-broken cursor-pointer text-red-500 hover:text-red-700 hover:bg-red-50 underline decoration-red-300 decoration-dashed decoration-1 underline-offset-2',
         attributes: {
           'data-wiki-link': link.targetTitle,
@@ -245,7 +245,7 @@ function createHighlightDecorations(highlights: Highlight[]): DecorationSet {
       const bgColor = highlightColors[h.color] || 'bg-yellow-200';
       const hasNote = h.note && h.note.trim().length > 0;
       return Decoration.mark({
-        class: `${bgColor} rounded-sm ${hasNote ? 'cursor-help border-b-2 border-dashed border-gray-400' : ''}`,
+        class: `${bgColor} rounded-sm ${hasNote ? 'cursor-help border-b-2 border-dashed border-neutral-400' : ''}`,
         attributes: {
           'data-highlight-id': h.id,
           ...(hasNote ? { title: h.note } : {}),
@@ -712,15 +712,15 @@ export function Editor({
 
   if (!note) {
     return (
-      <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-50 to-gray-100 text-gray-400">
+      <div className="flex items-center justify-center h-full bg-gradient-to-br from-gray-50 to-gray-100 text-neutral-400">
         <div className="text-center">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-200 flex items-center justify-center">
-            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-neutral-200 flex items-center justify-center">
+            <svg className="w-8 h-8 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
           <p className="text-lg font-medium">No note selected</p>
-          <p className="text-sm mt-1">Select a note or press <kbd className="px-2 py-0.5 bg-gray-200 rounded text-xs font-mono">Ctrl+N</kbd> to create one</p>
+          <p className="text-sm mt-1">Select a note or press <kbd className="px-2 py-0.5 bg-neutral-200 rounded text-xs font-mono">Ctrl+N</kbd> to create one</p>
         </div>
       </div>
     );
@@ -729,12 +729,12 @@ export function Editor({
   return (
     <div className={`flex flex-col h-full ${darkMode ? 'bg-[#1e1e1e]' : 'bg-white'}`}>
       {/* Header toolbar */}
-      <div className={`flex items-center justify-between px-4 py-2 border-b ${darkMode ? 'border-gray-700 bg-[#252526]' : 'border-gray-200 bg-white'}`}>
+      <div className={`flex items-center justify-between px-4 py-2 border-b ${darkMode ? 'border-neutral-700 bg-[#252526]' : 'border-neutral-200 bg-white'}`}>
         <div className="flex items-center gap-3">
-          <h2 className={`text-sm font-medium truncate max-w-[200px] ${darkMode ? 'text-gray-200' : 'text-gray-700'}`}>
+          <h2 className={`text-sm font-medium truncate max-w-[200px] ${darkMode ? 'text-neutral-200' : 'text-neutral-700'}`}>
             {note.title}
           </h2>
-          <span className={`text-xs ${darkMode ? 'text-gray-500' : 'text-gray-400'}`}>
+          <span className={`text-xs ${darkMode ? 'text-neutral-500' : 'text-neutral-400'}`}>
             {wordCount} words · {charCount} chars
           </span>
         </div>
@@ -746,7 +746,7 @@ export function Editor({
             className={`p-1.5 rounded text-xs transition-all ${
               focusMode
                 ? 'bg-gradient-to-r from-purple-500 to-indigo-500 text-white shadow-lg shadow-purple-500/25'
-                : darkMode ? 'text-gray-400 hover:bg-gray-700' : 'text-gray-500 hover:bg-gray-100'
+                : darkMode ? 'text-neutral-400 hover:bg-neutral-700' : 'text-neutral-500 hover:bg-neutral-100'
             }`}
             title="Focus mode - dim distractions"
           >
@@ -762,7 +762,7 @@ export function Editor({
             className={`p-1.5 rounded text-xs transition-colors ${
               showLineNumbers
                 ? darkMode ? 'bg-blue-900/50 text-blue-300' : 'bg-blue-100 text-blue-700'
-                : darkMode ? 'text-gray-400 hover:bg-gray-700' : 'text-gray-500 hover:bg-gray-100'
+                : darkMode ? 'text-neutral-400 hover:bg-neutral-700' : 'text-neutral-500 hover:bg-neutral-100'
             }`}
             title="Toggle line numbers"
           >
@@ -777,7 +777,7 @@ export function Editor({
             className={`p-1.5 rounded text-xs transition-colors ${
               darkMode
                 ? 'bg-yellow-900/50 text-yellow-300 hover:bg-yellow-900/70'
-                : 'text-gray-500 hover:bg-gray-100'
+                : 'text-neutral-500 hover:bg-neutral-100'
             }`}
             title="Toggle dark mode"
           >
@@ -797,7 +797,7 @@ export function Editor({
             <button
               onClick={onShare}
               className={`p-1.5 rounded text-xs transition-colors ${
-                darkMode ? 'text-gray-400 hover:bg-gray-700' : 'text-gray-500 hover:bg-gray-100'
+                darkMode ? 'text-neutral-400 hover:bg-neutral-700' : 'text-neutral-500 hover:bg-neutral-100'
               }`}
               title="Share note"
             >
@@ -810,12 +810,12 @@ export function Editor({
           {/* Preview toggle */}
           <button
             onClick={onTogglePreview}
-            className={`px-3 py-1 text-xs font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            className={`px-3 py-1 text-xs font-medium rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 ${
               showPreview
-                ? 'bg-blue-600 text-white'
+                ? 'bg-primary-600 text-white'
                 : darkMode
-                  ? 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                  ? 'bg-neutral-700 text-neutral-300 hover:bg-neutral-600'
+                  : 'bg-neutral-100 text-neutral-700 hover:bg-neutral-200'
             }`}
           >
             Preview
@@ -825,7 +825,7 @@ export function Editor({
 
       {/* Audio Playback for voice notes */}
       {note.audioId && (
-        <div className={`px-4 py-2 border-b ${darkMode ? 'border-gray-700 bg-[#252526]' : 'border-gray-200 bg-gray-50'}`}>
+        <div className={`px-4 py-2 border-b ${darkMode ? 'border-neutral-700 bg-[#252526]' : 'border-neutral-200 bg-neutral-50'}`}>
           <AudioPlaybackButton noteId={note.id} />
         </div>
       )}

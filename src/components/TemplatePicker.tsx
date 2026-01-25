@@ -215,7 +215,7 @@ export function TemplatePicker({
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Search templates..."
-                className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-200 text-sm"
+                className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-200 text-sm"
               />
 
               {/* Category filters */}
@@ -226,7 +226,7 @@ export function TemplatePicker({
                     className={`px-2 py-1 rounded text-xs transition-colors ${
                       !selectedCategory
                         ? 'bg-violet-100 text-violet-700'
-                        : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                        : 'bg-neutral-100 text-neutral-600 hover:bg-gray-200'
                     }`}
                   >
                     All
@@ -238,7 +238,7 @@ export function TemplatePicker({
                       className={`px-2 py-1 rounded text-xs capitalize transition-colors ${
                         selectedCategory === cat
                           ? 'bg-violet-100 text-violet-700'
-                          : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                          : 'bg-neutral-100 text-neutral-600 hover:bg-gray-200'
                       }`}
                     >
                       {cat}
@@ -251,7 +251,7 @@ export function TemplatePicker({
             {/* Template list */}
             {Object.entries(groupedTemplates).map(([category, categoryTemplates]) => (
               <div key={category} className="mb-4">
-                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+                <h3 className="text-xs font-semibold text-neutral-400 uppercase tracking-wider mb-2">
                   {category === 'uncategorized' ? 'Other' : category}
                 </h3>
                 <div className="space-y-2">
@@ -262,12 +262,12 @@ export function TemplatePicker({
                       className={`w-full p-3 rounded-lg border text-left transition-all group ${
                         selectedTemplate?.id === template.id
                           ? 'border-violet-500 bg-violet-50 ring-2 ring-violet-200'
-                          : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                          : 'border-neutral-200 hover:border-neutral-300 hover:bg-neutral-50'
                       }`}
                     >
                       <div className="flex items-start justify-between">
                         <div>
-                          <div className="font-medium text-gray-900 flex items-center gap-2">
+                          <div className="font-medium text-neutral-900 flex items-center gap-2">
                             {template.name}
                             {template.aiEnhanced && (
                               <span className="px-1.5 py-0.5 bg-gradient-to-r from-violet-100 to-purple-100 text-violet-600 text-xs rounded">
@@ -275,14 +275,14 @@ export function TemplatePicker({
                               </span>
                             )}
                           </div>
-                          <div className="text-sm text-gray-500 mt-0.5 line-clamp-2">
+                          <div className="text-sm text-neutral-500 mt-0.5 line-clamp-2">
                             {template.description}
                           </div>
                         </div>
                         {!template.id.startsWith('builtin-') && (
                           <button
                             onClick={(e) => handleDeleteTemplate(template.id, e)}
-                            className="p-1 text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
+                            className="p-1 text-neutral-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all"
                             title="Delete template"
                           >
                             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -296,7 +296,7 @@ export function TemplatePicker({
                           {template.tags.map(tag => (
                             <span
                               key={tag}
-                              className="px-1.5 py-0.5 bg-gray-100 rounded text-xs text-gray-500"
+                              className="px-1.5 py-0.5 bg-neutral-100 rounded text-xs text-neutral-500"
                             >
                               #{tag}
                             </span>
@@ -310,7 +310,7 @@ export function TemplatePicker({
             ))}
 
             {filteredTemplates.length === 0 && (
-              <div className="text-center py-8 text-gray-500">
+              <div className="text-center py-8 text-neutral-500">
                 <p>No templates found.</p>
               </div>
             )}
@@ -322,7 +322,7 @@ export function TemplatePicker({
                   handleClose();
                   onOpenTemplateDialog();
                 }}
-                className="w-full mt-4 p-3 border-2 border-dashed border-gray-200 rounded-lg text-gray-500 hover:border-violet-300 hover:text-violet-600 transition-colors text-sm"
+                className="w-full mt-4 p-3 border-2 border-dashed border-neutral-200 rounded-lg text-neutral-500 hover:border-violet-300 hover:text-violet-600 transition-colors text-sm"
               >
                 + Create new template
               </button>
@@ -337,7 +337,7 @@ export function TemplatePicker({
                   <svg className="w-5 h-5 text-violet-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                   </svg>
-                  <h3 className="font-semibold text-gray-900">Fill in details</h3>
+                  <h3 className="font-semibold text-neutral-900">Fill in details</h3>
                 </div>
 
                 {/* Regular placeholders (user input) */}
@@ -345,7 +345,7 @@ export function TemplatePicker({
                   .filter(p => !isAIPlaceholder(p))
                   .map(placeholder => (
                     <div key={placeholder.key}>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                      <label className="block text-sm font-medium text-neutral-700 mb-1">
                         {placeholder.label}
                         {placeholder.required && <span className="text-red-500 ml-1">*</span>}
                       </label>
@@ -355,7 +355,7 @@ export function TemplatePicker({
                           value={values[placeholder.key] ?? ''}
                           onChange={(e) => handleValueChange(placeholder.key, e.target.value)}
                           placeholder={getFormattedDate()}
-                          className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-200"
+                          className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-200"
                         />
                       ) : (
                         <input
@@ -363,7 +363,7 @@ export function TemplatePicker({
                           value={values[placeholder.key] ?? ''}
                           onChange={(e) => handleValueChange(placeholder.key, e.target.value)}
                           placeholder={placeholder.defaultValue ?? ''}
-                          className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-200"
+                          className="w-full px-3 py-2 border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-200"
                         />
                       )}
                     </div>
@@ -372,8 +372,8 @@ export function TemplatePicker({
                 {/* AI placeholders (shown as preview indicators) */}
                 {selectedTemplate.placeholders.filter(isAIPlaceholder).length > 0 && (
                   <div className="mt-4 space-y-2">
-                    <div className="flex items-center gap-2 text-sm font-medium text-gray-700">
-                      <svg className="w-4 h-4 text-amber-500" fill="currentColor" viewBox="0 0 24 24">
+                    <div className="flex items-center gap-2 text-sm font-medium text-neutral-700">
+                      <svg className="w-4 h-4 text-accent-500" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M13 10V3L4 14h7v7l9-11h-7z" />
                       </svg>
                       AI-Generated Sections
@@ -385,7 +385,7 @@ export function TemplatePicker({
                           key={placeholder.key}
                           className="flex items-center gap-2 p-2 bg-amber-50 rounded-lg border border-amber-100"
                         >
-                          <svg className="w-4 h-4 text-amber-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4 text-accent-500 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                             <path d="M13 10V3L4 14h7v7l9-11h-7z" />
                           </svg>
                           <div className="flex-1 min-w-0">
@@ -402,15 +402,15 @@ export function TemplatePicker({
                 {/* Preview section with AI toggle */}
                 <div className="mt-6">
                   <div className="flex items-center justify-between mb-2">
-                    <h4 className="text-sm font-medium text-gray-700">Preview</h4>
+                    <h4 className="text-sm font-medium text-neutral-700">Preview</h4>
                     {selectedTemplate.aiEnhanced && (
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setAiPreviewMode(false)}
                           className={`px-2 py-1 text-xs rounded transition-colors ${
                             !aiPreviewMode
-                              ? 'bg-gray-200 text-gray-700'
-                              : 'text-gray-500 hover:bg-gray-100'
+                              ? 'bg-gray-200 text-neutral-700'
+                              : 'text-neutral-500 hover:bg-neutral-100'
                           }`}
                         >
                           Template
@@ -446,7 +446,7 @@ export function TemplatePicker({
                           className={`ml-1 px-2 py-1 text-xs rounded transition-colors flex items-center gap-1 ${
                             realtimePreviewEnabled
                               ? 'bg-green-100 text-green-700'
-                              : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                              : 'bg-neutral-100 text-neutral-600 hover:bg-gray-200'
                           }`}
                           title={realtimePreviewEnabled ? 'Disable real-time preview' : 'Enable real-time preview'}
                         >
@@ -468,7 +468,7 @@ export function TemplatePicker({
                         Updating...
                       </div>
                     )}
-                    <pre className="text-xs text-gray-600 whitespace-pre-wrap font-mono bg-gray-50 p-3 rounded-lg border border-gray-200 max-h-48 overflow-y-auto">
+                    <pre className="text-xs text-neutral-600 whitespace-pre-wrap font-mono bg-neutral-50 p-3 rounded-lg border border-neutral-200 max-h-48 overflow-y-auto">
                       {aiPreviewMode && aiPreviewContent
                         ? aiPreviewContent.slice(0, 800)
                         : applyTemplate(selectedTemplate, values).content.slice(0, 500)}
@@ -486,7 +486,7 @@ export function TemplatePicker({
                     </p>
                   )}
                   {realtimePreviewEnabled && !aiPreviewMode && selectedTemplate.aiEnhanced && (
-                    <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                    <p className="text-xs text-neutral-500 mt-2 flex items-center gap-1">
                       <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                       </svg>
@@ -496,7 +496,7 @@ export function TemplatePicker({
                 </div>
               </div>
             ) : (
-              <div className="flex items-center justify-center h-full text-gray-400">
+              <div className="flex items-center justify-center h-full text-neutral-400">
                 <div className="text-center">
                   <svg className="w-12 h-12 mx-auto mb-3 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -509,10 +509,10 @@ export function TemplatePicker({
         </div>
 
         {/* Footer */}
-        <div className="relative px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
+        <div className="relative px-6 py-4 bg-neutral-50 border-t border-gray-100 flex justify-end gap-3">
           <button
             onClick={handleClose}
-            className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+            className="px-4 py-2 text-neutral-600 hover:text-gray-800 transition-colors"
           >
             Cancel
           </button>

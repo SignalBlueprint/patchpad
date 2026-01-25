@@ -61,11 +61,11 @@ export function VersionHistoryPanel({
   return (
     <div className="h-full flex flex-col bg-white">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-gray-200 flex items-center justify-between">
-        <h3 className="font-semibold text-gray-900">Version History</h3>
+      <div className="px-4 py-3 border-b border-neutral-200 flex items-center justify-between">
+        <h3 className="font-semibold text-neutral-900">Version History</h3>
         <button
           onClick={onClose}
-          className="p-1 text-gray-400 hover:text-gray-600"
+          className="p-1 text-neutral-400 hover:text-neutral-600"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -82,18 +82,18 @@ export function VersionHistoryPanel({
               value={snapshotLabel}
               onChange={(e) => setSnapshotLabel(e.target.value)}
               placeholder="Version label (optional)"
-              className="flex-1 px-3 py-1.5 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
+              className="flex-1 px-3 py-1.5 text-sm border border-neutral-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-200"
               autoFocus
             />
             <button
               onClick={handleCreateSnapshot}
-              className="px-3 py-1.5 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600"
+              className="px-3 py-1.5 bg-primary-500 text-white text-sm rounded-lg hover:bg-primary-600"
             >
               Save
             </button>
             <button
               onClick={() => setShowCreateSnapshot(false)}
-              className="px-3 py-1.5 text-gray-600 text-sm hover:text-gray-800"
+              className="px-3 py-1.5 text-neutral-600 text-sm hover:text-gray-800"
             >
               Cancel
             </button>
@@ -101,7 +101,7 @@ export function VersionHistoryPanel({
         ) : (
           <button
             onClick={() => setShowCreateSnapshot(true)}
-            className="w-full px-3 py-2 border-2 border-dashed border-gray-200 rounded-lg text-gray-500 hover:border-blue-300 hover:text-blue-600 transition-colors text-sm flex items-center justify-center gap-2"
+            className="w-full px-3 py-2 border-2 border-dashed border-neutral-200 rounded-lg text-neutral-500 hover:border-blue-300 hover:text-primary-600 transition-colors text-sm flex items-center justify-center gap-2"
           >
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -116,7 +116,7 @@ export function VersionHistoryPanel({
         {/* Version list */}
         <div className="w-64 border-r border-gray-100 overflow-y-auto">
           {versions.length === 0 ? (
-            <div className="p-4 text-center text-gray-400 text-sm">
+            <div className="p-4 text-center text-neutral-400 text-sm">
               <p>No versions yet</p>
               <p className="mt-1 text-xs">Versions are created automatically as you edit</p>
             </div>
@@ -129,11 +129,11 @@ export function VersionHistoryPanel({
                   className={`w-full p-3 rounded-lg text-left transition-colors ${
                     selectedVersionId === version.id
                       ? 'bg-blue-50 border border-blue-200'
-                      : 'hover:bg-gray-50 border border-transparent'
+                      : 'hover:bg-neutral-50 border border-transparent'
                   }`}
                 >
                   <div className="flex items-center justify-between">
-                    <span className="text-sm font-medium text-gray-900">
+                    <span className="text-sm font-medium text-neutral-900">
                       {version.label || `Version ${versions.length - index}`}
                     </span>
                     <span
@@ -142,23 +142,23 @@ export function VersionHistoryPanel({
                           ? 'bg-blue-100 text-blue-700'
                           : version.snapshotType === 'restore'
                           ? 'bg-green-100 text-green-700'
-                          : 'bg-gray-100 text-gray-600'
+                          : 'bg-neutral-100 text-neutral-600'
                       }`}
                     >
                       {version.snapshotType}
                     </span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">
+                  <p className="text-xs text-neutral-500 mt-1">
                     {formatDate(version.createdAt)}
                   </p>
                   <div className="flex items-center gap-2 mt-1">
                     <span
                       className={`text-xs ${
                         version.charDelta > 0
-                          ? 'text-green-600'
+                          ? 'text-success-600'
                           : version.charDelta < 0
-                          ? 'text-red-600'
-                          : 'text-gray-400'
+                          ? 'text-error-600'
+                          : 'text-neutral-400'
                       }`}
                     >
                       {version.charDelta > 0 ? '+' : ''}
@@ -181,7 +181,7 @@ export function VersionHistoryPanel({
                   <button
                     onClick={() => setShowDiff(false)}
                     className={`text-sm ${
-                      !showDiff ? 'text-blue-600 font-medium' : 'text-gray-500 hover:text-gray-700'
+                      !showDiff ? 'text-primary-600 font-medium' : 'text-neutral-500 hover:text-neutral-700'
                     }`}
                   >
                     Content
@@ -189,7 +189,7 @@ export function VersionHistoryPanel({
                   <button
                     onClick={() => setShowDiff(true)}
                     className={`text-sm ${
-                      showDiff ? 'text-blue-600 font-medium' : 'text-gray-500 hover:text-gray-700'
+                      showDiff ? 'text-primary-600 font-medium' : 'text-neutral-500 hover:text-neutral-700'
                     }`}
                   >
                     Diff from current
@@ -197,7 +197,7 @@ export function VersionHistoryPanel({
                 </div>
                 <button
                   onClick={() => onRestore(selectedVersion)}
-                  className="px-3 py-1.5 bg-blue-500 text-white text-sm rounded-lg hover:bg-blue-600 flex items-center gap-1"
+                  className="px-3 py-1.5 bg-primary-500 text-white text-sm rounded-lg hover:bg-primary-600 flex items-center gap-1"
                 >
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path
@@ -216,9 +216,9 @@ export function VersionHistoryPanel({
                 {showDiff && diff ? (
                   <div className="space-y-2">
                     <div className="flex gap-4 text-sm mb-4">
-                      <span className="text-green-600">+{diff.additions} lines</span>
-                      <span className="text-red-600">-{diff.deletions} lines</span>
-                      <span className="text-gray-500">
+                      <span className="text-success-600">+{diff.additions} lines</span>
+                      <span className="text-error-600">-{diff.deletions} lines</span>
+                      <span className="text-neutral-500">
                         {diff.charDelta > 0 ? '+' : ''}{diff.charDelta} chars
                       </span>
                     </div>
@@ -231,7 +231,7 @@ export function VersionHistoryPanel({
                               ? 'bg-green-50 text-green-800'
                               : line.startsWith('- ')
                               ? 'bg-red-50 text-red-800'
-                              : 'text-gray-600'
+                              : 'text-neutral-600'
                           }`}
                         >
                           {line}
@@ -241,10 +241,10 @@ export function VersionHistoryPanel({
                   </div>
                 ) : (
                   <div>
-                    <h4 className="text-lg font-medium text-gray-900 mb-2">
+                    <h4 className="text-lg font-medium text-neutral-900 mb-2">
                       {selectedVersion.title || 'Untitled'}
                     </h4>
-                    <pre className="text-sm whitespace-pre-wrap text-gray-700 font-sans">
+                    <pre className="text-sm whitespace-pre-wrap text-neutral-700 font-sans">
                       {selectedVersion.content}
                     </pre>
                   </div>
@@ -252,7 +252,7 @@ export function VersionHistoryPanel({
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center text-gray-400">
+            <div className="flex-1 flex items-center justify-center text-neutral-400">
               <div className="text-center">
                 <svg
                   className="w-12 h-12 mx-auto mb-2 opacity-50"

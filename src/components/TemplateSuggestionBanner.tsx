@@ -84,10 +84,10 @@ export function TemplateSuggestionBanner({
             </svg>
           </div>
           <div className="flex-1">
-            <p className="text-sm font-medium text-gray-900">
+            <p className="text-sm font-medium text-neutral-900">
               We noticed a pattern in your notes
             </p>
-            <p className="text-sm text-gray-600 mt-0.5">
+            <p className="text-sm text-neutral-600 mt-0.5">
               {patternDescription}. Would you like to create a "{suggestion.title}" template?
             </p>
             <div className="flex items-center gap-2 mt-2">
@@ -98,7 +98,7 @@ export function TemplateSuggestionBanner({
               }`}>
                 {confidenceText}
               </span>
-              <span className="text-xs text-gray-500">
+              <span className="text-xs text-neutral-500">
                 Based on {suggestion.basedOnNotes} notes
               </span>
             </div>
@@ -106,7 +106,7 @@ export function TemplateSuggestionBanner({
         </div>
         <button
           onClick={onDismiss}
-          className="p-1 text-gray-400 hover:text-gray-600 transition-colors"
+          className="p-1 text-neutral-400 hover:text-neutral-600 transition-colors"
           aria-label="Dismiss"
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -123,7 +123,7 @@ export function TemplateSuggestionBanner({
       {/* Preview toggle */}
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="mt-3 flex items-center gap-1 text-sm text-emerald-600 hover:text-emerald-700 transition-colors"
+        className="mt-3 flex items-center gap-1 text-sm text-success-600 hover:text-emerald-700 transition-colors"
       >
         <svg
           className={`w-4 h-4 transition-transform ${isExpanded ? 'rotate-90' : ''}`}
@@ -138,16 +138,16 @@ export function TemplateSuggestionBanner({
 
       {/* Template preview */}
       {isExpanded && (
-        <div className="mt-3 bg-white rounded-lg border border-gray-200 overflow-hidden">
-          <div className="px-3 py-2 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
-            <span className="text-xs font-medium text-gray-600">Template Structure</span>
-            <span className="text-xs text-gray-400">{suggestion.title}</span>
+        <div className="mt-3 bg-white rounded-lg border border-neutral-200 overflow-hidden">
+          <div className="px-3 py-2 bg-neutral-50 border-b border-neutral-200 flex items-center justify-between">
+            <span className="text-xs font-medium text-neutral-600">Template Structure</span>
+            <span className="text-xs text-neutral-400">{suggestion.title}</span>
           </div>
-          <pre className="p-3 text-xs text-gray-700 whitespace-pre-wrap font-mono max-h-48 overflow-y-auto">
+          <pre className="p-3 text-xs text-neutral-700 whitespace-pre-wrap font-mono max-h-48 overflow-y-auto">
             {suggestion.templateContent}
           </pre>
-          <div className="px-3 py-2 bg-gray-50 border-t border-gray-200">
-            <p className="text-xs text-gray-500">{suggestion.description}</p>
+          <div className="px-3 py-2 bg-neutral-50 border-t border-neutral-200">
+            <p className="text-xs text-neutral-500">{suggestion.description}</p>
           </div>
         </div>
       )}
@@ -177,7 +177,7 @@ export function TemplateSuggestionBanner({
         </button>
         <button
           onClick={onDismiss}
-          className="px-4 py-2 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 transition-colors"
+          className="px-4 py-2 text-sm font-medium text-neutral-600 bg-neutral-100 rounded-lg hover:bg-gray-200 transition-colors"
         >
           Not now
         </button>
@@ -187,7 +187,7 @@ export function TemplateSuggestionBanner({
             localStorage.setItem('patchpad_pattern_dismissed', suggestion.title);
             onDismiss();
           }}
-          className="px-4 py-2 text-sm text-gray-500 hover:text-gray-700 transition-colors"
+          className="px-4 py-2 text-sm text-neutral-500 hover:text-neutral-700 transition-colors"
         >
           Don't show again
         </button>
