@@ -44,10 +44,10 @@ export function sanitizeFilename(title: string): string {
 /**
  * Generate unique filenames for a set of titles
  * @param titles Array of titles to convert to filenames
- * @returns Map of original title to unique filename (without extension)
+ * @returns Array of unique filenames (without extension) in the same order as input
  */
-export function generateUniqueFilenames(titles: string[]): Map<string, string> {
-  const result = new Map<string, string>();
+export function generateUniqueFilenames(titles: string[]): string[] {
+  const result: string[] = [];
   const usedNames = new Set<string>();
 
   for (const title of titles) {
@@ -62,7 +62,7 @@ export function generateUniqueFilenames(titles: string[]): Map<string, string> {
     }
 
     usedNames.add(uniqueFilename.toLowerCase());
-    result.set(title, uniqueFilename);
+    result.push(uniqueFilename);
   }
 
   return result;

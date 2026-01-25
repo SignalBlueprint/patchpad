@@ -59,19 +59,22 @@ describe('generateUniqueFilenames', () => {
     const titles = ['Note', 'Note', 'Note'];
     const result = generateUniqueFilenames(titles);
 
-    expect(result.get('Note')).toBeDefined();
+    expect(result.length).toBe(3);
     // All values should be unique
-    const values = Array.from(result.values());
-    const uniqueValues = new Set(values.map(v => v.toLowerCase()));
+    const uniqueValues = new Set(result.map(v => v.toLowerCase()));
     expect(uniqueValues.size).toBe(3);
+    // First should be 'Note', second 'Note-1', third 'Note-2'
+    expect(result[0]).toBe('Note');
+    expect(result[1]).toBe('Note-1');
+    expect(result[2]).toBe('Note-2');
   });
 
   it('should handle case-insensitive duplicates', () => {
     const titles = ['Note', 'NOTE', 'note'];
     const result = generateUniqueFilenames(titles);
 
-    const values = Array.from(result.values());
-    const uniqueValues = new Set(values.map(v => v.toLowerCase()));
+    expect(result.length).toBe(3);
+    const uniqueValues = new Set(result.map(v => v.toLowerCase()));
     expect(uniqueValues.size).toBe(3);
   });
 });
