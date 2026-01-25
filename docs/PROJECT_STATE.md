@@ -5,10 +5,9 @@
 
 ## What's Next
 
-1. [ ] Wire up Live Collaborative Canvases - Connect CollaborationControls UI and remote cursors to canvas view
-2. [ ] Add canvas replay renderer for SessionPlayer - Visualize session playback with note movements and AI interactions
-3. [ ] Implement session comparison feature - Compare two thinking sessions with side-by-side event timelines
-4. [ ] Add "Run Archivist" button to Second Brain Dashboard - Surface connection suggestions with accept/dismiss tracking
+1. [ ] Add canvas replay renderer for SessionPlayer - Visualize session playback with note movements and AI interactions
+2. [ ] Implement session comparison feature - Compare two thinking sessions with side-by-side event timelines
+3. [ ] Add "Run Archivist" button to Second Brain Dashboard - Surface connection suggestions with accept/dismiss tracking
 
 ## What's Done
 
@@ -24,6 +23,7 @@ _All Horizon 1 (Quick Wins) features complete:_
 - Session Playback with speed controls, timeline scrubber, and event markers
 - Session Annotations with note, highlight, and voice recording support
 - Session Insights with activity analysis, breakthrough detection, and AI-generated summaries
+- Live Collaborative Canvases - CollaborationControls UI and remote cursors connected to canvas view with Yjs CRDT sync
 
 ## Blocked
 
