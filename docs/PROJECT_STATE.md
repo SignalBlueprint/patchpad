@@ -28,6 +28,7 @@ _All Horizon 1 (Quick Wins) features complete:_
 - Session Comparison - Compare two thinking sessions with side-by-side event timelines, topic evolution, and learning insights
 - Semantic Search Test Suite - Comprehensive test coverage for semanticSearch.ts (22 tests) - 2026-01-26
 - Embeddings Test Suite - Comprehensive test coverage for embeddings.ts (31 tests) - 2026-01-26
+- Graph Publishing Test Suite - Comprehensive test coverage for graphPublishing.ts (34 tests) - 2026-01-27
 
 ## Blocked
 
@@ -60,7 +61,7 @@ _No blockers._
 **Current Health**: Green (production ready, 49% feature complete across all horizons)
 
 **Known Tech Debt**:
-- 9.0% test coverage (14/156 files) - Improved with semanticSearch.ts and embeddings.ts tests
+- 9.6% test coverage (15/156 files) - Improved with semanticSearch.ts, embeddings.ts, and graphPublishing.ts tests
 - No service worker for offline-first PWA
 - No error tracking/monitoring
 - Yjs collaboration wired but not fully exposed in UI
