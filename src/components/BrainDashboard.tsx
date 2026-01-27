@@ -43,8 +43,8 @@ const INSIGHT_ICONS = {
 };
 
 const PRIORITY_COLORS = {
-  high: 'bg-red-100 text-red-800 border-red-200',
-  medium: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+  high: 'bg-error-100 text-error-700 border-error-100',
+  medium: 'bg-warning-100 text-warning-700 border-warning-100',
   low: 'bg-neutral-100 text-neutral-600 border-neutral-200',
 };
 
@@ -126,12 +126,12 @@ export function BrainDashboard({ notes, onSelectNote, onClose }: BrainDashboardP
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-xl shadow-2xl w-full max-w-5xl h-[80vh] flex flex-col overflow-hidden">
+      <div className="bg-white rounded-xl shadow-lg w-full max-w-5xl h-[80vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="px-6 py-4 border-b border-neutral-200 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center">
-              <svg className="w-6 h-6 text-secondary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-10 h-10 bg-primary-100 rounded-lg flex items-center justify-center">
+              <svg className="w-6 h-6 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
               </svg>
             </div>
@@ -147,7 +147,7 @@ export function BrainDashboard({ notes, onSelectNote, onClose }: BrainDashboardP
             <button
               onClick={() => setPublishDialogOpen(true)}
               disabled={!graph || graph.concepts.length === 0}
-              className="px-3 py-1.5 text-sm font-medium text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg hover:bg-emerald-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
+              className="px-3 py-1.5 text-sm font-medium text-primary-700 bg-primary-50 border border-primary-200 rounded-lg hover:bg-primary-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5"
               title="Export graph as HTML file"
             >
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -169,23 +169,22 @@ export function BrainDashboard({ notes, onSelectNote, onClose }: BrainDashboardP
         {/* Tabs */}
         <div className="px-6 py-2 border-b border-neutral-200 flex gap-1">
           {[
-            { id: 'graph', label: 'Knowledge Graph', icon: '🕸️' },
-            { id: 'insights', label: 'Insights', icon: '💡', count: insights.length },
-            { id: 'concepts', label: 'Concepts', icon: '📚', count: graph?.concepts.length },
-          ].map(({ id, label, icon, count }) => (
+            { id: 'graph', label: 'Knowledge Graph', count: undefined },
+            { id: 'insights', label: 'Insights', count: insights.length },
+            { id: 'concepts', label: 'Concepts', count: graph?.concepts.length },
+          ].map(({ id, label, count }) => (
             <button
               key={id}
               onClick={() => setTab(id as Tab)}
               className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-2 ${
                 tab === id
-                  ? 'bg-purple-100 text-purple-700'
-                  : 'text-neutral-600 hover:bg-neutral-100'
+                  ? 'bg-primary-50 text-primary-700'
+                  : 'text-neutral-600 hover:bg-neutral-50'
               }`}
             >
-              <span>{icon}</span>
               {label}
               {count !== undefined && (
-                <span className="text-xs bg-gray-200 px-1.5 py-0.5 rounded-full">
+                <span className="text-xs bg-neutral-200 text-neutral-600 px-1.5 py-0.5 rounded-full">
                   {count}
                 </span>
               )}
@@ -198,7 +197,7 @@ export function BrainDashboard({ notes, onSelectNote, onClose }: BrainDashboardP
           {loading ? (
             <div className="h-full flex items-center justify-center">
               <div className="text-center">
-                <svg className="w-12 h-12 mx-auto text-purple-500 animate-spin mb-4" fill="none" viewBox="0 0 24 24">
+                <svg className="w-12 h-12 mx-auto text-primary-500 animate-spin mb-4" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
@@ -244,7 +243,7 @@ export function BrainDashboard({ notes, onSelectNote, onClose }: BrainDashboardP
                           insight.type === 'pattern' ? 'text-primary-500' :
                           insight.type === 'gap' ? 'text-accent-500' :
                           insight.type === 'connection' ? 'text-green-500' :
-                          'text-purple-500'
+                          'text-primary-500'
                         }`}>
                           {INSIGHT_ICONS[insight.type]}
                         </div>
@@ -299,7 +298,7 @@ export function BrainDashboard({ notes, onSelectNote, onClose }: BrainDashboardP
                     <button
                       onClick={() => setTypeFilter('all')}
                       className={`text-xs px-2 py-1 rounded-full ${
-                        typeFilter === 'all' ? 'bg-purple-100 text-purple-700' : 'bg-neutral-100 text-neutral-600'
+                        typeFilter === 'all' ? 'bg-primary-100 text-primary-700' : 'bg-neutral-100 text-neutral-600'
                       }`}
                     >
                       All
@@ -309,7 +308,7 @@ export function BrainDashboard({ notes, onSelectNote, onClose }: BrainDashboardP
                         key={type}
                         onClick={() => setTypeFilter(type)}
                         className={`text-xs px-2 py-1 rounded-full capitalize ${
-                          typeFilter === type ? 'bg-purple-100 text-purple-700' : 'bg-neutral-100 text-neutral-600'
+                          typeFilter === type ? 'bg-primary-100 text-primary-700' : 'bg-neutral-100 text-neutral-600'
                         }`}
                       >
                         {type}
@@ -333,7 +332,7 @@ export function BrainDashboard({ notes, onSelectNote, onClose }: BrainDashboardP
                             <button
                               onClick={() => setSelectedConcept(concept)}
                               className={`w-full px-4 py-3 text-left hover:bg-neutral-50 transition-colors ${
-                                selectedConcept?.id === concept.id ? 'bg-purple-50' : ''
+                                selectedConcept?.id === concept.id ? 'bg-primary-50' : ''
                               }`}
                             >
                               <div className="flex items-center justify-between">
@@ -410,7 +409,7 @@ export function BrainDashboard({ notes, onSelectNote, onClose }: BrainDashboardP
                                 <button
                                   key={relatedId}
                                   onClick={() => setSelectedConcept(related)}
-                                  className="px-3 py-1.5 bg-purple-50 text-purple-700 rounded-full text-sm hover:bg-purple-100 transition-colors"
+                                  className="px-3 py-1.5 bg-primary-50 text-primary-700 rounded-full text-sm hover:bg-purple-100 transition-colors"
                                 >
                                   {related.name}
                                 </button>

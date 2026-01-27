@@ -120,14 +120,14 @@ export function SecondBrainDashboard({
 
       {/* Modal */}
       <div
-        className={`relative w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/50 transition-all duration-300 ${
+        className={`relative w-full max-w-4xl mx-4 max-h-[90vh] overflow-hidden bg-white rounded-xl shadow-lg border border-neutral-200 transition-all duration-300 ${
           isVisible && !isClosing
             ? 'scale-100 translate-y-0'
             : 'scale-95 translate-y-4'
         }`}
       >
-        {/* Header gradient */}
-        <div className="absolute top-0 left-0 right-0 h-40 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 opacity-95" />
+        {/* Header accent */}
+        <div className="absolute top-0 left-0 right-0 h-32 bg-primary-600" />
 
         {/* Close button */}
         <button
@@ -184,7 +184,7 @@ export function SecondBrainDashboard({
                   type="checkbox"
                   checked={showOnStartup}
                   onChange={(e) => handleShowOnStartupChange(e.target.checked)}
-                  className="w-4 h-4 rounded border-neutral-300 text-secondary-600 focus:ring-purple-500"
+                  className="w-4 h-4 rounded border-neutral-300 text-primary-600 focus:ring-primary-500"
                 />
                 Show on startup
               </label>
@@ -192,7 +192,7 @@ export function SecondBrainDashboard({
               {/* Start button */}
               <button
                 onClick={handleClose}
-                className="py-2.5 px-6 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg shadow-indigo-500/25"
+                className="py-2.5 px-6 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors"
               >
                 Start Writing
               </button>

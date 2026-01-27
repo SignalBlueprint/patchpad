@@ -138,13 +138,11 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
       />
 
       {/* Palette */}
-      <div className="relative w-full max-w-xl glass-card rounded-2xl shadow-2xl overflow-hidden animate-spring-in border border-white/20">
-        {/* Decorative gradient bar */}
-        <div className="h-1 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500" />
+      <div className="relative w-full max-w-xl glass-card rounded-xl shadow-lg overflow-hidden animate-spring-in border border-neutral-200/50">
 
         {/* Search input */}
         <div className="flex items-center px-4 border-b border-neutral-200/50">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg shadow-indigo-500/25">
+          <div className="w-10 h-10 rounded-lg bg-primary-600 flex items-center justify-center">
             <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
             </svg>
@@ -191,16 +189,16 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
                           cmd.action();
                           onClose();
                         }}
-                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all duration-200 ${
+                        className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${
                           isSelected
-                            ? 'bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-900 shadow-sm border border-indigo-100'
-                            : 'hover:bg-neutral-50/80 text-neutral-700 border border-transparent'
+                            ? 'bg-primary-50 text-primary-900 border border-primary-100'
+                            : 'hover:bg-neutral-50 text-neutral-700 border border-transparent'
                         }`}
                       >
                         {cmd.icon && (
                           <span className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center transition-colors ${
                             isSelected
-                              ? 'bg-gradient-to-br from-indigo-500 to-purple-600 text-white shadow-md shadow-indigo-500/25'
+                              ? 'bg-primary-600 text-white'
                               : 'bg-neutral-100 text-neutral-500'
                           }`}>
                             {cmd.icon}
@@ -216,7 +214,7 @@ export function CommandPalette({ isOpen, onClose, commands }: CommandPaletteProp
                         </div>
                         {cmd.shortcut && (
                           <kbd className={`flex-shrink-0 px-2 py-0.5 text-xs font-medium rounded-lg transition-colors ${
-                            isSelected ? 'bg-indigo-100 text-indigo-700' : 'bg-neutral-100 text-neutral-500'
+                            isSelected ? 'bg-primary-100 text-primary-700' : 'bg-neutral-100 text-neutral-500'
                           }`}>
                             {cmd.shortcut}
                           </kbd>

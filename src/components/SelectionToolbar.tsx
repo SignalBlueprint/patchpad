@@ -15,11 +15,9 @@ interface Position {
 }
 
 const highlightColors: { color: HighlightColor; bg: string; label: string }[] = [
-  { color: 'yellow', bg: 'bg-yellow-300', label: 'Yellow' },
-  { color: 'green', bg: 'bg-green-300', label: 'Green' },
-  { color: 'blue', bg: 'bg-blue-300', label: 'Blue' },
-  { color: 'pink', bg: 'bg-pink-300', label: 'Pink' },
-  { color: 'orange', bg: 'bg-orange-300', label: 'Orange' },
+  { color: 'yellow', bg: 'bg-accent-200', label: 'Amber' },
+  { color: 'green', bg: 'bg-primary-200', label: 'Moss' },
+  { color: 'blue', bg: 'bg-info-100', label: 'Teal' },
 ];
 
 export function SelectionToolbar({ selection, editorElement, onAction, onHighlight, isAIAvailable }: SelectionToolbarProps) {
@@ -85,7 +83,7 @@ export function SelectionToolbar({ selection, editorElement, onAction, onHighlig
   return (
     <div
       ref={toolbarRef}
-      className="absolute z-50 flex items-center gap-1 px-2 py-1.5 bg-gray-900 rounded-lg shadow-xl animate-fade-in"
+      className="absolute z-50 flex items-center gap-1 px-2 py-1.5 bg-neutral-900 rounded-lg shadow-xl animate-fade-in"
       style={{
         top: position.top,
         left: position.left,
@@ -101,10 +99,10 @@ export function SelectionToolbar({ selection, editorElement, onAction, onHighlig
               setSelectedColor(null);
               setAnnotation('');
             }}
-            className="flex items-center gap-1.5 px-2 py-1 text-xs font-medium rounded transition-colors text-gray-200 hover:bg-gray-700"
+            className="flex items-center gap-1.5 px-2 py-1 text-xs font-medium rounded transition-colors text-neutral-200 hover:bg-neutral-700"
             title="Highlight"
           >
-            <span className="w-4 h-4 rounded bg-gradient-to-r from-yellow-300 via-green-300 to-blue-300" />
+            <span className="w-4 h-4 rounded bg-accent-200" />
             <span className="hidden sm:inline">Highlight</span>
           </button>
 
@@ -117,8 +115,8 @@ export function SelectionToolbar({ selection, editorElement, onAction, onHighlig
                   <button
                     key={color}
                     onClick={() => setSelectedColor(color)}
-                    className={`w-6 h-6 rounded ${bg} transition-all ${
-                      selectedColor === color ? 'ring-2 ring-gray-600 ring-offset-1' : 'hover:ring-2 hover:ring-gray-400'
+                    className={`w-6 h-6 rounded ${bg} transition-colors ${
+                      selectedColor === color ? 'ring-2 ring-neutral-600 ring-offset-1' : 'hover:ring-2 hover:ring-neutral-400'
                     }`}
                     title={label}
                   />
@@ -166,7 +164,7 @@ export function SelectionToolbar({ selection, editorElement, onAction, onHighlig
                         setSelectedColor(null);
                         setAnnotation('');
                       }}
-                      className="px-2 py-1 text-xs font-medium text-neutral-600 bg-neutral-100 rounded hover:bg-gray-200 transition-colors"
+                      className="px-2 py-1 text-xs font-medium text-neutral-600 bg-neutral-100 rounded hover:bg-neutral-200 transition-colors"
                     >
                       Cancel
                     </button>
@@ -186,7 +184,7 @@ export function SelectionToolbar({ selection, editorElement, onAction, onHighlig
       )}
 
       {/* Divider */}
-      {onHighlight && <div className="w-px h-4 bg-gray-600 mx-1" />}
+      {onHighlight && <div className="w-px h-4 bg-neutral-600 mx-1" />}
 
       {/* AI Actions */}
       {actions.map((action) => {
@@ -199,7 +197,7 @@ export function SelectionToolbar({ selection, editorElement, onAction, onHighlig
             className={`flex items-center gap-1.5 px-2 py-1 text-xs font-medium rounded transition-colors ${
               disabled
                 ? 'text-neutral-500 cursor-not-allowed'
-                : 'text-gray-200 hover:bg-gray-700'
+                : 'text-neutral-200 hover:bg-neutral-700'
             }`}
             title={disabled ? 'AI required' : action.label}
           >
@@ -211,7 +209,7 @@ export function SelectionToolbar({ selection, editorElement, onAction, onHighlig
 
       {/* Triangle pointer */}
       <div
-        className="absolute w-3 h-3 bg-gray-900 transform rotate-45"
+        className="absolute w-3 h-3 bg-neutral-900 transform rotate-45"
         style={{
           bottom: -6,
           left: '50%',

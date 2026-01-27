@@ -46,12 +46,12 @@ export function DailyDigestModal({
 
       {/* Modal */}
       <div
-        className={`relative w-full max-w-lg mx-4 bg-white/90 backdrop-blur-xl rounded-2xl shadow-2xl border border-white/50 overflow-hidden transition-all duration-300 ${
+        className={`relative w-full max-w-lg mx-4 bg-white rounded-xl shadow-lg border border-neutral-200 overflow-hidden transition-all duration-300 ${
           isVisible && !isClosing ? 'scale-100 translate-y-0' : 'scale-95 translate-y-4'
         }`}
       >
-        {/* Header gradient */}
-        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 opacity-90" />
+        {/* Header */}
+        <div className="absolute top-0 left-0 right-0 h-32 bg-primary-600" />
 
         {/* Close button */}
         <button
@@ -81,7 +81,7 @@ export function DailyDigestModal({
               }
               value={digest.notesCreated}
               label="Notes Created"
-              color="indigo"
+              color="primary"
             />
             <StatCard
               icon={
@@ -91,7 +91,7 @@ export function DailyDigestModal({
               }
               value={digest.notesUpdated}
               label="Notes Updated"
-              color="purple"
+              color="primary"
             />
             <StatCard
               icon={
@@ -101,7 +101,7 @@ export function DailyDigestModal({
               }
               value={digest.wordsWritten}
               label="Words Written"
-              color="pink"
+              color="primary"
             />
           </div>
 
@@ -146,10 +146,10 @@ export function DailyDigestModal({
                 {digest.topConcepts.map((concept, index) => (
                   <span
                     key={index}
-                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-100"
+                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm bg-primary-50 text-primary-700 border border-primary-100"
                   >
                     {concept.name}
-                    <span className="text-xs text-blue-400">({concept.count})</span>
+                    <span className="text-xs text-primary-500">({concept.count})</span>
                   </span>
                 ))}
               </div>
@@ -157,21 +157,21 @@ export function DailyDigestModal({
           )}
 
           {/* Suggestion */}
-          <div className="bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl p-4 border border-amber-100">
+          <div className="bg-accent-50 rounded-lg p-4 border border-accent-100">
             <div className="flex items-start gap-3">
-              <div className="flex-shrink-0 w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center">
-                <svg className="w-4 h-4 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-accent-100 flex items-center justify-center">
+                <svg className="w-4 h-4 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
               </div>
-              <p className="text-sm text-amber-800">{digest.suggestion}</p>
+              <p className="text-sm text-accent-800">{digest.suggestion}</p>
             </div>
           </div>
 
           {/* Start Writing button */}
           <button
             onClick={handleClose}
-            className="w-full mt-6 py-3 px-4 bg-gradient-to-r from-indigo-500 to-purple-500 text-white font-medium rounded-xl hover:from-indigo-600 hover:to-purple-600 transition-all shadow-lg shadow-indigo-500/25"
+            className="w-full mt-6 py-3 px-4 bg-primary-600 text-white font-medium rounded-lg hover:bg-primary-700 transition-colors"
           >
             Start Writing
           </button>
@@ -185,19 +185,17 @@ interface StatCardProps {
   icon: React.ReactNode;
   value: number;
   label: string;
-  color: 'indigo' | 'purple' | 'pink';
+  color: 'primary';
 }
 
 function StatCard({ icon, value, label, color }: StatCardProps) {
   const colorClasses = {
-    indigo: 'from-indigo-50 to-indigo-100 text-secondary-600 border-indigo-100',
-    purple: 'from-purple-50 to-purple-100 text-secondary-600 border-purple-100',
-    pink: 'from-pink-50 to-pink-100 text-pink-600 border-pink-100',
+    primary: 'bg-primary-50 text-primary-700 border-primary-100',
   };
 
   return (
     <div
-      className={`p-3 rounded-xl bg-gradient-to-br ${colorClasses[color]} border text-center`}
+      className={`p-3 rounded-xl ${colorClasses[color]} border text-center`}
     >
       <div className="flex justify-center mb-1">{icon}</div>
       <div className="text-2xl font-bold">{value.toLocaleString()}</div>
