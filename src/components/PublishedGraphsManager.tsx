@@ -14,6 +14,7 @@ import {
   getGraphAnalytics,
   getGraphUrl,
 } from '../services/graphPublishing';
+import { GraphAnalytics as GraphAnalyticsModal } from './GraphAnalytics';
 
 interface PublishedGraphsManagerProps {
   userId: string;
@@ -28,6 +29,7 @@ export function PublishedGraphsManager({ userId, isOpen, onClose }: PublishedGra
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [analyticsModalOpen, setAnalyticsModalOpen] = useState(false);
 
   // Load published graphs
   useEffect(() => {
@@ -245,7 +247,18 @@ export function PublishedGraphsManager({ userId, isOpen, onClose }: PublishedGra
                 {/* Analytics */}
                 {analytics && (
                   <div className="bg-white rounded-lg p-4">
-                    <h4 className="text-sm font-medium text-neutral-900 mb-3">Analytics</h4>
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-sm font-medium text-neutral-900">Analytics</h4>
+                      <button
+                        onClick={() => setAnalyticsModalOpen(true)}
+                        className="text-xs text-primary-600 hover:text-primary-700 font-medium flex items-center gap-1"
+                      >
+                        View Full
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                    </div>
                     <div className="space-y-3">
                       <div className="flex justify-between text-sm">
                         <span className="text-neutral-500">Unique Visitors</span>
@@ -335,6 +348,15 @@ export function PublishedGraphsManager({ userId, isOpen, onClose }: PublishedGra
           </div>
         </div>
       </div>
+
+      {/* Analytics Modal */}
+      {selectedGraph && (
+        <GraphAnalyticsModal
+          graph={selectedGraph}
+          isOpen={analyticsModalOpen}
+          onClose={() => setAnalyticsModalOpen(false)}
+        />
+      )}
     </div>
   );
 }

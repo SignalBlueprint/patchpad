@@ -15,6 +15,7 @@ _All Horizon 1 (Quick Wins) features complete:_
 - Thinking Timeline with session clustering and configurable gap threshold
 - Conversation Insights panel with top questions, topics, knowledge gaps, and activity tracking
 - Knowledge Graph Publishing with interactive HTML export
+- Knowledge Graph Analytics Dashboard with view tracking, most-clicked nodes, referrer tracking, and 14-day chart - Enhanced 2026-01-26
 - Template Intelligence with pattern detection and AI placeholder types
 - Template Intelligence AI placeholder filling - Real-time preview of AI-generated content in TemplatePicker
 - Knowledge Agents framework (Archivist, Researcher, Writer) with AgentDashboard
